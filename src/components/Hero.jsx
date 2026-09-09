@@ -1,0 +1,4 @@
+import { profile } from '../data/portfolio.js';
+export default function Hero() {
+  return <section className="hero" id="home">{profile.videoSrc ? <video className="hero-video" autoPlay muted loop playsInline src={profile.videoSrc} /> : <div className="hero-video hero-placeholder" aria-label="Hero video placeholder"><span>ADD HERO VIDEO<br />src/assets/videos/hero.mp4</span></div>}<div className="hero-overlay" /><div className="hero-glow" /><div className="hero-content"><p className="eyebrow">{profile.role} <span>•</span> {profile.location}</p><h1>Engineering <em>with intent.</em></h1><p className="hero-intro">{profile.intro}</p><div className="hero-actions"><a className="button" href={`mailto:${profile.email}`}>Start a conversation <b>↗</b></a><a className="text-link" href="#projects">View selected work <b>↓</b></a></div></div><p className="scroll-cue">SCROLL TO EXPLORE <i /></p></section>;
+}
