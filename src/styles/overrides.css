@@ -1,0 +1,4 @@
+/* Apple-inspired system typography: sharp, native and highly legible. */
+body, button, input, textarea { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif; }
+.host-access { position: fixed; right: 18px; bottom: 18px; z-index: 9; padding: 11px 13px; border: 1px solid #ffffff45; background: #111513; color: #e8ebe3; font: 10px "DM Mono", monospace; letter-spacing: .08em; cursor: pointer; }
+.host-access:hover { background: var(--acid); color: #111513; }
