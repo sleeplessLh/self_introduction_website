@@ -1,0 +1,4 @@
+import { supabase } from '../lib/supabase.js';
+const cacheKey = 'portfolio-cms-content-v2';
+export async function loadContent() { const { data, error } = await supabase.from('portfolio_content').select('id,content').limit(1).maybeSingle(); if (!error && data?.content) { localStorage.setItem(cacheKey, JSON.stringify(data)); return data; } try { return JSON.parse(localStorage.getItem(cacheKey)); } catch { return null; } }
+export async function saveContent(content) { const current = await loadContent(); const request = current?.id ? supabase.from('portfolio_content').update({ content, updated_at: new Date().toISOString() }).eq('id', current.id) : supabase.from('portfolio_content').insert({ content }); const { error } = await request; if (error) throw error; const saved = { id: current?.id, content }; localStorage.setItem(cacheKey, JSON.stringify(saved)); return saved; }

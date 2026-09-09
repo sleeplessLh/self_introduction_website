@@ -2,56 +2,20 @@ import portrait from '../assets/images/portrait-placeholder.svg';
 import projectOne from '../assets/images/project-one.svg';
 import projectTwo from '../assets/images/project-two.svg';
 import projectThree from '../assets/images/project-three.svg';
+const uid = () => crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`;
 
-// Replace placeholder text, links and assets here after adding resume details.
-export const profile = {
-  name: 'YOUR NAME',
-  initials: 'YN',
-  role: 'Software Engineer / Student',
-  location: 'Based in [Your City]',
-  email: 'your.email@example.com',
-  intro: 'I build considered software at the intersection of reliable systems and useful human experiences.',
-  bio: 'This is a placeholder introduction. Replace it with a concise point of view: the problems you enjoy solving, the kind of engineer you are becoming, and what you care about when building software.',
-  education: 'B.Sc. Software Engineering · [University] · [Expected year]',
-  portrait,
-  // Add a local MP4 at src/assets/videos/hero.mp4, then set videoSrc to it.
-  videoSrc: null,
-  resumeUrl: '#',
-};
-
-export const stats = [
-  ['01', 'Focus areas', 'Software systems, product engineering'],
-  ['02', 'Currently learning', 'Architecture, data, distributed systems'],
-  ['03', 'Open to', 'Internships, collaborations, meaningful problems'],
-];
-
-export const experience = [
-  { period: 'NOW', title: 'Building foundations', detail: 'Placeholder for your current study, role, or independent work.' },
-  { period: 'NEXT', title: 'Seeking applied experience', detail: 'Placeholder for the kind of opportunity you would like to pursue.' },
-];
-
-export const highlights = [
-  { label: 'Competitions', value: 'Add hackathons, contests, or challenges here.' },
-  { label: 'Recognition', value: 'Add an award, scholarship, or meaningful milestone here.' },
-  { label: 'Technical interests', value: 'Systems · Backend · AI/ML · Developer tools' },
-];
-
-export const projects = [
-  { title: 'PROJECT / ONE', category: 'Product Engineering', year: '2026', description: 'A placeholder for a project that solves one clear problem with a thoughtful technical approach.', technologies: ['React', 'Node.js', 'PostgreSQL'], image: projectOne, github: '#', demo: '#' },
-  { title: 'PROJECT / TWO', category: 'Systems & Data', year: '2026', description: 'A placeholder for an engineering project where the implementation reveals how you think.', technologies: ['Python', 'APIs', 'Docker'], image: projectTwo, github: '#', demo: '#' },
-  { title: 'PROJECT / THREE', category: 'Experiment', year: '2026', description: 'A placeholder for a technical experiment, tool, or prototype worth exploring in public.', technologies: ['JavaScript', 'Data', 'Design'], image: projectThree, github: '#', demo: '#' },
-];
-
-export const strengths = [
-  ['01', 'Software Engineering', 'From problem framing to maintainable implementation.'],
-  ['02', 'Problem Solving', 'Breaking ambiguous problems into testable steps.'],
-  ['03', 'Systems Thinking', 'Considering the interactions behind a useful interface.'],
-  ['04', 'Technical Learning', 'Building depth through deliberate practice and iteration.'],
-  ['05', 'Collaboration', 'Communicating clearly, sharing context, and moving work forward.'],
-  ['06', 'Engineering Craft', 'Caring about clarity, edge cases, and the details that last.'],
-];
-
-export const socialLinks = {
-  github: { label: 'GitHub', url: 'https://github.com/' },
-  linkedin: { label: 'LinkedIn', url: 'https://www.linkedin.com/' },
-};
+export const createDefaultContent = () => ({
+  theme: { accent: '#c9ee6b' },
+  navigation: [{ id: 'home', label: 'Home' }, { id: 'about', label: 'About' }, { id: 'projects', label: 'Projects' }, { id: 'competitions', label: 'Competitions' }, { id: 'learning', label: 'Learning' }, { id: 'strengths', label: 'Strengths' }, { id: 'contact', label: 'Contact' }],
+  hero: { eyebrow: 'Software Engineer / Student • Based in [Your City]', title: 'Engineering', emphasis: 'with intent.', intro: 'I build considered software at the intersection of reliable systems and useful human experiences.', primaryLabel: 'Start a conversation', secondaryLabel: 'View selected work', scrollLabel: 'Scroll to explore', videoSrc: null },
+  profile: { name: 'YOUR NAME', initials: 'YN', role: 'Software Engineer / Student', location: 'Based in [Your City]', email: 'your.email@example.com', bio: 'This is a placeholder introduction. Replace it with a concise point of view: the problems you enjoy solving, the kind of engineer you are becoming, and what you care about when building software.', education: 'B.Sc. Software Engineering · [University] · [Expected year]', portrait, portraitCaption: 'Profile image', resumeUrl: '#' },
+  about: { label: '01 / ABOUT', kicker: 'THE ENGINEER BEHIND THE WORK', title: 'A point of view,', emphasis: 'not just a stack.', educationLabel: 'Education', contactLabel: 'Contact', experienceLabel: 'Experience / direction', highlightsLabel: 'Signals of progress', stats: [{ id: uid(), number: '01', label: 'Focus areas', value: 'Software systems, product engineering' }, { id: uid(), number: '02', label: 'Currently learning', value: 'Architecture, data, distributed systems' }, { id: uid(), number: '03', label: 'Open to', value: 'Internships, collaborations, meaningful problems' }], experience: [{ id: uid(), period: 'NOW', title: 'Building foundations', detail: 'Placeholder for your current study, role, or independent work.' }], highlights: [{ id: uid(), label: 'Competitions', value: 'Add hackathons, contests, or challenges here.' }, { id: uid(), label: 'Technical interests', value: 'Systems · Backend · AI/ML · Developer tools' }] },
+  sections: { projects: { label: '02 / PROJECT EXPERIENCE', title: 'Proof through', emphasis: 'practice.', description: 'Selected projects will live here. Each one is structured to show the problem, the craft, and the technology behind the result.', detailLabel: 'View details', emptyLabel: 'No projects published yet.' }, competitions: { label: '03 / COMPETITION EXPERIENCE', title: 'Learn under', emphasis: 'pressure.', description: 'A dedicated space for competitions, hackathons, and challenges. Add only work you want to discuss.', detailLabel: 'View details', emptyLabel: 'No competition experience published yet.' }, learning: { label: '04 / SELF-LEARNING JOURNEY', title: 'Curiosity into', emphasis: 'craft.', description: 'A living record of independent learning, practice, and the questions worth following.', emptyLabel: 'No self-learning journey entries published yet.' }, strengths: { label: '05 / CAPABILITIES', title: 'Useful in the', emphasis: 'important places.', description: 'Not a rating system. A working set of strengths that evolves with each problem worth solving.' }, contact: { eyebrow: 'AVAILABLE FOR THE NEXT INTERESTING PROBLEM', title: 'Let’s make', emphasis: 'something matter.', ctaLabel: 'Get in touch' } },
+  projects: [{ id: uid(), title: 'PROJECT / ONE', label: 'Product Engineering', date: '2026', coverImage: projectOne, gallery: [], description: 'A placeholder for a project that solves one clear problem with a thoughtful technical approach.', technologies: ['React', 'Node.js', 'PostgreSQL'], github: '', liveDemo: '' }, { id: uid(), title: 'PROJECT / TWO', label: 'Systems & Data', date: '2026', coverImage: projectTwo, gallery: [], description: 'A placeholder for an engineering project where the implementation reveals how you think.', technologies: ['Python', 'APIs', 'Docker'], github: '', liveDemo: '' }, { id: uid(), title: 'PROJECT / THREE', label: 'Experiment', date: '2026', coverImage: projectThree, gallery: [], description: 'A placeholder for a technical experiment, tool, or prototype worth exploring in public.', technologies: ['JavaScript', 'Data', 'Design'], github: '', liveDemo: '' }],
+  competitions: [], learningJourney: [],
+  strengths: [{ id: uid(), number: '01', title: 'Software Engineering', description: 'From problem framing to maintainable implementation.' }, { id: uid(), number: '02', title: 'Problem Solving', description: 'Breaking ambiguous problems into testable steps.' }, { id: uid(), number: '03', title: 'Systems Thinking', description: 'Considering the interactions behind a useful interface.' }, { id: uid(), number: '04', title: 'Technical Learning', description: 'Building depth through deliberate practice and iteration.' }],
+  contact: { socialLinks: [{ id: uid(), label: 'GitHub', url: 'https://github.com/' }, { id: uid(), label: 'LinkedIn', url: 'https://www.linkedin.com/' }] }
+});
+export const blankProject = () => ({ id: uid(), title: 'New project', label: 'Project label', date: 'Year', coverImage: projectOne, gallery: [], description: 'Describe the problem, your approach, and why it matters.', technologies: [], github: '', liveDemo: '' });
+export const blankCompetition = () => ({ id: uid(), title: 'New competition', label: 'Competition label', date: 'Date', coverImage: projectTwo, gallery: [], description: 'Describe the challenge, your contribution, and what you learned.', tags: [] });
+export const blankLearning = () => ({ id: uid(), title: 'New learning experience', category: 'Category', status: 'Exploring', period: 'Period', summary: 'Describe what you are learning and why.', topics: [], technologies: [], resources: [], notes: '' });
