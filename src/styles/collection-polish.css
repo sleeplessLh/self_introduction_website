@@ -8,6 +8,7 @@
 .compact-collection .projects-heading h2 { font-size: clamp(37px, 4vw, 62px); margin-bottom: 10px; }
 .compact-collection .projects-heading p { max-width: 540px; font-size: 13px; }
 .compact-list { gap: 10px; }
+.collection-add { display: block; margin-top: 14px; }
 
 .tag-order { display: flex; flex-wrap: wrap; gap: 5px; margin: -5px 0 13px; }
 .tag-order span { display: flex; align-items: center; border: 1px solid #1115132b; }
