@@ -4,12 +4,16 @@ import { loadContent, saveContent } from '../services/contentStorage.js';
 
 const PortfolioContext = createContext(null);
 const clone = value => JSON.parse(JSON.stringify(value));
+const mergeSections = (saved = {}, defaults = {}) => Object.fromEntries(Object.entries(defaults).map(([key, value]) => [key, { ...value, ...(saved[key] || {}) }]));
+const normalizeGallery = gallery => (gallery || []).map(image => typeof image === 'string' ? { src: image, caption: '', hidden: false } : { caption: '', hidden: false, ...image });
+const normalizeCollection = (items = []) => items.map(item => ({ galleryUrl: '', details: '', coverPosition: '50% 50%', ...item, gallery: normalizeGallery(item.gallery) }));
+const normalizeLearning = (items = []) => items.map(item => ({ hidden: false, knowledge: [], topics: [], technologies: [], resources: [], notes: '', ...item, knowledge: (item.knowledge || []).map(entry => ({ hidden: false, resourceLabel: '', resourceUrl: '', projectLabel: '', projectUrl: '', ...entry })) }));
 function normalize(saved, defaults) {
   if (!saved) return defaults;
   if (!saved.navigation) return { ...defaults, profile: { ...defaults.profile, ...saved }, theme: { ...defaults.theme, accent: saved.accent || defaults.theme.accent } };
   const isLegacyHero = !saved.schemaVersion || saved.schemaVersion < 3;
   const needsCompetitionTemplate = !saved.schemaVersion || saved.schemaVersion < 4;
-  return { ...defaults, ...saved, schemaVersion: defaults.schemaVersion, theme: { ...defaults.theme, ...saved.theme }, hero: isLegacyHero ? defaults.hero : { ...defaults.hero, ...saved.hero }, profile: { ...defaults.profile, ...saved.profile }, about: { ...defaults.about, ...saved.about }, sections: { ...defaults.sections, ...saved.sections }, contact: { ...defaults.contact, ...saved.contact }, navigation: saved.navigation || defaults.navigation, projects: saved.projects || defaults.projects, competitions: needsCompetitionTemplate ? defaults.competitions : saved.competitions || [], learningJourney: saved.learningJourney || [], strengths: saved.strengths || defaults.strengths };
+  return { ...defaults, ...saved, schemaVersion: defaults.schemaVersion, theme: { ...defaults.theme, ...saved.theme }, hero: isLegacyHero ? defaults.hero : { ...defaults.hero, ...saved.hero }, profile: { ...defaults.profile, ...saved.profile }, about: { ...defaults.about, ...saved.about }, sections: mergeSections(saved.sections, defaults.sections), contact: { ...defaults.contact, ...saved.contact }, navigation: saved.navigation || defaults.navigation, projects: normalizeCollection(saved.projects || defaults.projects), competitions: normalizeCollection(needsCompetitionTemplate ? defaults.competitions : saved.competitions || []), learningJourney: normalizeLearning(saved.learningJourney || []), strengths: saved.strengths || defaults.strengths };
 }
 export function PortfolioProvider({ children }) {
   const [defaults] = useState(() => createDefaultContent());

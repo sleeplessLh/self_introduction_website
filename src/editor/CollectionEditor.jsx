@@ -8,7 +8,7 @@ const move = (list, index, direction) => {
   return next;
 };
 
-const normaliseGallery = gallery => (gallery || []).map(image => typeof image === 'string' ? { src: image, caption: '' } : image).filter(image => image?.src);
+const normaliseGallery = gallery => (gallery || []).map(image => typeof image === 'string' ? { src: image, caption: '', hidden: false } : { hidden: false, ...image }).filter(image => image?.src);
 
 export default function CollectionEditor({ title, items, create, updateItems, kind, activeId, onActiveChange }) {
   const select = id => onActiveChange?.(id);
@@ -43,8 +43,8 @@ export default function CollectionEditor({ title, items, create, updateItems, ki
             <TagField label="Labels / knowledge points" values={kind === 'project' ? item.technologies : item.tags} onChange={value => updateItem(index, kind === 'project' ? 'technologies' : 'tags', value)} />
             <TextField label="Gallery external URL (optional)" type="url" value={item.galleryUrl || ''} placeholder="https://..." onChange={value => updateItem(index, 'galleryUrl', value)} />
             {kind === 'project' && <><TextField label="GitHub URL" type="url" value={item.github} onChange={value => updateItem(index, 'github', value)} /><TextField label="Live demo URL" type="url" value={item.liveDemo} onChange={value => updateItem(index, 'liveDemo', value)} /></>}
-            <ImageField label="Gallery images" multiple onChange={images => setGallery([...gallery, ...images.map(src => ({ src, caption: '' }))])} />
-            <div className="gallery-editor">{gallery.map((image, imageIndex) => <figure key={`${imageIndex}-${image.src.slice(0, 16)}`}><img src={image.src} alt="Gallery preview" /><TextField label={`Image ${imageIndex + 1} caption`} value={image.caption || ''} onChange={caption => setGallery(gallery.map((entry, entryIndex) => entryIndex === imageIndex ? { ...entry, caption } : entry))} /><figcaption><button onClick={() => setGallery(move(gallery, imageIndex, -1))} aria-label="Move image left">←</button><button onClick={() => setGallery(move(gallery, imageIndex, 1))} aria-label="Move image right">→</button><button className="danger" onClick={() => setGallery(gallery.filter((_, galleryIndex) => galleryIndex !== imageIndex))}>Remove</button></figcaption></figure>)}</div>
+            <ImageField label="Gallery images" multiple onChange={images => setGallery([...gallery, ...images.map(src => ({ src, caption: '', hidden: false }))])} />
+            <div className="gallery-editor">{gallery.map((image, imageIndex) => <figure className={image.hidden ? 'is-hidden' : ''} key={`${imageIndex}-${image.src.slice(0, 16)}`}><img src={image.src} alt="Gallery preview" /><span className="gallery-visibility">{image.hidden ? 'Hidden from visitors' : 'Visible to visitors'}</span><TextField label={`Image ${imageIndex + 1} caption`} value={image.caption || ''} onChange={caption => setGallery(gallery.map((entry, entryIndex) => entryIndex === imageIndex ? { ...entry, caption } : entry))} /><ImageField label="Replace this image" value="" onChange={src => setGallery(gallery.map((entry, entryIndex) => entryIndex === imageIndex ? { ...entry, src } : entry))} /><figcaption><button onClick={() => setGallery(move(gallery, imageIndex, -1))} aria-label="Move image left">←</button><button onClick={() => setGallery(move(gallery, imageIndex, 1))} aria-label="Move image right">→</button><button onClick={() => setGallery(gallery.map((entry, entryIndex) => entryIndex === imageIndex ? { ...entry, hidden: !entry.hidden } : entry))}>{image.hidden ? 'Show' : 'Hide'}</button><button className="danger" onClick={() => setGallery(gallery.filter((_, galleryIndex) => galleryIndex !== imageIndex))}>Remove</button></figcaption></figure>)}</div>
           </>}</div>}
       </article>;
     })}
