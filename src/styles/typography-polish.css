@@ -1,0 +1,16 @@
+/* Keep portfolio headings quiet, sharp and legible — no display/script treatment. */
+h1 em,
+h2 em {
+  font-family: inherit;
+  font-style: normal;
+  font-weight: inherit;
+}
+
+/* The second line remains part of the hierarchy without reading like a slogan. */
+.about h2 em,
+.projects-heading h2 em,
+.learning-section h2 em,
+.strengths h2 em,
+.contact h2 em {
+  color: currentColor;
+}
