@@ -1,0 +1,21 @@
+.compact-collection.projects-section,
+.compact-collection.collection-section {
+  padding-top: 72px;
+  padding-bottom: 72px;
+}
+
+.compact-collection .projects-heading { margin-bottom: 26px; }
+.compact-collection .projects-heading h2 { font-size: clamp(37px, 4vw, 62px); margin-bottom: 10px; }
+.compact-collection .projects-heading p { max-width: 540px; font-size: 13px; }
+.compact-list { gap: 10px; }
+
+.tag-order { display: flex; flex-wrap: wrap; gap: 5px; margin: -5px 0 13px; }
+.tag-order span { display: flex; align-items: center; border: 1px solid #1115132b; }
+.tag-order i { padding: 4px 6px; font-size: 10px; font-style: normal; }
+.tag-order button { padding: 4px 5px; border: 0; border-left: 1px solid #1115132b; background: transparent; cursor: pointer; font-size: 10px; }
+.tag-order .danger { color: #a42c22; }
+
+@media (max-width: 800px) {
+  .compact-collection.projects-section,
+  .compact-collection.collection-section { padding-top: 56px; padding-bottom: 56px; }
+}

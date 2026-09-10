@@ -6,5 +6,6 @@ import './styles/global.css';
 import './styles/overrides.css';
 import './styles/mood.css';
 import './styles/cms.css';
+import './styles/collection-polish.css';
 
 createRoot(document.getElementById('root')).render(<React.StrictMode><PortfolioProvider><App /></PortfolioProvider></React.StrictMode>);
