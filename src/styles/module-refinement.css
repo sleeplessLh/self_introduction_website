@@ -39,11 +39,7 @@
   box-shadow: none;
 }
 .hero-portrait::before {
-  inset: 0;
-  z-index: 1;
-  background: linear-gradient(180deg, transparent 52%, #050914dc 96%), linear-gradient(90deg, #0509148c, transparent 26%);
-  -webkit-mask-image: radial-gradient(ellipse 68% 88% at 58% 44%, #000 38%, #000e 54%, transparent 76%);
-  mask-image: radial-gradient(ellipse 68% 88% at 58% 44%, #000 38%, #000e 54%, transparent 76%);
+  display: none;
 }
 .hero-portrait::after {
   display: none;
@@ -53,10 +49,12 @@
   height: 100%;
   display: block;
   object-fit: cover;
-  object-position: var(--portrait-position, 50% 35%);
-  filter: saturate(.82) contrast(1.06) brightness(.94) drop-shadow(0 30px 44px #0008);
-  -webkit-mask-image: radial-gradient(ellipse 68% 88% at 58% 44%, #000 38%, #000e 54%, transparent 76%);
-  mask-image: radial-gradient(ellipse 68% 88% at 58% 44%, #000 38%, #000e 54%, transparent 76%);
+  object-position: var(--portrait-position, 50% 20%);
+  filter: saturate(.82) contrast(1.08) brightness(.9) drop-shadow(0 30px 44px #0008);
+  -webkit-mask-image: radial-gradient(ellipse 72% 88% at 50% 46%, #000 42%, #000e 58%, transparent 84%), linear-gradient(180deg, transparent 0%, #000 17%, #000 76%, transparent 100%);
+  -webkit-mask-composite: source-in;
+  mask-image: radial-gradient(ellipse 72% 88% at 50% 46%, #000 42%, #000e 58%, transparent 84%), linear-gradient(180deg, transparent 0%, #000 17%, #000 76%, transparent 100%);
+  mask-composite: intersect;
 }
 .portrait-empty {
   width: 100%;
@@ -69,6 +67,17 @@
 }
 .portrait-editor { z-index: 4; }
 .editor-help { margin: 4px 0 18px; color: #5c645e; font-size: 11px; line-height: 1.55; }
+.collection-host-bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 20px; border-top: 1px solid #ffffff1b; border-bottom: 1px solid #ffffff1b; padding: 10px 0; color: #b9c1c2; font: 9px "DM Mono"; }
+.collection-host-bar .collection-add { margin: 0; }
+.collection-entry { max-height: 260px; opacity: 1; transform: translateY(0); overflow: hidden; transition: max-height .5s ease, opacity .35s ease, transform .45s ease, margin .45s ease; }
+.collection-entry.is-collapsed { max-height: 0; margin: 0; opacity: 0; transform: translateY(-12px); pointer-events: none; }
+.dedicated-gallery-editor > header { display: flex; justify-content: space-between; align-items: start; gap: 15px; margin-bottom: 18px; border-bottom: 1px solid #11151324; padding-bottom: 16px; }
+.dedicated-gallery-editor > header p { margin: 0 0 6px; color: #5a635c; font: 9px "DM Mono"; }
+.dedicated-gallery-editor > header h3 { margin: 0 0 5px; font-size: 23px; text-transform: none; letter-spacing: -.03em; }
+.dedicated-gallery-editor > header small { color: #69706b; font: 8px "DM Mono"; word-break: break-all; }
+.dedicated-gallery-editor > header button { border: 1px solid #11151333; background: transparent; padding: 7px 8px; cursor: pointer; white-space: nowrap; }
+.gallery-editor-empty { border: 1px dashed #11151335; padding: 18px; color: #59615b; font-size: 11px; line-height: 1.6; }
+.gallery-open-editor { width: 100%; margin-top: 10px; }
 
 /* About no longer reserves any portrait column. */
 .about-layout.about-without-portrait { display: block; }
