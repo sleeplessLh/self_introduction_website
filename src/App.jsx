@@ -7,7 +7,8 @@ import LearningJourney from './components/LearningJourney.jsx';
 import Strengths from './components/Strengths.jsx';
 import Contact from './components/Contact.jsx';
 import HostAccess from './components/HostAccess.jsx';
+import GlobalBackground from './components/GlobalBackground.jsx';
 
 export default function App() {
-  return <><Navbar /><main><Hero /><About /><Projects /><Competitions /><LearningJourney /><Strengths /><Contact /></main><HostAccess /></>;
+  return <><GlobalBackground /><Navbar /><main><Hero /><About /><Projects /><Competitions /><LearningJourney /><Strengths /><Contact /></main><HostAccess /></>;
 }

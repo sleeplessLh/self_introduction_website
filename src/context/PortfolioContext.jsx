@@ -7,7 +7,8 @@ const clone = value => JSON.parse(JSON.stringify(value));
 function normalize(saved, defaults) {
   if (!saved) return defaults;
   if (!saved.navigation) return { ...defaults, profile: { ...defaults.profile, ...saved }, theme: { ...defaults.theme, accent: saved.accent || defaults.theme.accent } };
-  return { ...defaults, ...saved, theme: { ...defaults.theme, ...saved.theme }, hero: { ...defaults.hero, ...saved.hero }, profile: { ...defaults.profile, ...saved.profile }, about: { ...defaults.about, ...saved.about }, sections: { ...defaults.sections, ...saved.sections }, contact: { ...defaults.contact, ...saved.contact }, navigation: saved.navigation || defaults.navigation, projects: saved.projects || defaults.projects, competitions: saved.competitions || [], learningJourney: saved.learningJourney || [], strengths: saved.strengths || defaults.strengths };
+  const isLegacyHero = !saved.schemaVersion || saved.schemaVersion < 3;
+  return { ...defaults, ...saved, schemaVersion: defaults.schemaVersion, theme: { ...defaults.theme, ...saved.theme }, hero: isLegacyHero ? defaults.hero : { ...defaults.hero, ...saved.hero }, profile: { ...defaults.profile, ...saved.profile }, about: { ...defaults.about, ...saved.about }, sections: { ...defaults.sections, ...saved.sections }, contact: { ...defaults.contact, ...saved.contact }, navigation: saved.navigation || defaults.navigation, projects: saved.projects || defaults.projects, competitions: saved.competitions || [], learningJourney: saved.learningJourney || [], strengths: saved.strengths || defaults.strengths };
 }
 export function PortfolioProvider({ children }) {
   const [defaults] = useState(() => createDefaultContent());
