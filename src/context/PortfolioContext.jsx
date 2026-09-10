@@ -15,6 +15,7 @@ export function PortfolioProvider({ children }) {
   const [content, setContent] = useState(defaults);
   const [savedContent, setSavedContent] = useState(defaults);
   const [hostMode, setHostMode] = useState(false);
+  const [editorRequest, setEditorRequest] = useState(null);
   const [status, setStatus] = useState('');
   useEffect(() => { loadContent().then(row => { const next = normalize(row?.content, defaults); setContent(next); setSavedContent(next); }); }, [defaults]);
   useEffect(() => { document.documentElement.style.setProperty('--host-accent', content.theme.accent || '#c9ee6b'); }, [content.theme.accent]);
@@ -22,7 +23,7 @@ export function PortfolioProvider({ children }) {
   const save = async () => { setStatus('Saving…'); try { await saveContent(content); setSavedContent(clone(content)); setStatus('Saved'); } catch (error) { setStatus(error.message || 'Could not save changes.'); } };
   const cancel = () => { setContent(clone(savedContent)); setStatus('Changes discarded'); };
   const reset = () => { const next = createDefaultContent(); setContent(next); setStatus('Default content loaded — save to publish it.'); };
-  const value = useMemo(() => ({ content, update, hostMode, setHostMode, save, cancel, reset, status, isDirty: JSON.stringify(content) !== JSON.stringify(savedContent) }), [content, hostMode, status, savedContent]);
+  const value = useMemo(() => ({ content, update, hostMode, setHostMode, editorRequest, requestEditor: setEditorRequest, save, cancel, reset, status, isDirty: JSON.stringify(content) !== JSON.stringify(savedContent) }), [content, hostMode, editorRequest, status, savedContent]);
   return <PortfolioContext.Provider value={value}>{children}</PortfolioContext.Provider>;
 }
 export const usePortfolio = () => useContext(PortfolioContext);

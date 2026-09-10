@@ -1,9 +1,9 @@
 import { usePortfolio } from '../context/PortfolioContext.jsx';
 
 export default function CollectionCard({ item, type, onOpen, detailLabel }) {
-  const { hostMode } = usePortfolio();
+  const { hostMode, requestEditor } = usePortfolio();
   const labels = item.technologies || item.tags || [];
-  const edit = () => window.dispatchEvent(new CustomEvent('portfolio:edit', { detail: { kind: type, id: item.id } }));
+  const edit = () => requestEditor({ kind: type, id: item.id });
   const primaryAction = hostMode ? edit : onOpen;
   return <article className={`collection-card ${hostMode ? 'is-host-editable' : ''}`}>
     <button className="collection-cover" onClick={primaryAction} aria-label={hostMode ? `Edit ${item.title}` : `Open ${item.title}`}><img src={item.coverImage} alt="" loading="lazy" /><span>{hostMode ? 'Edit' : item.date}</span></button>

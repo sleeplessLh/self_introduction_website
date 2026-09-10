@@ -9,7 +9,7 @@ import StrengthEditor from '../editor/StrengthEditor.jsx';
 const tabs = ['Content', 'Profile', 'About', 'Projects', 'Competitions', 'Learning', 'Strengths'];
 const setAt = (object, key, value) => ({ ...object, [key]: value });
 export default function HostAccess() {
-  const { content, update, hostMode, setHostMode, save, cancel, reset, status, isDirty } = usePortfolio();
+  const { content, update, hostMode, setHostMode, editorRequest, requestEditor, save, cancel, reset, status, isDirty } = usePortfolio();
   const [open, setOpen] = useState(false); const [email, setEmail] = useState(''); const [password, setPassword] = useState(''); const [authNote, setAuthNote] = useState(''); const [tab, setTab] = useState('Content'); const [activeItem, setActiveItem] = useState(null);
   const setContent = (key, value) => update(current => setAt(current, key, value));
   const setNested = (group, key, value) => update(current => ({ ...current, [group]: setAt(current[group], key, value) }));
@@ -23,10 +23,7 @@ export default function HostAccess() {
     if (new URLSearchParams(window.location.search).get('host') === '1') activate();
     window.addEventListener('keydown', handler); return () => window.removeEventListener('keydown', handler);
   }, [setHostMode]);
-  useEffect(() => {
-    const openCollectionEditor = event => { const { kind, id } = event.detail || {}; const tabName = kind === 'competition' ? 'Competitions' : kind === 'project' ? 'Projects' : null; if (!tabName) return; setTab(tabName); setActiveItem({ kind, id }); };
-    window.addEventListener('portfolio:edit', openCollectionEditor); return () => window.removeEventListener('portfolio:edit', openCollectionEditor);
-  }, []);
+  useEffect(() => { if (!editorRequest) return; const tabName = editorRequest.kind === 'competition' ? 'Competitions' : editorRequest.kind === 'project' ? 'Projects' : null; if (!tabName) return; setTab(tabName); setActiveItem(editorRequest); requestEditor(null); }, [editorRequest, requestEditor]);
   return <>
     {open && <div className="host-dialog"><div><form onSubmit={login}><button type="button" onClick={() => setOpen(false)}>×</button><p>PRIVATE HOST ACCESS</p><h2>Manage your portfolio.</h2><input type="email" placeholder="Email" required value={email} onChange={event => setEmail(event.target.value)} /><input type="password" placeholder="Password" required value={password} onChange={event => setPassword(event.target.value)} /><button>Unlock editor ↗</button><small>{authNote}</small></form></div></div>}
     {hostMode && <aside className="cms-drawer" aria-label="Portfolio editor"><header><div><p>HOST MODE</p><h2>Content studio</h2></div><button onClick={exit}>Exit ×</button></header><nav>{tabs.map(item => <button className={tab === item ? 'active' : ''} onClick={() => setTab(item)} key={item}>{item}</button>)}</nav><div className="cms-scroll">
