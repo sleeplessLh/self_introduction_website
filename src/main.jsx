@@ -8,5 +8,6 @@ import './styles/mood.css';
 import './styles/cms.css';
 import './styles/collection-polish.css';
 import './styles/typography-polish.css';
+import './styles/gallery-experience.css';
 
 createRoot(document.getElementById('root')).render(<React.StrictMode><PortfolioProvider><App /></PortfolioProvider></React.StrictMode>);
