@@ -1,0 +1,150 @@
+/* Editorial portrait: one image, softly integrated into the night environment. */
+.hero-portrait-stage {
+  position: relative;
+  z-index: 2;
+  align-self: end;
+  justify-self: end;
+  width: min(100%, 500px);
+  height: min(70vh, 700px);
+  min-height: 430px;
+  isolation: isolate;
+}
+.portrait-depth {
+  position: absolute;
+  inset: 10% -9% -4% 8%;
+  z-index: -1;
+  border-radius: 48% 38% 42% 52%;
+  background: radial-gradient(circle at 42% 35%, color-mix(in srgb, var(--host-accent, #c9ee6b) 18%, transparent), transparent 58%), #21314b33;
+  filter: blur(28px);
+}
+.hero-portrait-stage::before {
+  content: "";
+  position: absolute;
+  left: -15%;
+  right: 8%;
+  bottom: 4%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #ffffff42, transparent);
+}
+.hero-portrait {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  min-height: 0;
+  max-width: none;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.hero-portrait::before {
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, transparent 52%, #050914dc 96%), linear-gradient(90deg, #0509148c, transparent 26%);
+  -webkit-mask-image: radial-gradient(ellipse 68% 88% at 58% 44%, #000 38%, #000e 54%, transparent 76%);
+  mask-image: radial-gradient(ellipse 68% 88% at 58% 44%, #000 38%, #000e 54%, transparent 76%);
+}
+.hero-portrait::after {
+  display: none;
+}
+.hero-portrait img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  object-position: var(--portrait-position, 50% 35%);
+  filter: saturate(.82) contrast(1.06) brightness(.94) drop-shadow(0 30px 44px #0008);
+  -webkit-mask-image: radial-gradient(ellipse 68% 88% at 58% 44%, #000 38%, #000e 54%, transparent 76%);
+  mask-image: radial-gradient(ellipse 68% 88% at 58% 44%, #000 38%, #000e 54%, transparent 76%);
+}
+.portrait-empty {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border: 1px dashed #ffffff27;
+  color: #ffffff70;
+  font: 10px "DM Mono";
+}
+.portrait-editor { z-index: 4; }
+.editor-help { margin: 4px 0 18px; color: #5c645e; font-size: 11px; line-height: 1.55; }
+
+/* About no longer reserves any portrait column. */
+.about-layout.about-without-portrait { display: block; }
+.about-without-portrait .about-copy {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+  gap: clamp(48px, 10vw, 170px);
+  align-items: end;
+}
+.about-without-portrait .about-copy > .reveal:first-child { max-width: 760px; }
+.about-without-portrait .about-meta { margin-top: 0; align-self: end; }
+.about-without-portrait + .fact-strip { margin-top: 92px; }
+
+/* Compact achievement sticker, unique to competition cards. */
+.collection-card .achievement,
+.achievement-badge {
+  width: fit-content;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 8px;
+  border: 1px solid color-mix(in srgb, var(--host-accent, #c9ee6b) 42%, transparent);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--host-accent, #c9ee6b) 8%, transparent);
+}
+.collection-cover-empty { display: grid; height: 100%; place-items: center; color: #ffffff69; font: 9px "DM Mono"; }
+
+/* Gallery editor keeps hidden media in the CMS without exposing it publicly. */
+.gallery-editor { grid-template-columns: 1fr; }
+.gallery-editor figure { display: grid; grid-template-columns: 105px 1fr; gap: 5px 10px; padding: 9px; border: 1px solid #11151320; }
+.gallery-editor figure > img { grid-row: 1 / span 4; width: 105px; height: 92px; margin: 0; }
+.gallery-editor figure.is-hidden { background: #1115130b; opacity: .68; }
+.gallery-visibility { color: #596059; font-size: 9px; font-weight: 500; }
+.gallery-editor figure > figcaption { grid-column: 2; flex-wrap: wrap; }
+.gallery-editor figure .editor-image { margin: 0; }
+.gallery-editor figure .image-picker { padding: 5px 7px; font-size: 9px; }
+.gallery-heading { display: flex; align-items: center; justify-content: space-between; margin-top: 25px; border-top: 1px solid #ffffff1c; padding-top: 12px; font: 10px "DM Mono"; color: #aeb7bc; }
+.gallery-heading button { border: 1px solid #ffffff29; background: transparent; color: #dfe5e7; padding: 6px 8px; cursor: pointer; font: 9px "DM Mono"; }
+.gallery-heading button.is-selected { border-color: var(--host-accent, #c9ee6b); color: var(--host-accent, #c9ee6b); }
+.gallery-empty { color: #ffffff70; font: 10px "DM Mono"; }
+.detail-copy { max-height: 82vh; overflow: auto; padding-right: 8px; }
+
+/* Self-learning is a hierarchy: category -> knowledge points -> evidence links. */
+.learning-categories { display: grid; gap: 14px; }
+.learning-category { border: 1px solid #ffffff16; background: #07101aa1; padding: clamp(20px, 3vw, 34px); }
+.learning-category-head { display: flex; justify-content: space-between; gap: 30px; align-items: start; }
+.learning-category h3 { margin: 7px 0 0; font-size: clamp(25px, 3vw, 42px); letter-spacing: -.055em; }
+.learning-status { display: grid; justify-items: end; gap: 5px; flex: 0 0 auto; font: 9px "DM Mono"; }
+.learning-status span { color: var(--host-accent, var(--acid)); }
+.learning-status small { color: var(--soft); }
+.learning-summary { max-width: 720px; margin: 16px 0 19px; color: var(--soft); font-size: 13px; line-height: 1.7; }
+.learning-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 18px; }
+.learning-tags span { border: 1px solid #ffffff27; padding: 4px 7px; color: #dce2e3; font: 8px "DM Mono"; }
+.knowledge-points { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: #ffffff15; border: 1px solid #ffffff15; }
+.knowledge-points > section { min-height: 135px; padding: 16px; background: #07101a; }
+.knowledge-points > section > div { display: flex; justify-content: space-between; gap: 16px; }
+.knowledge-points h4 { margin: 0; font-size: 15px; font-weight: 600; }
+.knowledge-points span { flex: 0 0 auto; color: var(--host-accent, var(--acid)); font: 8px "DM Mono"; }
+.knowledge-points p { margin: 10px 0; color: var(--soft); font-size: 11px; line-height: 1.55; }
+.knowledge-points nav { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; color: #dfe5e3; font: 9px "DM Mono"; }
+.learning-host-row { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; border-top: 1px dashed #ffffff29; padding-top: 11px; color: #f3df8e; font: 9px "DM Mono"; }
+.learning-host-row button { border: 1px solid #ffffff31; background: transparent; color: var(--host-accent, var(--acid)); padding: 6px 8px; cursor: pointer; font: 9px "DM Mono"; }
+.is-hidden-host { opacity: .55; }
+.secondary-add { margin: 7px 0 13px; background: #344038!important; }
+.knowledge-editor-item { margin: 8px 0; padding: 10px; border: 1px solid #1115131f; }
+.knowledge-editor-item.is-hidden { background: #1115130b; opacity: .7; }
+
+@media (max-width: 800px) {
+  .hero-portrait-stage { order: 1; justify-self: center; width: min(100%, 430px); height: 42vh; min-height: 300px; }
+  .hero-copy { order: 2; }
+  .hero-portrait { width: auto; max-width: none; height: auto; min-height: 0; }
+  .about-without-portrait .about-copy { grid-template-columns: 1fr; gap: 40px; }
+  .about-without-portrait .about-meta { margin-top: 0; }
+  .about-without-portrait + .fact-strip { margin-top: 65px; }
+  .knowledge-points { grid-template-columns: 1fr; }
+  .learning-category-head { display: block; }
+  .learning-status { justify-items: start; margin-top: 12px; }
+  .gallery-editor figure { grid-template-columns: 82px 1fr; }
+  .gallery-editor figure > img { width: 82px; height: 82px; }
+}

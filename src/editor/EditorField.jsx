@@ -16,7 +16,7 @@ const readImage = file => new Promise((resolve, reject) => {
   reader.readAsDataURL(file);
 });
 
-const optimiseImage = async file => {
+export const optimiseImage = async file => {
   const source = await readImage(file);
   if (file.type === 'image/svg+xml') return source;
   const image = new Image();
