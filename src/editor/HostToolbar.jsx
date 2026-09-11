@@ -7,12 +7,16 @@ export default function HostToolbar() {
   const [confirmDiscard, setConfirmDiscard] = useState(false);
   useEffect(() => { if (!status) return; setToast(status); const timer = window.setTimeout(() => setToast(''), 2800); return () => window.clearTimeout(timer); }, [status]);
   const discard = () => { cancel(); setConfirmDiscard(false); };
+  const preview = () => {
+    window.history.replaceState({}, '', `${window.location.pathname}${window.location.hash}`);
+    setHostMode(false);
+  };
   return <div className="host-workspace-controls">
     <div className="host-mode-indicator"><i /><strong>HOST MODE</strong><span>{isDirty ? `${changeCount} unsaved edit${changeCount === 1 ? '' : 's'}` : 'All changes saved'}</span></div>
     <div className="host-action-toolbar" aria-label="Host editing toolbar">
       <button data-tooltip="Undo" aria-label="Undo" onClick={undo} disabled={!canUndo}>↶</button>
       <button data-tooltip="Redo" aria-label="Redo" onClick={redo} disabled={!canRedo}>↷</button>
-      <button data-tooltip="Preview visitor mode" aria-label="Preview visitor mode" onClick={() => setHostMode(false)}>◉</button>
+      <button data-tooltip="Preview visitor mode" aria-label="Preview visitor mode" onClick={preview}>◉</button>
       <button data-tooltip="Save" aria-label="Save" onClick={save} disabled={!isDirty}>✓</button>
       <button data-tooltip="Discard" aria-label="Discard" onClick={() => setConfirmDiscard(true)} disabled={!isDirty}>×</button>
     </div>
