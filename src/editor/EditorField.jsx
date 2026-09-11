@@ -9,7 +9,10 @@ export function TagField({ label, values = [], onChange }) {
     [next[index], next[destination]] = [next[destination], next[index]];
     onChange(next);
   };
-  return <div className="tag-field"><strong>{label}</strong>{values.map((value, index) => <div className="tag-edit-row" key={`${index}-${value}`}><input aria-label={`${label} ${index + 1}`} value={value} onChange={event => onChange(values.map((entry, entryIndex) => entryIndex === index ? event.target.value : entry))} /><button type="button" onClick={() => move(index, -1)} disabled={index === 0} aria-label={`Move ${value} left`}>←</button><button type="button" onClick={() => move(index, 1)} disabled={index === values.length - 1} aria-label={`Move ${value} right`}>→</button><button type="button" className="danger" onClick={() => onChange(values.filter((_, valueIndex) => valueIndex !== index))} aria-label={`Remove ${value}`}>×</button></div>)}<button type="button" className="tag-add" onClick={() => onChange([...values, 'New label'])}>+ Add Label</button></div>;
+  return <div className="tag-field"><strong>{label}</strong>{values.map((value, index) => {
+    const item = typeof value === 'string' ? { id: `${index}-${value}`, label: value } : value;
+    return <div className="tag-edit-row" key={item.id}><input aria-label={`${label} ${index + 1}`} value={item.label} onChange={event => onChange(values.map((entry, entryIndex) => entryIndex === index ? { ...(typeof entry === 'string' ? { id: crypto.randomUUID?.() || `${Date.now()}-${Math.random()}` } : entry), label: event.target.value } : entry))} /><button type="button" onClick={() => move(index, -1)} disabled={index === 0} aria-label={`Move ${item.label} left`}>←</button><button type="button" onClick={() => move(index, 1)} disabled={index === values.length - 1} aria-label={`Move ${item.label} right`}>→</button><button type="button" className="danger" onClick={() => onChange(values.filter((_, valueIndex) => valueIndex !== index))} aria-label={`Remove ${item.label}`}>×</button></div>;
+  })}<button type="button" className="tag-add" onClick={() => onChange([...values, { id: crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`, label: 'New label' }])}>+ Add Label</button></div>;
 }
 const readImage = file => new Promise((resolve, reject) => {
   const reader = new FileReader();
