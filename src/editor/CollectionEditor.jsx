@@ -11,6 +11,7 @@ const move = (list, index, direction) => {
 
 export default function CollectionEditor({ title, items, create, updateItems, kind, activeId, activePanel = 'details', onActiveChange, onPanelChange }) {
   const updateItem = (id, key, value) => updateItems(items.map(item => item.id === id ? { ...item, [key]: value } : item));
+  const saveGallery = (id, galleryDraft) => updateItems(items.map(item => item.id === id ? { ...item, ...galleryDraft } : item));
   const add = () => { const item = create(); updateItems([...items, item]); onActiveChange?.(item.id); };
   const remove = (id, index) => {
     if (!window.confirm(`Delete this ${kind}?`)) return;
@@ -19,7 +20,7 @@ export default function CollectionEditor({ title, items, create, updateItems, ki
     onActiveChange?.(next[Math.max(0, index - 1)]?.id || null);
   };
   const galleryItem = activePanel === 'gallery' ? items.find(item => item.id === activeId) : null;
-  if (galleryItem) return <GalleryEditor item={galleryItem} kind={kind} onChange={updateItem} onBack={() => { onActiveChange?.(null); window.setTimeout(() => document.getElementById(`${kind}-${galleryItem.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 40); }} />;
+  if (galleryItem) return <GalleryEditor item={galleryItem} kind={kind} onSave={saveGallery} onBack={() => { onActiveChange?.(null); window.setTimeout(() => document.getElementById(`${kind}-${galleryItem.id}`)?.scrollIntoView({ behavior: 'smooth', block: 'center' }), 40); }} />;
 
   return <div className="collection-editor">
     <p className="editor-help">Select an item below to edit it. Every update is matched by the card's permanent ID and remains a draft until Save.</p>

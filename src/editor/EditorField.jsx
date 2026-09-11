@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 export function TextField({ label, value = '', onChange, multiline = false, type = 'text', placeholder = '' }) { const Input = multiline ? 'textarea' : 'input'; return <label className="editor-field"><span>{label}</span><Input type={multiline ? undefined : type} value={value} placeholder={placeholder} onChange={event => onChange(event.target.value)} /></label>; }
 export function TagField({ label, values = [], onChange }) {
   const move = (index, direction) => {
@@ -7,7 +9,7 @@ export function TagField({ label, values = [], onChange }) {
     [next[index], next[destination]] = [next[destination], next[index]];
     onChange(next);
   };
-  return <><TextField label={label} value={values.join(', ')} placeholder="Separate items with commas" onChange={value => onChange(value.split(',').map(item => item.trim()).filter(Boolean))} />{values.length > 0 && <div className="tag-order" aria-label={`${label} order`}>{values.map((value, index) => <span key={`${value}-${index}`}><i>{value}</i><button type="button" onClick={() => move(index, -1)} aria-label={`Move ${value} left`}>←</button><button type="button" onClick={() => move(index, 1)} aria-label={`Move ${value} right`}>→</button><button type="button" className="danger" onClick={() => onChange(values.filter((_, valueIndex) => valueIndex !== index))} aria-label={`Remove ${value}`}>×</button></span>)}</div>}</>;
+  return <div className="tag-field"><strong>{label}</strong>{values.map((value, index) => <div className="tag-edit-row" key={`${index}-${value}`}><input aria-label={`${label} ${index + 1}`} value={value} onChange={event => onChange(values.map((entry, entryIndex) => entryIndex === index ? event.target.value : entry))} /><button type="button" onClick={() => move(index, -1)} disabled={index === 0} aria-label={`Move ${value} left`}>←</button><button type="button" onClick={() => move(index, 1)} disabled={index === values.length - 1} aria-label={`Move ${value} right`}>→</button><button type="button" className="danger" onClick={() => onChange(values.filter((_, valueIndex) => valueIndex !== index))} aria-label={`Remove ${value}`}>×</button></div>)}<button type="button" className="tag-add" onClick={() => onChange([...values, 'New label'])}>+ Add Label</button></div>;
 }
 const readImage = file => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -32,11 +34,14 @@ export const optimiseImage = async file => {
 };
 
 export function ImageField({ label, value, onChange, multiple = false }) {
+  const [error, setError] = useState('');
   const select = async event => {
-    const files = [...(event.target.files || [])].filter(file => file.type.startsWith('image/'));
-    const images = await Promise.all(files.map(optimiseImage));
-    if (images.length) onChange(multiple ? images : images[0]);
+    setError('');
+    const selected = [...(event.target.files || [])];
+    const files = selected.filter(file => /image\/(jpeg|png|webp|svg\+xml)/.test(file.type));
+    if (selected.length && !files.length) setError('Unsupported file. Choose JPG, JPEG, PNG, WebP, or SVG.');
+    try { const images = await Promise.all(files.map(optimiseImage)); if (images.length) onChange(multiple ? images : images[0]); } catch (imageError) { setError(`Upload failed: ${imageError.message || 'the image could not be processed.'}`); }
     event.target.value = '';
   };
-  return <div className="editor-image"><span>{label}</span><label className="image-picker"><input type="file" accept="image/*" multiple={multiple} onChange={select} />{multiple ? 'Add images' : value ? 'Replace image' : 'Upload image'}</label>{!multiple && value && <div className="image-preview"><img src={value} alt="Preview" /><button type="button" className="danger" onClick={() => onChange('')}>Remove image</button></div>}</div>;
+  return <div className="editor-image"><span>{label}</span><label className="image-picker"><input type="file" accept="image/jpeg,image/png,image/webp,image/svg+xml" multiple={multiple} onChange={select} />{multiple ? 'Add images' : value ? 'Replace image' : 'Upload image'}</label>{error && <small className="image-error" role="alert">{error}</small>}{!multiple && value && <div className="image-preview"><img src={value} alt="Preview" /><button type="button" className="danger" onClick={() => onChange('')}>Remove image</button></div>}</div>;
 }
