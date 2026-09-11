@@ -13,6 +13,7 @@ const move = (list, index, direction) => {
 
 export default function GalleryEditor({ item, kind, onSave, onBack }) {
   const [draft, setDraft] = useState(() => ({ galleryUrl: item.galleryUrl || '', gallery: normaliseGallery(item.gallery) }));
+  const [pendingRemove, setPendingRemove] = useState(null);
   useEffect(() => setDraft({ galleryUrl: item.galleryUrl || '', gallery: normaliseGallery(item.gallery) }), [item.id]);
   const gallery = draft.gallery;
   const setGallery = value => setDraft(current => ({ ...current, gallery: value }));
@@ -28,7 +29,7 @@ export default function GalleryEditor({ item, kind, onSave, onBack }) {
       <span className="gallery-visibility">{image.hidden ? 'Hidden from visitors' : 'Visible to visitors'}</span>
       <TextField label={`Image ${imageIndex + 1} Caption`} value={image.caption || ''} onChange={caption => setGallery(gallery.map((entry, entryIndex) => entryIndex === imageIndex ? { ...entry, caption } : entry))} />
       <ImageField label="Replace this Gallery image" value="" onChange={src => setGallery(gallery.map((entry, entryIndex) => entryIndex === imageIndex ? { ...entry, src } : entry))} />
-      <figcaption><button onClick={() => setGallery(move(gallery, imageIndex, -1))} disabled={imageIndex === 0}>← Earlier</button><button onClick={() => setGallery(move(gallery, imageIndex, 1))} disabled={imageIndex === gallery.length - 1}>Later →</button><button onClick={() => setGallery(gallery.map((entry, entryIndex) => entryIndex === imageIndex ? { ...entry, hidden: !entry.hidden } : entry))}>{image.hidden ? 'Show' : 'Hide'}</button><button className="danger" onClick={() => { if (window.confirm('Permanently remove this Gallery image?')) setGallery(gallery.filter((_, galleryIndex) => galleryIndex !== imageIndex)); }}>Remove</button></figcaption>
+      <figcaption><button onClick={() => setGallery(move(gallery, imageIndex, -1))} disabled={imageIndex === 0}>← Earlier</button><button onClick={() => setGallery(move(gallery, imageIndex, 1))} disabled={imageIndex === gallery.length - 1}>Later →</button><button onClick={() => setGallery(gallery.map((entry, entryIndex) => entryIndex === imageIndex ? { ...entry, hidden: !entry.hidden } : entry))}>{image.hidden ? 'Show' : 'Hide'}</button>{pendingRemove === image.id ? <><button onClick={() => { setGallery(gallery.filter(entry => entry.id !== image.id)); setPendingRemove(null); }}>Confirm remove</button><button onClick={() => setPendingRemove(null)}>Keep</button></> : <button className="danger" onClick={() => setPendingRemove(image.id)}>Remove</button>}</figcaption>
     </figure>)}</div>
     <footer className="gallery-draft-actions"><button onClick={onBack}>Cancel Gallery Changes</button><button className="save" onClick={saveGallery}>Save Gallery Draft</button></footer>
   </section>;

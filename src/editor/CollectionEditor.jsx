@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { ImageField, TagField, TextField } from './EditorField.jsx';
 import GalleryEditor from './GalleryEditor.jsx';
 
@@ -10,13 +11,14 @@ const move = (list, index, direction) => {
 };
 
 export default function CollectionEditor({ title, items, create, updateItems, kind, activeId, activePanel = 'details', onActiveChange, onPanelChange }) {
+  const [pendingRemove, setPendingRemove] = useState(null);
   const updateItem = (id, key, value) => updateItems(items.map(item => item.id === id ? { ...item, [key]: value } : item));
   const saveGallery = (id, galleryDraft) => updateItems(items.map(item => item.id === id ? { ...item, ...galleryDraft } : item));
   const add = () => { const item = create(); updateItems([...items, item]); onActiveChange?.(item.id); };
   const remove = (id, index) => {
-    if (!window.confirm(`Delete this ${kind}?`)) return;
     const next = items.filter(item => item.id !== id);
     updateItems(next);
+    setPendingRemove(null);
     onActiveChange?.(next[Math.max(0, index - 1)]?.id || null);
   };
   const galleryItem = activePanel === 'gallery' ? items.find(item => item.id === activeId) : null;
@@ -29,7 +31,7 @@ export default function CollectionEditor({ title, items, create, updateItems, ki
       const expanded = activeId === item.id || (!activeId && index === 0);
       const labels = kind === 'project' ? item.technologies || [] : item.tags || [];
       return <article key={item.id} className={`editor-item ${expanded ? 'is-active' : ''}`} data-item-id={item.id}>
-        <div className="editor-item-top"><button className="editor-item-select" onClick={() => onActiveChange?.(expanded ? null : item.id)}><strong>{title} {index + 1}</strong><span>{item.title || `Untitled ${title}`}</span></button><span><button onClick={() => updateItems(move(items, index, -1))} disabled={index === 0} aria-label={`Move ${title} ${index + 1} up`}>↑</button><button onClick={() => updateItems(move(items, index, 1))} disabled={index === items.length - 1} aria-label={`Move ${title} ${index + 1} down`}>↓</button><button className="danger" onClick={() => remove(item.id, index)}>Delete</button></span></div>
+        <div className="editor-item-top"><button className="editor-item-select" onClick={() => onActiveChange?.(expanded ? null : item.id)}><strong>{title} {index + 1}</strong><span>{item.title || `Untitled ${title}`}</span></button><span><button onClick={() => updateItems(move(items, index, -1))} disabled={index === 0} aria-label={`Move ${title} ${index + 1} up`}>↑</button><button onClick={() => updateItems(move(items, index, 1))} disabled={index === items.length - 1} aria-label={`Move ${title} ${index + 1} down`}>↓</button>{pendingRemove === item.id ? <><button onClick={() => remove(item.id, index)}>Confirm delete</button><button onClick={() => setPendingRemove(null)}>Keep</button></> : <button className="danger" onClick={() => setPendingRemove(item.id)}>Delete</button>}</span></div>
         {expanded && <div className="editor-item-fields">
           <TextField label="Title" value={item.title || ''} onChange={value => updateItem(item.id, 'title', value)} />
           <TextField label="Label" value={item.label || ''} onChange={value => updateItem(item.id, 'label', value)} />
