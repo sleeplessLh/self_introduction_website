@@ -27,13 +27,13 @@ export const optimiseImage = async file => {
   const image = new Image();
   image.src = source;
   await image.decode();
-  const limit = 1600;
+  const limit = 2400;
   const scale = Math.min(1, limit / Math.max(image.naturalWidth, image.naturalHeight));
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
   canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
   canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL('image/webp', 0.86);
+  return canvas.toDataURL('image/webp', 0.92);
 };
 
 export function ImageField({ label, value, onChange, multiple = false }) {
@@ -42,7 +42,7 @@ export function ImageField({ label, value, onChange, multiple = false }) {
     setError('');
     const selected = [...(event.target.files || [])];
     const files = selected.filter(file => /image\/(jpeg|png|webp|svg\+xml)/.test(file.type));
-    if (selected.length && !files.length) setError('Unsupported file. Choose JPG, JPEG, PNG, WebP, or SVG.');
+    if (selected.length !== files.length) setError('Some files were skipped. Choose JPG, JPEG, PNG, WebP, or SVG.');
     try { const images = await Promise.all(files.map(optimiseImage)); if (images.length) onChange(multiple ? images : images[0]); } catch (imageError) { setError(`Upload failed: ${imageError.message || 'the image could not be processed.'}`); }
     event.target.value = '';
   };

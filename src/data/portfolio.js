@@ -1,4 +1,4 @@
-import portrait from '../assets/images/hero-portrait-lawrance.jpg';
+import portrait from '../assets/images/hero-portrait-lawrance-transparent.png';
 import projectOne from '../assets/images/project-one.svg';
 import projectTwo from '../assets/images/project-two.svg';
 import projectThree from '../assets/images/project-three.svg';
@@ -6,10 +6,10 @@ const uid = () => crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`;
 const labels = values => values.map(label => ({ id: uid(), label }));
 
 export const createDefaultContent = () => ({
-  schemaVersion: 9,
+  schemaVersion: 10,
   theme: { accent: '#c9ee6b' },
   navigation: [{ id: 'home', label: 'Home' }, { id: 'about', label: 'About' }, { id: 'projects', label: 'Projects' }, { id: 'competitions', label: 'Competitions' }, { id: 'learning', label: 'Learning' }, { id: 'strengths', label: 'Strengths' }, { id: 'contact', label: 'Contact' }],
-  hero: { fullName: 'LAWRANCE HII NANG YUANG', role: 'Software Engineering Undergraduate', university: 'Universiti Teknologi Malaysia', intro: 'Interested in building dependable software through thoughtful engineering, practical systems, and continuous learning.', technicalFocus: ['Software Engineering', 'Systems', 'Backend'], primaryLabel: 'Contact me', primaryUrl: 'mailto:lawrancehii12345@gmail.com', secondaryLabel: 'View projects', secondaryUrl: '#projects', portrait, portraitPosition: '50% 20%', supportingLabel: 'Portfolio / 2026', videoSrc: null },
+  hero: { fullName: 'LAWRANCE HII NANG YUANG', role: 'Software Engineering Undergraduate', university: 'Universiti Teknologi Malaysia', intro: 'Interested in building dependable software through thoughtful engineering, practical systems, and continuous learning.', technicalFocus: ['Software Engineering', 'Systems', 'Backend'], primaryLabel: 'Contact me', primaryUrl: 'mailto:lawrancehii12345@gmail.com', secondaryLabel: 'View projects', secondaryUrl: '#projects', portrait, portraitPosition: '50% 50%', supportingLabel: 'Portfolio / 2026', videoSrc: null },
   profile: { name: 'LAWRANCE HII NANG YUANG', initials: 'LH', role: 'Software Engineering Undergraduate', location: 'Malaysia', email: 'lawrancehii12345@gmail.com', bio: 'This is a placeholder introduction. Replace it with a concise point of view: the problems you enjoy solving, the kind of engineer you are becoming, and what you care about when building software.', education: 'Software Engineering · Universiti Teknologi Malaysia', languages: [], portrait, portraitCaption: 'Profile image', resumeUrl: '#' },
   about: { label: '01 / ABOUT', kicker: 'THE ENGINEER BEHIND THE WORK', title: 'A point of view,', emphasis: 'not just a stack.', educationLabel: 'Education', contactLabel: 'Contact', educationTitle: 'Education', skillsTitle: 'Skills', educationDirection: 'The education journey progresses from bottom to top.', stats: [{ id: uid(), number: '01', label: 'Focus areas', value: 'Software systems, product engineering' }, { id: uid(), number: '02', label: 'Currently learning', value: 'Architecture, data, distributed systems' }, { id: uid(), number: '03', label: 'Open to', value: 'Internships, collaborations, meaningful problems' }] },
   educationStages: [

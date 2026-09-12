@@ -17,8 +17,8 @@ function normalize(saved, defaults) {
   if (!saved.navigation) return { ...defaults, profile: { ...defaults.profile, ...saved }, theme: { ...defaults.theme, accent: saved.accent || defaults.theme.accent } };
   const isLegacyHero = !saved.schemaVersion || saved.schemaVersion < 3;
   const needsCompetitionTemplate = !saved.schemaVersion || saved.schemaVersion < 4;
-  const needsProfessionalPortrait = !saved.schemaVersion || saved.schemaVersion < 8;
-  const needsStructuredEducation = !saved.schemaVersion || saved.schemaVersion < 9;
+  const needsProfessionalPortrait = !saved.schemaVersion || saved.schemaVersion < 10;
+  const needsStructuredEducation = !saved.schemaVersion || saved.schemaVersion < 10;
   const hero = isLegacyHero ? defaults.hero : { ...defaults.hero, ...saved.hero, ...(needsProfessionalPortrait ? { portrait: defaults.hero.portrait, portraitPosition: defaults.hero.portraitPosition } : {}) };
   return { ...defaults, ...saved, schemaVersion: defaults.schemaVersion, theme: { ...defaults.theme, ...saved.theme }, hero, profile: { ...defaults.profile, ...saved.profile }, about: { ...defaults.about, ...saved.about }, sections: mergeSections(saved.sections, defaults.sections), contact: { ...defaults.contact, ...saved.contact }, navigation: saved.navigation || defaults.navigation, projects: normalizeCollection(saved.projects || defaults.projects), competitions: normalizeCollection(needsCompetitionTemplate ? defaults.competitions : saved.competitions || []), learningJourney: normalizeLearning(saved.learningJourney || []), educationStages: normalizeEducation(needsStructuredEducation ? defaults.educationStages : saved.educationStages || defaults.educationStages), skillGroups: normalizeSkills(needsStructuredEducation ? defaults.skillGroups : saved.skillGroups || defaults.skillGroups), strengths: saved.strengths || defaults.strengths };
 }
