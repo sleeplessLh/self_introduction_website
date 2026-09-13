@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import EditableText from '../editor/EditableText.jsx';
 import { usePortfolio } from '../context/PortfolioContext.jsx';
+import { gmailComposeUrl } from '../utils/contactLinks.js';
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -22,5 +23,5 @@ export default function Navbar() {
     return () => { document.removeEventListener('pointerdown', close); document.removeEventListener('keydown', close); };
   }, []);
 
-  return <header className="navbar"><a className="brand" href="#home" aria-label="Home"><EditableText value={content.profile.initials} onChange={setInitials} /><i>.</i></a><nav className={open ? 'open' : ''} aria-label="Main navigation">{content.navigation.map((link, index) => <a key={link.id} href={`#${link.id}`} onClick={() => setOpen(false)}><EditableText value={link.label} onChange={value => setNav(index, value)} /></a>)}</nav><a className="nav-contact" href={`mailto:${content.profile.email}`}><EditableText value={content.hero.primaryLabel} onChange={value => setHero('primaryLabel', value)} /> <span>↗</span></a><details className="nav-more" ref={moreMenu}><summary className="more-button" role="button" aria-label="More options">⋯</summary><div className="more-menu" role="menu"><button role="menuitem" onClick={hostMode ? exitHost : openHost}>{hostMode ? '↪ Exit Host Mode' : '▣ Host Access'}</button></div></details><button className="menu-button" onClick={() => setOpen(!open)} aria-label="Toggle menu" aria-expanded={open}><span /><span /></button></header>;
+  return <header className="navbar"><a className="brand" href="#home" aria-label="Home"><EditableText value={content.profile.initials} onChange={setInitials} /><i>.</i></a><nav className={open ? 'open' : ''} aria-label="Main navigation">{content.navigation.map((link, index) => <a key={link.id} href={`#${link.id}`} onClick={() => setOpen(false)}><EditableText value={link.label} onChange={value => setNav(index, value)} /></a>)}</nav><a className="nav-contact" href={gmailComposeUrl(content.profile.email)} target="_blank" rel="noreferrer"><EditableText value={content.hero.primaryLabel} onChange={value => setHero('primaryLabel', value)} /> <span>↗</span></a><details className="nav-more" ref={moreMenu}><summary className="more-button" role="button" aria-label="More options">⋯</summary><div className="more-menu" role="menu"><button role="menuitem" onClick={hostMode ? exitHost : openHost}>{hostMode ? '↪ Exit Host Mode' : '▣ Host Access'}</button></div></details><button className="menu-button" onClick={() => setOpen(!open)} aria-label="Toggle menu" aria-expanded={open}><span /><span /></button></header>;
 }

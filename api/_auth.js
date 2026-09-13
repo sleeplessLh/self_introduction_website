@@ -58,6 +58,10 @@ export async function passwordLogin(email, password, request, response) {
 }
 
 export const environmentReady = () => Boolean(supabaseUrl() && supabaseKey());
+export async function sendPasswordRecovery(email, redirectTo) {
+  const response = await authFetch('recover', { method: 'POST', body: JSON.stringify({ email, redirect_to: redirectTo }) });
+  return response.ok;
+}
 export const restConfig = token => ({ url: `${supabaseUrl()}/rest/v1`, headers: { apikey: supabaseKey(), Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' } });
 
 export function sameOrigin(request) {
