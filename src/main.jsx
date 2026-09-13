@@ -10,5 +10,6 @@ import './styles/collection-polish.css';
 import './styles/typography-polish.css';
 import './styles/gallery-experience.css';
 import './styles/module-refinement.css';
+import './styles/revision-v11.css';
 
 createRoot(document.getElementById('root')).render(<React.StrictMode><PortfolioProvider><App /></PortfolioProvider></React.StrictMode>);

@@ -13,7 +13,7 @@ const move = (list, index, direction) => {
 export function EducationEditor({ items, onChange }) {
   const [pendingStage, setPendingStage] = useState(null);
   const updateStage = (id, key, value) => onChange(items.map(item => item.id === id ? { ...item, [key]: value } : item));
-  const add = () => onChange([...items, { id: uid(), school: 'New school', subtitle: 'Course or stream', grade: '', startDate: 'Start', endDate: 'Present', description: '', logo: '', logoPosition: '50% 50%' }]);
+  const add = () => onChange([{ id: uid(), school: 'New school', subtitle: 'Course or stream', grade: '', startDate: 'Start', endDate: 'Present', description: '', logo: '', logoPosition: '50% 50%' }, ...items]);
   return <div><button className="editor-add" onClick={add}>+ Add Education</button>{items.map((stage, index) => <article className="editor-item" key={stage.id} data-education-id={stage.id}>
     <div className="editor-item-top"><strong>Education {index + 1}</strong><span><button onClick={() => onChange(move(items, index, -1))} disabled={index === 0}>↑</button><button onClick={() => onChange(move(items, index, 1))} disabled={index === items.length - 1}>↓</button>{pendingStage === stage.id ? <><button className="danger" onClick={() => { onChange(items.filter(item => item.id !== stage.id)); setPendingStage(null); }}>Confirm delete</button><button onClick={() => setPendingStage(null)}>Keep</button></> : <button className="danger" onClick={() => setPendingStage(stage.id)}>Delete</button>}</span></div>
     <TextField label="School Name / Title" value={stage.school} onChange={value => updateStage(stage.id, 'school', value)} />

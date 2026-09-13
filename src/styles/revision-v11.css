@@ -1,0 +1,110 @@
+/* V11: responsive Gallery grid with a separate image viewer. */
+.gallery-grid-modal { display: block; overflow-y: auto; padding: clamp(72px, 8vw, 110px) max(22px, calc((100vw - 1500px) / 2)) 60px; }
+.gallery-grid-modal > .detail-close { position: fixed; z-index: 2; top: 24px; right: 28px; }
+.gallery-grid-modal .gallery-modal-header { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 30px; padding: 0 54px 18px 0; border-bottom: 1px solid #ffffff20; }
+.gallery-grid-modal .gallery-modal-header > div { min-width: 0; }
+.gallery-grid-modal .gallery-modal-header h2 { overflow-wrap: anywhere; }
+.gallery-photo-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 2vw, 28px); }
+.gallery-photo-grid figure { min-width: 0; margin: 0; }
+.gallery-photo-grid figure > button { display: block; width: 100%; aspect-ratio: 4 / 3; overflow: hidden; border: 1px solid #ffffff20; background: #07101a; padding: 0; cursor: zoom-in; }
+.gallery-photo-grid img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .35s ease, filter .35s ease; }
+.gallery-photo-grid button:hover img { transform: scale(1.025); filter: brightness(1.08); }
+.gallery-photo-grid figcaption { min-height: 25px; padding: 9px 2px 0; color: #b9c1c2; font: 10px/1.55 'DM Mono'; }
+.gallery-external-link { display: inline-block; margin-top: 26px; color: var(--host-accent, var(--acid)); font: 10px 'DM Mono'; }
+.gallery-grid-modal > .gallery-empty-state { min-height: 45vh; place-content: center; }
+.gallery-lightbox { position: fixed; z-index: 110; inset: 0; display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 12px; padding: 54px 28px 20px; background: #02050af5; backdrop-filter: blur(14px); animation: detail-backdrop-in .18s ease both; }
+.gallery-lightbox-close { position: absolute; z-index: 112; top: 16px; right: 21px; width: 38px; height: 38px; border: 1px solid #ffffff34; background: #07101bd9; color: white; cursor: pointer; font-size: 24px; }
+.gallery-lightbox .detail-stage { min-height: 0; height: 100%; border: 1px solid #ffffff17; }
+.gallery-lightbox .detail-stage img { width: 100%; height: 100%; max-height: calc(100vh - 160px); object-fit: contain; }
+.gallery-viewer-footer { display: grid; grid-template-columns: minmax(160px, .4fr) minmax(0, 1.6fr); gap: 18px; align-items: center; }
+.gallery-viewer-footer > p { margin: 0; color: #c8d0d2; font: 10px/1.5 'DM Mono'; }
+.gallery-viewer-thumbnails { display: flex; gap: 7px; overflow-x: auto; padding: 3px; }
+.gallery-viewer-thumbnails button { flex: 0 0 72px; height: 52px; overflow: hidden; border: 1px solid #ffffff20; background: transparent; padding: 0; cursor: pointer; }
+.gallery-viewer-thumbnails button.is-selected { outline: 2px solid var(--host-accent, var(--acid)); outline-offset: 1px; }
+.gallery-viewer-thumbnails img { width: 100%; height: 100%; object-fit: cover; }
+
+/* The card action now opens a dedicated editor above every page layer. */
+.host-gallery-editor-overlay { position: fixed; z-index: 120; inset: 0; overflow-y: auto; background: #e8ebe3; color: #111513; padding: clamp(22px, 4vw, 56px) max(18px, calc((100vw - 1100px) / 2)); }
+.host-gallery-editor-overlay .dedicated-gallery-editor { min-height: 100%; }
+.host-gallery-editor-overlay .gallery-editor { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.host-gallery-editor-overlay .gallery-draft-actions { bottom: 0; margin-left: 0; margin-right: 0; }
+.image-picker { position: relative; z-index: 1; }
+.image-picker input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: auto; cursor: pointer; }
+
+/* Host-side label management is visible directly on every card. */
+.host-label-manager { align-items: center; }
+.collection-tags .host-label-row { display: inline-flex; align-items: center; gap: 2px; padding: 2px 3px 2px 7px; }
+.collection-tags .host-label-row > button,.add-inline-label { border: 0; background: #ffffff0e; color: inherit; padding: 2px 4px; cursor: pointer; font: 8px 'DM Mono'; }
+.collection-tags .host-label-row > button:disabled { opacity: .25; cursor: not-allowed; }
+.collection-tags .host-label-row > .danger { color: #ff9e91; }
+.collection-tags .add-inline-label { border: 1px dashed #ffffff48; border-radius: 20px; padding: 5px 8px; color: var(--host-accent, var(--acid)); }
+
+/* Education records always expose a description box in Host Mode. */
+.education-description .editable-inline { display: block; width: 100%; min-width: 0; min-height: 40px; overflow-wrap: anywhere; }
+.education-description .editable-inline:empty::before { content: 'Click to add a description'; color: #ffffff62; }
+.inline-record-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+.inline-record-actions button,.skill-inline-actions button,.skill-inline-actions select,.about-inline-actions button { border: 1px solid #ffffff28; background: #06101aaf; color: #e7ece8; padding: 6px 8px; cursor: pointer; font: 9px 'DM Mono'; }
+.inline-record-actions button:disabled,.skill-inline-actions button:disabled,.about-inline-actions button:disabled { opacity: .28; cursor: not-allowed; }
+.inline-record-actions .danger,.skill-inline-actions .danger { color: #ff9e91; border-color: #ff8f813d; }
+
+/* Skills are an unlimited vertical hierarchy, not a badge grid. */
+.skill-groups { display: grid; grid-template-columns: 1fr; gap: 0; border: 0; background: transparent; padding: 0; margin: 0; list-style: none; counter-reset: skill-group; }
+.skill-groups .skill-group { min-height: 0; border-top: 1px solid #ffffff1c; background: transparent; padding: 0; list-style: none; }
+.skill-groups .skill-group:last-child { border-bottom: 1px solid #ffffff1c; }
+.skill-group > article { display: grid; grid-template-columns: 62px minmax(210px, .7fr) minmax(0, 1.3fr); gap: clamp(18px, 4vw, 64px); min-height: 150px; padding: 28px 8px; background: #07101a78; }
+.skill-group-index { margin: 5px 0 0; }
+.skill-groups .skill-group h3 { margin: 0 0 8px; font-size: clamp(25px, 3vw, 42px); }
+.skill-group-description { grid-column: 2; min-height: 0; margin: 0; font-size: 12px; }
+.skill-items { grid-column: 3; grid-row: 1 / span 3; display: grid; gap: 0; align-content: start; margin: 0; padding: 0; list-style: none; }
+.skill-items > li { display: grid; grid-template-columns: 32px minmax(0, 1fr) auto; gap: 12px; align-items: center; min-height: 42px; border-bottom: 1px solid #ffffff12; padding: 7px 0; color: #e2e7e6; font-size: 15px; }
+.skill-letter { color: var(--host-accent, var(--acid)); font: 10px 'DM Mono'; }
+.skill-inline-actions { display: flex; gap: 3px; align-items: center; }
+.skill-inline-actions select { max-width: 115px; }
+.skill-group .inline-record-actions { grid-column: 2 / -1; }
+
+/* About and Self-Learning share the same readable vertical rhythm. */
+.about-intro { display: grid; grid-template-columns: minmax(0, .9fr) minmax(320px, .75fr); gap: clamp(40px, 9vw, 150px); align-items: end; margin-bottom: 72px; }
+.about-intro .kicker,.about-intro h2 { grid-column: 1; }
+.about-intro h2 { margin-bottom: 0; }
+.about-intro > p:last-child { grid-column: 2; grid-row: 1 / span 2; margin: 0; color: #c3c8c0; font-size: 17px; line-height: 1.75; }
+.about-item-list,.learning-list { display: grid; grid-template-columns: 1fr; border-top: 1px solid #ffffff1b; }
+.about-item-list > .reveal,.learning-list > .reveal { width: 100%; }
+.about-item-list article,.learning-list .learning-item { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 22px; align-items: start; min-height: 0; border-right: 0; border-bottom: 1px solid #ffffff1b; padding: 25px 8px; }
+.about-item-list article > span,.learning-list .learning-item > span { color: var(--host-accent, var(--acid)); font: 9px 'DM Mono'; }
+.about-item-list h3,.learning-list .learning-item h3 { margin: 0 0 7px; font-size: clamp(24px, 3vw, 39px); line-height: 1.1; letter-spacing: -.05em; }
+.about-item-list p,.learning-list .learning-item p { max-width: 850px; margin: 0; color: var(--soft); font-size: 14px; line-height: 1.7; }
+.about-inline-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
+.is-hidden-host { opacity: .48; }
+
+/* Raise the cutout so the hair visually aligns with the hero heading. */
+.hero-portrait-stage { align-self: center; transform: translateY(-5vh); height: min(80vh, 790px); }
+.hero-portrait { position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero-portrait img { animation: none; object-position: var(--portrait-position, 50% 20%); -webkit-mask-image: radial-gradient(ellipse 78% 94% at 50% 45%, #000 52%, #000f 67%, transparent 91%), linear-gradient(180deg, #000 0%, #000 80%, transparent 100%); mask-image: radial-gradient(ellipse 78% 94% at 50% 45%, #000 52%, #000f 67%, transparent 91%), linear-gradient(180deg, #000 0%, #000 80%, transparent 100%); }
+
+@media (max-width: 1050px) {
+  .gallery-photo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .host-gallery-editor-overlay .gallery-editor { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 800px) {
+  .gallery-grid-modal { padding: 70px 18px 35px; }
+  .gallery-photo-grid { grid-template-columns: 1fr; }
+  .gallery-lightbox { padding: 54px 10px 14px; }
+  .gallery-viewer-footer { grid-template-columns: 1fr; }
+  .gallery-lightbox .detail-stage img { max-height: calc(100vh - 225px); }
+  .skill-group > article { grid-template-columns: 34px minmax(0, 1fr); gap: 12px; }
+  .skill-group-index { grid-row: 1 / span 3; }
+  .skill-group > article > h3,.skill-group-description,.skill-items,.skill-group .inline-record-actions { grid-column: 2; }
+  .skill-items { grid-row: auto; }
+  .skill-items > li { grid-template-columns: 25px minmax(0, 1fr); }
+  .skill-inline-actions { grid-column: 2; justify-content: flex-start; flex-wrap: wrap; }
+  .about-intro { grid-template-columns: 1fr; gap: 25px; margin-bottom: 48px; }
+  .about-intro .kicker,.about-intro h2,.about-intro > p:last-child { grid-column: 1; grid-row: auto; }
+  .about-item-list article,.learning-list .learning-item { grid-template-columns: 34px minmax(0, 1fr); gap: 12px; }
+  .about-inline-actions,.learning-list .learning-item > button { grid-column: 2; justify-content: flex-start; }
+  .hero-portrait-stage { transform: translateY(-2vh); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gallery-photo-grid img,.gallery-lightbox { animation: none; transition: none; }
+}

@@ -1,16 +1,33 @@
 import Reveal from './Reveal.jsx';
 import EditableText from '../editor/EditableText.jsx';
 import { usePortfolio } from '../context/PortfolioContext.jsx';
+import { blankAboutItem } from '../data/portfolio.js';
+
+const move = (list, index, direction) => {
+  const target = index + direction;
+  if (target < 0 || target >= list.length) return list;
+  const next = [...list];
+  [next[index], next[target]] = [next[target], next[index]];
+  return next;
+};
 
 export default function About() {
-  const { content, update } = usePortfolio();
+  const { content, update, hostMode, requestEditor } = usePortfolio();
   const { profile, about } = content;
+  const items = hostMode ? about.items : about.items.filter(item => !item.hidden);
   const setProfile = (key, value) => update(current => ({ ...current, profile: { ...current.profile, [key]: value } }));
   const setAbout = (key, value) => update(current => ({ ...current, about: { ...current.about, [key]: value } }));
-  const setList = (list, index, key, value) => update(current => ({ ...current, about: { ...current.about, [list]: current.about[list].map((item, itemIndex) => itemIndex === index ? { ...item, [key]: value } : item) } }));
+  const setItems = value => setAbout('items', value);
+  const setItem = (id, key, value) => setItems(about.items.map(item => item.id === id ? { ...item, [key]: value } : item));
+  const addItem = () => { const item = blankAboutItem(); setItems([...about.items, item]); requestEditor({ kind: 'about', id: item.id }); };
+
   return <section className="section about" id="about">
     <div className="section-label"><EditableText value={about.label} onChange={value => setAbout('label', value)} /></div>
-    <div className="about-layout about-without-portrait"><div className="about-copy"><Reveal><p className="kicker"><EditableText value={about.kicker} onChange={value => setAbout('kicker', value)} /></p><h2><EditableText value={about.title} onChange={value => setAbout('title', value)} /><br /><em><EditableText value={about.emphasis} onChange={value => setAbout('emphasis', value)} /></em></h2><p><EditableText value={profile.bio} multiline onChange={value => setProfile('bio', value)} /></p></Reveal><Reveal className="about-meta"><div><small><EditableText value={about.educationLabel} onChange={value => setAbout('educationLabel', value)} /></small><strong><EditableText value={profile.education} onChange={value => setProfile('education', value)} /></strong></div><div><small><EditableText value={about.contactLabel} onChange={value => setAbout('contactLabel', value)} /></small><a href={`mailto:${profile.email}`}><EditableText value={profile.email} onChange={value => setProfile('email', value)} /> ↗</a></div>{profile.languages?.length > 0 && <div><small>LANGUAGES</small><strong>{profile.languages.map((language, index) => <EditableText key={`${language}-${index}`} value={language} onChange={value => setProfile('languages', profile.languages.map((item, itemIndex) => itemIndex === index ? value : item))} />)}</strong></div>}</Reveal></div></div>
-    <div className="fact-strip">{about.stats.map((item, index) => <Reveal key={item.id}><article><span><EditableText value={item.number} onChange={value => setList('stats', index, 'number', value)} /></span><small><EditableText value={item.label} onChange={value => setList('stats', index, 'label', value)} /></small><p><EditableText value={item.value} onChange={value => setList('stats', index, 'value', value)} /></p></article></Reveal>)}</div>
+    <Reveal className="about-intro"><p className="kicker"><EditableText value={about.kicker} onChange={value => setAbout('kicker', value)} /></p><h2><EditableText value={about.title} onChange={value => setAbout('title', value)} /><br /><em><EditableText value={about.emphasis} onChange={value => setAbout('emphasis', value)} /></em></h2><p><EditableText value={profile.bio} multiline onChange={value => setProfile('bio', value)} /></p></Reveal>
+    {hostMode && <div className="collection-host-bar"><span>{about.items.length} About items</span><button className="editor-add collection-add" onClick={addItem}>+ Add About Item</button></div>}
+    <div className="about-item-list">{items.map((item, visibleIndex) => {
+      const sourceIndex = about.items.findIndex(entry => entry.id === item.id);
+      return <Reveal key={item.id}><article className={item.hidden ? 'is-hidden-host' : ''} data-about-id={item.id}><span>{String(visibleIndex + 1).padStart(2, '0')}</span><div><h3><EditableText value={item.title} onChange={value => setItem(item.id, 'title', value)} /></h3><p><EditableText value={item.description} multiline onChange={value => setItem(item.id, 'description', value)} /></p></div>{hostMode && <div className="about-inline-actions"><button onClick={() => requestEditor({ kind: 'about', id: item.id })}>Edit ↗</button><button onClick={() => setItems(move(about.items, sourceIndex, -1))} disabled={sourceIndex === 0}>↑</button><button onClick={() => setItems(move(about.items, sourceIndex, 1))} disabled={sourceIndex === about.items.length - 1}>↓</button><button onClick={() => setItem(item.id, 'hidden', !item.hidden)}>{item.hidden ? 'Show' : 'Hide'}</button></div>}</article></Reveal>;
+    })}</div>
   </section>;
 }
