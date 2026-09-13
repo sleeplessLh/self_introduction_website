@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { usePortfolio } from '../context/PortfolioContext.jsx';
 import EditableText from '../editor/EditableText.jsx';
 import { optimiseImage } from '../editor/EditorField.jsx';
+import defaultPortrait from '../assets/images/hero-portrait-lawrance-transparent.png';
 
 export default function Hero() {
   const { content, update, hostMode } = usePortfolio();
@@ -18,6 +19,6 @@ export default function Hero() {
     catch (error) { setUploadError(`Upload failed: ${error.message || 'the portrait could not be processed.'}`); }
     event.target.value = '';
   };
-  const portrait = hero.portrait;
+  const portrait = /\/assets\/hero-portrait-lawrance-transparent-[^/]+\.png$/i.test(hero.portrait || '') ? defaultPortrait : hero.portrait;
   return <section className="hero hero-identity" id="home"><div className="hero-overlay" /><div className="hero-stars" aria-hidden="true" /><div className="hero-copy"><p className="hero-support"><EditableText value={hero.supportingLabel} onChange={value => setHero('supportingLabel', value)} /></p><h1><EditableText value={hero.fullName} onChange={value => setHero('fullName', value)} /></h1><div className="hero-credentials"><EditableText value={hero.role} onChange={value => setHero('role', value)} /><span>·</span><EditableText value={hero.university} onChange={value => setHero('university', value)} /></div><p className="hero-intro"><EditableText value={hero.intro} multiline onChange={value => setHero('intro', value)} /></p><div className="hero-focus">{hero.technicalFocus.map((item, index) => <EditableText key={`${item}-${index}`} value={item} onChange={value => setHero('technicalFocus', hero.technicalFocus.map((entry, itemIndex) => itemIndex === index ? value : entry))} />)}</div><div className="hero-actions"><a className="button" href={hero.primaryUrl}><EditableText value={hero.primaryLabel} onChange={value => setHero('primaryLabel', value)} /> <b>↗</b></a><a className="text-link" href={hero.secondaryUrl}><EditableText value={hero.secondaryLabel} onChange={value => setHero('secondaryLabel', value)} /> <b>↓</b></a></div></div><div className="hero-portrait-stage"><div className="portrait-depth" aria-hidden="true" /><div className={`hero-portrait ${hostMode ? 'is-editable' : ''}`} style={{ '--portrait-position': hero.portraitPosition }}>{portrait ? <img src={portrait} alt={`${hero.fullName} portrait`} /> : <div className="portrait-empty">Upload your portrait in Host Mode</div>}{hostMode && <div className="portrait-editor"><button onClick={() => upload.current?.click()}>Replace portrait</button><button onClick={() => setHero('portrait', '')}>Remove</button><label>Position<input value={hero.portraitPosition} onChange={event => setHero('portraitPosition', event.target.value)} placeholder="50% 50%" /></label><input ref={upload} type="file" accept="image/jpeg,image/png,image/webp" onChange={replacePortrait} hidden />{uploadError && <small className="portrait-upload-error" role="alert">{uploadError}</small>}</div>}</div></div></section>;
 }
