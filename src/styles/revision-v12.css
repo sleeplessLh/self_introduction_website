@@ -87,38 +87,21 @@
 .more-menu button:hover,.more-menu button:focus-visible { background: #ffffff0c; color: var(--host-accent, var(--acid)); }
 .host-entry { display: none!important; }
 
-/* Deliberate editorial portrait panel using the complete original photograph. */
-.hero-identity { align-items: stretch; }
-.hero-copy { align-self: start; padding-top: clamp(18px, 5.2vh, 58px); }
+/* Seamless portrait-and-stargazing composite: no card, cutout seam, or overlay patch. */
+.hero-identity {
+  align-items: stretch;
+  grid-template-columns: 1fr;
+  background-image: linear-gradient(90deg, #030713e8 0%, #030713a8 44%, transparent 67%), url('../assets/images/hero-lawrance-stargazing-composite.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  padding-top: 80px;
+}
+.hero-overlay,.hero-stars { opacity: .18; }
+.hero-copy { align-self: start; width: min(56vw, 760px); padding-top: clamp(18px, 5.2vh, 58px); }
 .hero-portrait-stage {
-  align-self: start;
-  width: min(100%, 390px);
-  height: min(72svh, 620px);
-  min-height: 540px;
-  margin-top: clamp(20px, 4vh, 42px);
-  transform: none;
+  display: none;
 }
-.hero-portrait {
-  overflow: hidden;
-  background: #0c121a;
-  border: 1px solid #ffffff1c;
-  border-radius: 24px 24px 8px 24px;
-  box-shadow: 0 30px 80px #0008;
-}
-.hero-portrait-stage::before { display: none; }
-.hero-portrait-stage::after { display: none; }
-.hero-portrait::before,.hero-portrait::after { display: none; }
-.hero-portrait img {
-  width: 100%;
-  height: 122%;
-  object-fit: cover;
-  object-position: 50% top;
-  transform: translateY(-10%);
-  filter: saturate(.82) contrast(1.06) brightness(.82);
-  -webkit-mask-image: none;
-  mask-image: none;
-}
-.portrait-depth { border-radius: 48%; filter: blur(55px); opacity: .28; }
 .host-dialog { z-index: var(--layer-confirm); }
 
 @media (max-width: 800px) {
@@ -134,22 +117,19 @@
   .cms-drawer { top: 68px; height: calc(100svh - 126px); padding-bottom: 8px; }
   .host-gallery-editor-overlay { padding-top: 84px; padding-bottom: 72px; }
   .hero-identity { grid-template-columns: 1fr; padding-top: 88px; }
-  .hero-copy { order: 1; padding-top: 0; }
-  .hero-portrait-stage {
-    order: 2;
-    justify-self: center;
-    width: min(88vw, 360px);
-    height: clamp(390px, 58vh, 500px);
-    min-height: 340px;
-    margin-top: -12px;
+  .hero-identity {
+    min-height: 1080px;
+    background-image: linear-gradient(180deg, #030713f5 0%, #030713c9 42%, transparent 68%), url('../assets/images/hero-lawrance-stargazing-composite.png');
+    background-size: auto 100%;
+    background-position: 67% bottom;
   }
-  .hero-portrait { border-radius: 18px 18px 6px 18px; }
-  .hero-portrait img { height: 116%; transform: translateY(-7%); object-position: 50% top; }
+  .hero-copy { order: 1; padding-top: 0; }
+  .hero-copy { width: 100%; }
 }
 
 @media (min-width: 801px) and (max-height: 760px) {
   .hero-copy { padding-top: 8px; }
-  .hero-portrait-stage { min-height: 520px; height: calc(100svh - 185px); margin-top: 18px; }
+  .hero-identity { background-position: center; padding-top: 76px; }
 }
 
 /* Host workspace: page and editor scroll independently. */
