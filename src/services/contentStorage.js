@@ -10,13 +10,10 @@ export async function loadContent() {
 }
 
 export async function saveContent(content) {
-  const current = await loadContent();
-  const request = current?.id
-    ? supabase.from('portfolio_content').update({ content, updated_at: new Date().toISOString() }).eq('id', current.id).select('id').single()
-    : supabase.from('portfolio_content').insert({ content }).select('id').single();
-  const { data, error } = await request;
-  if (error) throw error;
-  const saved = { id: data?.id || current?.id, content };
+  const response = await fetch('/api/content', { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ content }) });
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.error || (response.status === 401 ? 'Host authentication required.' : 'Could not save changes.'));
+  const saved = { id: data.id, content };
   cache(saved);
   return saved;
 }

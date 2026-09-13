@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../lib/supabase.js';
 import { blankAboutItem, blankCompetition, blankLearning, blankProject } from '../data/portfolio.js';
 import { usePortfolio } from '../context/PortfolioContext.jsx';
 import CollectionEditor from '../editor/CollectionEditor.jsx';
@@ -19,17 +18,15 @@ export default function HostAccess() {
   const setContent = (key, value) => update(current => setAt(current, key, value));
   const setNested = (group, key, value) => update(current => ({ ...current, [group]: setAt(current[group], key, value) }));
   const setAboutList = (key, index, field, value) => setNested('about', key, content.about[key].map((entry, entryIndex) => entryIndex === index ? setAt(entry, field, value) : entry));
-  async function login(event) { event.preventDefault(); const { error } = await supabase.auth.signInWithPassword({ email, password }); if (error) return setAuthNote('Login failed. Check your email and password.'); setHostMode(true); setOpen(false); setAuthNote(''); }
-  function exit() { if (isDirty && !window.confirm('Discard unsaved changes and exit Host Mode?')) return; if (isDirty) cancel(); setHostMode(false); }
+  async function login(event) { event.preventDefault(); setAuthNote('Verifying…'); try { const response = await fetch('/api/host/login', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) }); const result = await response.json(); if (!response.ok) return setAuthNote(result.error || 'Login failed. Check your credentials.'); setPassword(''); setHostMode(true); setOpen(false); setAuthNote(''); } catch { setAuthNote('Host verification is temporarily unavailable.'); } }
+  async function exit() { if (isDirty && !window.confirm('Discard unsaved changes and exit Host Mode?')) return; if (isDirty) cancel(); await fetch('/api/host/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => {}); setHostMode(false); }
   const field = (group, key, label, multiline = false) => <TextField key={`${group}-${key}`} label={label} value={content[group][key]} multiline={multiline} onChange={value => setNested(group, key, value)} />;
   useEffect(() => {
-    const activate = async () => { setOpen(true); const { data, error } = await supabase.auth.getSession(); if (error) setAuthNote('Unable to check your Host session. Please sign in again.'); else if (data.session) { setHostMode(true); setOpen(false); } };
+    const activate = () => { setAuthNote(''); setPassword(''); setOpen(true); };
+    const restore = async () => { try { const response = await fetch('/api/host/session', { credentials: 'same-origin' }); const result = response.headers.get('content-type')?.includes('application/json') ? await response.json() : null; setHostMode(Boolean(response.ok && result?.authenticated)); } catch { setHostMode(false); } };
     const handler = event => { if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'e') { event.preventDefault(); activate(); } };
     const requested = () => activate();
-    if (new URLSearchParams(window.location.search).get('host') === '1') {
-      if (import.meta.env.DEV) { setHostMode(true); setOpen(false); }
-      else activate();
-    }
+    restore();
     window.addEventListener('keydown', handler); window.addEventListener('portfolio:host-access', requested); return () => { window.removeEventListener('keydown', handler); window.removeEventListener('portfolio:host-access', requested); };
   }, [setHostMode]);
   useEffect(() => { if (!editorRequest) return; const tabName = editorRequest.kind === 'competition' ? 'Competitions' : editorRequest.kind === 'project' ? 'Projects' : editorRequest.kind === 'learning' ? 'Learning' : editorRequest.kind === 'about' ? 'About' : editorRequest.kind === 'skills' ? 'Skills' : editorRequest.kind === 'education' ? 'Education' : null; if (!tabName) return; setTab(tabName); setActiveItem(editorRequest); }, [editorRequest]);

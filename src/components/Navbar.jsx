@@ -11,7 +11,7 @@ export default function Navbar() {
   const setNav = (index, value) => update(current => ({ ...current, navigation: current.navigation.map((item, itemIndex) => itemIndex === index ? { ...item, label: value } : item) }));
   const setHero = (key, value) => update(current => ({ ...current, hero: { ...current.hero, [key]: value } }));
   const openHost = () => { setMoreOpen(false); window.dispatchEvent(new CustomEvent('portfolio:host-access')); };
-  const exitHost = () => { setMoreOpen(false); setHostMode(false); window.history.replaceState({}, '', `${window.location.pathname}${window.location.hash}`); };
+  const exitHost = async () => { setMoreOpen(false); await fetch('/api/host/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => {}); setHostMode(false); window.history.replaceState({}, '', `${window.location.pathname}${window.location.hash}`); };
   useEffect(() => {
     const close = event => { if (event.key === 'Escape' || (moreMenu.current && !moreMenu.current.contains(event.target))) setMoreOpen(false); };
     document.addEventListener('pointerdown', close);
