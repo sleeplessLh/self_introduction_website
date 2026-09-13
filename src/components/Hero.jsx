@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePortfolio } from '../context/PortfolioContext.jsx';
-import { gmailComposeUrl, mailtoUrl } from '../utils/contactLinks.js';
+import { gmailComposeUrl, mailtoUrl, openEmail } from '../utils/contactLinks.js';
 import EditableText from '../editor/EditableText.jsx';
 import { optimiseImage } from '../editor/EditorField.jsx';
 import defaultPortrait from '../assets/images/hero-portrait-lawrance.jpg';
@@ -10,6 +10,12 @@ export default function Hero() {
   const { hero } = content;
   const upload = useRef(null);
   const [uploadError, setUploadError] = useState('');
+  useEffect(() => {
+    const link = document.querySelector('#home .hero-actions .button');
+    const handler = event => openEmail(event, content.profile.email);
+    link?.addEventListener('click', handler);
+    return () => link?.removeEventListener('click', handler);
+  }, [content.profile.email]);
   const setHero = (key, value) => update(current => ({ ...current, hero: { ...current.hero, [key]: value } }));
   const replacePortrait = async event => {
     const file = event.target.files?.[0];
