@@ -87,36 +87,34 @@
 .more-menu button:hover,.more-menu button:focus-visible { background: #ffffff0c; color: var(--host-accent, var(--acid)); }
 .host-entry { display: none!important; }
 
-/* Transparent foreground anchored to the same responsive vertical rhythm as the title. */
+/* Deliberate editorial portrait panel using the complete original photograph. */
 .hero-identity { align-items: stretch; }
 .hero-copy { align-self: start; padding-top: clamp(18px, 5.2vh, 58px); }
 .hero-portrait-stage {
   align-self: start;
-  width: min(100%, 430px);
-  height: calc(100svh - 190px);
-  min-height: 620px;
-  max-height: none;
-  margin-top: clamp(45px, 7vh, 68px);
+  width: min(100%, 390px);
+  height: min(72svh, 620px);
+  min-height: 540px;
+  margin-top: clamp(20px, 4vh, 42px);
   transform: none;
 }
 .hero-portrait {
   overflow: hidden;
-  background: #10151c;
-  border: 1px solid #ffffff24;
-  border-radius: 48% 48% 10% 10% / 22% 22% 8% 8%;
-  box-shadow: 0 32px 90px #0009, inset 0 0 55px #0005;
+  background: #0c121a;
+  border: 1px solid #ffffff1c;
+  border-radius: 24px 24px 8px 24px;
+  box-shadow: 0 30px 80px #0008;
 }
 .hero-portrait-stage::before { display: none; }
 .hero-portrait-stage::after { display: none; }
 .hero-portrait::before,.hero-portrait::after { display: none; }
 .hero-portrait img {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  object-position: 50% top;
+  height: 122%;
   object-fit: cover;
-  transform: none;
-  filter: saturate(.78) contrast(1.08) brightness(.78);
+  object-position: 50% top;
+  transform: translateY(-10%);
+  filter: saturate(.82) contrast(1.06) brightness(.82);
   -webkit-mask-image: none;
   mask-image: none;
 }
@@ -140,17 +138,18 @@
   .hero-portrait-stage {
     order: 2;
     justify-self: center;
-    width: min(92vw, 430px);
-    height: clamp(340px, 64vh, 520px);
+    width: min(88vw, 360px);
+    height: clamp(390px, 58vh, 500px);
     min-height: 340px;
     margin-top: -12px;
   }
-  .hero-portrait img { object-position: 50% top; }
+  .hero-portrait { border-radius: 18px 18px 6px 18px; }
+  .hero-portrait img { height: 116%; transform: translateY(-7%); object-position: 50% top; }
 }
 
 @media (min-width: 801px) and (max-height: 760px) {
   .hero-copy { padding-top: 8px; }
-  .hero-portrait-stage { min-height: 590px; height: calc(100svh - 150px); margin-top: 42px; }
+  .hero-portrait-stage { min-height: 520px; height: calc(100svh - 185px); margin-top: 18px; }
 }
 
 /* Host workspace: page and editor scroll independently. */
