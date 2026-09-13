@@ -33,7 +33,8 @@
 .gallery-photo-grid button:hover img { transform: scale(1.018); filter: brightness(1.07); }
 
 /* Stable layer system: drawer starts below the global toolbar safety zone. */
-.navbar { z-index: var(--layer-nav); }
+#root > .navbar { z-index: var(--layer-nav); }
+.hero-stars,.hero-overlay,.portrait-depth { pointer-events: none; }
 .host-workspace-controls { z-index: var(--layer-host-marker); }
 .host-mode-indicator { z-index: var(--layer-host-marker); top: 94px; }
 .host-action-toolbar {
@@ -68,6 +69,8 @@
   font: 20px/1 'DM Mono';
   letter-spacing: 2px;
 }
+.more-button { list-style: none; }
+.more-button::-webkit-details-marker { display: none; }
 .more-button:hover,.more-button:focus-visible,.more-button[aria-expanded="true"] { border-color: #ffffff22; background: #ffffff0a; }
 .more-menu {
   position: absolute;

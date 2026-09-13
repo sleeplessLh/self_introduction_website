@@ -13,7 +13,7 @@ import AboutEditor from '../editor/AboutEditor.jsx';
 const tabs = ['Content', 'Profile', 'About', 'Education', 'Skills', 'Projects', 'Competitions', 'Learning', 'Strengths', 'Contact'];
 const setAt = (object, key, value) => ({ ...object, [key]: value });
 export default function HostAccess() {
-  const { content, update, hostMode, setHostMode, editorRequest, requestEditor, save, cancel, reset, status, isDirty } = usePortfolio();
+  const { content, update, hostMode, setHostMode, hostAccessRequest, editorRequest, requestEditor, save, cancel, reset, status, isDirty } = usePortfolio();
   const [open, setOpen] = useState(false); const [email, setEmail] = useState(''); const [password, setPassword] = useState(''); const [authNote, setAuthNote] = useState(''); const [tab, setTab] = useState('Content'); const [activeItem, setActiveItem] = useState(null);
   const setContent = (key, value) => update(current => setAt(current, key, value));
   const setNested = (group, key, value) => update(current => ({ ...current, [group]: setAt(current[group], key, value) }));
@@ -25,10 +25,10 @@ export default function HostAccess() {
     const activate = () => { setAuthNote(''); setPassword(''); setOpen(true); };
     const restore = async () => { try { const response = await fetch('/api/host/session', { credentials: 'same-origin' }); const result = response.headers.get('content-type')?.includes('application/json') ? await response.json() : null; setHostMode(Boolean(response.ok && result?.authenticated)); } catch { setHostMode(false); } };
     const handler = event => { if (event.ctrlKey && event.shiftKey && event.key.toLowerCase() === 'e') { event.preventDefault(); activate(); } };
-    const requested = () => activate();
     restore();
-    window.addEventListener('keydown', handler); window.addEventListener('portfolio:host-access', requested); return () => { window.removeEventListener('keydown', handler); window.removeEventListener('portfolio:host-access', requested); };
+    window.addEventListener('keydown', handler); return () => window.removeEventListener('keydown', handler);
   }, [setHostMode]);
+  useEffect(() => { if (hostAccessRequest > 0 && !hostMode) { setAuthNote(''); setPassword(''); setOpen(true); } }, [hostAccessRequest, hostMode]);
   useEffect(() => { if (!editorRequest) return; const tabName = editorRequest.kind === 'competition' ? 'Competitions' : editorRequest.kind === 'project' ? 'Projects' : editorRequest.kind === 'learning' ? 'Learning' : editorRequest.kind === 'about' ? 'About' : editorRequest.kind === 'skills' ? 'Skills' : editorRequest.kind === 'education' ? 'Education' : null; if (!tabName) return; setTab(tabName); setActiveItem(editorRequest); }, [editorRequest]);
   const galleryCollectionKey = editorRequest?.kind === 'competition' ? 'competitions' : 'projects';
   const requestedGalleryItem = editorRequest?.panel === 'gallery' && ['project', 'competition'].includes(editorRequest.kind) ? content[galleryCollectionKey].find(item => item.id === editorRequest.id) : null;
