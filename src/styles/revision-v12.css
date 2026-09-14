@@ -378,8 +378,8 @@ main > section {
   height: auto;
   object-fit: contain;
   filter: saturate(.94) contrast(1.025) brightness(.96) drop-shadow(0 24px 38px #0008);
-  -webkit-mask-image: radial-gradient(ellipse 76% 96% at 50% 18%, #000 0%, #000 77%, transparent 100%);
-  mask-image: radial-gradient(ellipse 76% 96% at 50% 18%, #000 0%, #000 77%, transparent 100%);
+  -webkit-mask-image: none;
+  mask-image: none;
 }
 .portrait-depth { display: none; }
 
@@ -404,7 +404,9 @@ main > section {
   display: block;
   width: 100%;
   margin: 0 0 12px;
+  color: #f5f7f4;
 }
+.skill-items li > span:not(.skill-letter) { color: #f5f7f4; }
 .learning-list .learning-copy p {
   display: block;
   width: 100%;
