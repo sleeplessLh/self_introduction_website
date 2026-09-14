@@ -87,14 +87,11 @@
 .more-menu button:hover,.more-menu button:focus-visible { background: #ffffff0c; color: var(--host-accent, var(--acid)); }
 .host-entry { display: none!important; }
 
-/* Seamless portrait-and-stargazing composite: no card, cutout seam, or overlay patch. */
+/* Hero layout inherits the single global scene; only transparent readability layers live here. */
 .hero-identity {
   align-items: stretch;
   grid-template-columns: 1fr;
-  background-image: linear-gradient(90deg, #030713e8 0%, #030713a8 44%, transparent 67%), url('../assets/images/hero-lawrance-stargazing-composite.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  background: transparent;
   padding-top: 80px;
 }
 .hero-overlay,.hero-stars { opacity: .18; }
@@ -119,9 +116,7 @@
   .hero-identity { grid-template-columns: 1fr; padding-top: 88px; }
   .hero-identity {
     min-height: 1080px;
-    background-image: linear-gradient(180deg, #030713 0%, #030713 50%, #030713e8 58%, transparent 72%), url('../assets/images/hero-lawrance-stargazing-composite.png');
-    background-size: 100% 100%, auto 100%;
-    background-position: center, 72% 380px;
+    background: transparent;
   }
   .hero-copy { order: 1; padding-top: 0; transform: none; }
   .hero-copy { width: 100%; }
@@ -305,9 +300,7 @@
   .navbar nav a { font-size: 12px; }
   .hero-identity {
     min-height: 980px;
-    background-image: linear-gradient(180deg, #030713 0%, #030713 47%, #030713e8 55%, transparent 70%), url('../assets/images/hero-lawrance-stargazing-composite.png');
-    background-size: 100% 100%, auto 82%;
-    background-position: center, 67% 430px;
+    background: transparent;
   }
   .hero-intro,
   .about-intro > p:last-child,
@@ -329,4 +322,122 @@
 
 @media (prefers-reduced-motion: reduce) {
   .navbar { transition: none; }
+}
+
+/* Revision 14: one continuous site background and restrained portrait scale. */
+main > section {
+  background-color: transparent !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+}
+.learning-section { background: transparent !important; }
+.global-background { background: #071020; }
+.global-scene {
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+.hero-identity {
+  grid-template-columns: minmax(0, 1fr) minmax(300px, 30vw);
+  align-items: start;
+  gap: clamp(28px, 4vw, 74px);
+  background: transparent !important;
+}
+.hero-stars,.hero-glow { display: none; }
+.hero-overlay {
+  background: radial-gradient(ellipse at 15% 42%, #020611dc 0%, #020611a8 36%, transparent 72%);
+  -webkit-mask-image: linear-gradient(#000 0%, #000 86%, transparent 100%);
+  mask-image: linear-gradient(#000 0%, #000 86%, transparent 100%);
+}
+.hero-copy { width: min(58vw, 760px); }
+.hero-portrait-stage {
+  display: block;
+  position: relative;
+  align-self: start;
+  justify-self: end;
+  width: clamp(300px, 29vw, 430px);
+  height: auto;
+  margin-top: clamp(18px, 3.5vh, 34px);
+  margin-right: clamp(25px, 3.5vw, 64px);
+}
+.hero-portrait {
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  max-width: none;
+  overflow: visible;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.hero-portrait::before { display: none; }
+.hero-portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: saturate(.94) contrast(1.025) brightness(.96) drop-shadow(0 24px 38px #0008);
+  -webkit-mask-image: radial-gradient(ellipse 76% 96% at 50% 18%, #000 0%, #000 77%, transparent 100%);
+  mask-image: radial-gradient(ellipse 76% 96% at 50% 18%, #000 0%, #000 77%, transparent 100%);
+}
+.portrait-depth { display: none; }
+
+.learning-list {
+  width: 100%;
+  padding-left: 58px;
+}
+.learning-list .learning-item {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  width: 100%;
+  gap: 24px;
+  padding: 31px 8px 33px 0;
+}
+.learning-list .learning-item > .learning-copy {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0;
+  max-width: none;
+}
+.learning-list .learning-copy h3 {
+  display: block;
+  width: 100%;
+  margin: 0 0 12px;
+}
+.learning-list .learning-copy p {
+  display: block;
+  width: 100%;
+  max-width: 980px;
+  margin: 0;
+  font-size: clamp(15px, 1.15vw, 17px);
+  line-height: 1.78;
+}
+
+@media (max-width: 800px) {
+  .global-scene { background-attachment: scroll; }
+  .hero-identity {
+    grid-template-columns: 1fr;
+    min-height: 940px;
+    padding-top: 88px;
+    background: transparent !important;
+  }
+  .hero-copy { order: 1; width: 100%; }
+  .hero-portrait-stage {
+    order: 2;
+    justify-self: end;
+    width: min(62vw, 240px);
+    margin: 22px 7vw -18px 0;
+  }
+  .hero-overlay {
+    background: radial-gradient(ellipse at 28% 28%, #020611d8 0%, #02061194 42%, transparent 74%);
+  }
+  .learning-list { padding-left: 42px; }
+  .learning-list .learning-item {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 15px;
+    padding: 25px 0 27px;
+  }
+  .learning-list .learning-item > button { grid-column: 1; }
+  .learning-list .learning-copy p { font-size: 15px; line-height: 1.72; }
 }
