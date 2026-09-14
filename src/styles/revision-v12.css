@@ -445,3 +445,40 @@ main > section {
   .learning-list .learning-item > button { grid-column: 1; }
   .learning-list .learning-copy p { font-size: 15px; line-height: 1.72; }
 }
+
+/* Final cascade guard for Hero stacking and CTA proportions. */
+#root > .global-background { z-index: 0; }
+.global-background > .global-scene,
+.global-background > .global-stars,
+.global-background > .global-atmosphere,
+.global-background > .wind-flowers { z-index: 1; }
+.hero-identity { isolation: isolate; }
+.hero-identity > .hero-overlay { z-index: 1; }
+.hero-identity > .hero-portrait-stage { z-index: 2; }
+.hero-identity > .hero-copy { z-index: 3; }
+.hero-portrait-stage::before,
+.hero-portrait-stage::after,
+.hero-portrait::before,
+.hero-portrait::after { display: none !important; content: none !important; }
+.hero-portrait,
+.hero-portrait img {
+  position: relative;
+  z-index: 1;
+  opacity: 1;
+  overflow: visible;
+  -webkit-mask-image: none !important;
+  mask-image: none !important;
+  clip-path: none !important;
+}
+.hero-actions { gap: clamp(38px, 3.5vw, 56px); }
+.hero-actions .button {
+  justify-content: space-between;
+  min-width: clamp(168px, 13vw, 194px);
+  min-height: 56px;
+  padding: 15px 20px 15px 24px;
+}
+
+@media (max-width: 800px) {
+  .hero-actions { gap: 24px; }
+  .hero-actions .button { min-width: 170px; min-height: 54px; }
+}
