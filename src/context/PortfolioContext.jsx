@@ -24,8 +24,9 @@ function normalize(saved, defaults) {
   const isLegacyHero = !saved.schemaVersion || saved.schemaVersion < 3;
   const needsCompetitionTemplate = !saved.schemaVersion || saved.schemaVersion < 4;
   const needsProfessionalPortrait = !saved.schemaVersion || saved.schemaVersion < 10;
+  const needsTransparentPortrait = !saved.schemaVersion || saved.schemaVersion < 12;
   const needsStructuredEducation = !saved.schemaVersion || saved.schemaVersion < 10;
-  const hero = isLegacyHero ? defaults.hero : { ...defaults.hero, ...saved.hero, ...(needsProfessionalPortrait ? { portrait: defaults.hero.portrait, portraitPosition: defaults.hero.portraitPosition } : {}) };
+  const hero = isLegacyHero ? defaults.hero : { ...defaults.hero, ...saved.hero, ...((needsProfessionalPortrait || needsTransparentPortrait) ? { portrait: defaults.hero.portrait, portraitPosition: defaults.hero.portraitPosition } : {}) };
   const savedAboutItems = saved.about?.items || (saved.about?.stats || []).map(item => ({ id: item.id, title: item.label, description: item.value, hidden: false }));
   const contact = { ...defaults.contact, ...saved.contact, socialLinks: (saved.contact?.socialLinks || defaults.contact.socialLinks).map(link => ({ ...link, url: ['https://github.com/', 'https://www.linkedin.com/'].includes(link.url) ? '' : link.url })) };
   const profile = { ...defaults.profile, ...saved.profile, email: 'lawrancehii12345@gmail.com', resumeUrl: saved.profile?.resumeUrl === '#' ? '' : saved.profile?.resumeUrl || '' };

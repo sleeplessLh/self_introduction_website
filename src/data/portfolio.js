@@ -1,4 +1,4 @@
-import portrait from '../assets/images/hero-portrait-lawrance-transparent-v3.png';
+import portrait from '../assets/images/hero-portrait-lawrance-transparent-v4.png';
 import projectOne from '../assets/images/project-one.svg';
 import projectTwo from '../assets/images/project-two.svg';
 import projectThree from '../assets/images/project-three.svg';
@@ -6,7 +6,7 @@ const uid = () => crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`;
 const labels = values => values.map(label => ({ id: uid(), label }));
 
 export const createDefaultContent = () => ({
-  schemaVersion: 11,
+  schemaVersion: 12,
   theme: { accent: '#c9ee6b' },
   navigation: [{ id: 'home', label: 'Home' }, { id: 'about', label: 'About' }, { id: 'projects', label: 'Projects' }, { id: 'competitions', label: 'Competitions' }, { id: 'learning', label: 'Learning' }, { id: 'strengths', label: 'Strengths' }, { id: 'contact', label: 'Contact' }],
   hero: { fullName: 'LAWRANCE HII NANG YUANG', role: 'Software Engineering Undergraduate', university: 'Universiti Teknologi Malaysia', intro: 'Interested in building dependable software through thoughtful engineering, practical systems, and continuous learning.', technicalFocus: ['Software Engineering', 'Systems', 'Backend'], primaryLabel: 'Contact me', primaryUrl: 'https://mail.google.com/mail/?view=cm&fs=1&to=lawrancehii12345@gmail.com', secondaryLabel: 'View projects', secondaryUrl: '#projects', portrait, portraitPosition: '50% 50%', supportingLabel: 'Portfolio / 2026', videoSrc: null },
