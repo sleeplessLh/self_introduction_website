@@ -98,7 +98,7 @@
   padding-top: 80px;
 }
 .hero-overlay,.hero-stars { opacity: .18; }
-.hero-copy { align-self: start; width: min(56vw, 760px); padding-top: clamp(18px, 5.2vh, 58px); }
+.hero-copy { align-self: start; width: min(56vw, 760px); padding-top: clamp(18px, 5.2vh, 58px); transform: translateY(-38px); }
 .hero-portrait-stage {
   display: none;
 }
@@ -119,11 +119,11 @@
   .hero-identity { grid-template-columns: 1fr; padding-top: 88px; }
   .hero-identity {
     min-height: 1080px;
-    background-image: linear-gradient(180deg, #030713f5 0%, #030713c9 42%, transparent 68%), url('../assets/images/hero-lawrance-stargazing-composite.png');
-    background-size: auto 100%;
-    background-position: 67% bottom;
+    background-image: linear-gradient(180deg, #030713 0%, #030713 50%, #030713e8 58%, transparent 72%), url('../assets/images/hero-lawrance-stargazing-composite.png');
+    background-size: 100% 100%, auto 100%;
+    background-position: center, 72% 380px;
   }
-  .hero-copy { order: 1; padding-top: 0; }
+  .hero-copy { order: 1; padding-top: 0; transform: none; }
   .hero-copy { width: 100%; }
 }
 
