@@ -358,7 +358,7 @@ main > section {
   justify-self: end;
   width: clamp(300px, 29vw, 430px);
   height: auto;
-  margin-top: clamp(30px, calc(3.5vh + 12px), 46px);
+  margin-top: clamp(44px, calc(3.5vh + 26px), 60px);
   margin-right: clamp(25px, 3.5vw, 64px);
 }
 .hero-portrait {
@@ -431,7 +431,7 @@ main > section {
     order: 2;
     justify-self: end;
     width: min(62vw, 240px);
-    margin: 28px 7vw -24px 0;
+    margin: 36px 7vw -32px 0;
   }
   .hero-overlay {
     background: radial-gradient(ellipse at 28% 28%, #020611d8 0%, #02061194 42%, transparent 74%);
