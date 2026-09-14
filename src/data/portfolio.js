@@ -32,5 +32,5 @@ export const createDefaultContent = () => ({
 });
 export const blankProject = () => ({ id: uid(), title: 'New project', label: 'Project label', date: 'Year', coverImage: '', coverPosition: '50% 50%', gallery: [], galleryUrl: '', description: 'Describe the problem, your approach, and why it matters.', details: '', technologies: [], github: '', liveDemo: '' });
 export const blankCompetition = () => ({ id: uid(), title: 'New competition', label: 'Competition label', date: 'Date', coverImage: '', coverPosition: '50% 50%', gallery: [], galleryUrl: '', description: 'Describe the challenge, your contribution, and what you learned.', details: '', achievement: 'Add achievement or participation result', tags: [] });
-export const blankLearning = () => ({ id: uid(), title: 'New learning item', description: 'Describe what you studied and the depth you reached.', hidden: false });
+export const blankLearning = () => ({ id: uid(), date: 'Date / time range', title: 'New learning item', description: 'Describe what you studied and the depth you reached.', hidden: false });
 export const blankAboutItem = () => ({ id: uid(), title: 'New About item', description: 'Add a clear detail about your background, direction, or experience.', hidden: false });

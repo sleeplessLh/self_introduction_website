@@ -9,7 +9,12 @@ const stableId = () => crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`
 const normalizeGallery = gallery => (gallery || []).map(image => typeof image === 'string' ? { id: stableId(), src: image, caption: '', hidden: false } : { id: image.id || stableId(), caption: '', hidden: false, ...image });
 const normalizeLabels = labels => (labels || []).map(entry => typeof entry === 'string' ? { id: stableId(), label: entry } : { id: entry.id || stableId(), label: entry.label || '' });
 const normalizeCollection = (items = []) => items.map(item => ({ galleryUrl: '', details: '', coverPosition: '50% 50%', ...item, gallery: normalizeGallery(item.gallery), technologies: normalizeLabels(item.technologies), tags: normalizeLabels(item.tags) }));
-const normalizeLearning = (items = []) => items.map(item => ({ id: item.id || stableId(), title: item.title || 'Learning item', description: item.description || item.summary || '', hidden: Boolean(item.hidden) }));
+const normalizeLearning = (items = []) => items.map(item => {
+  const description = item.description || item.summary || '';
+  const lines = description.split(/\r?\n/);
+  const firstLineLooksLikeDate = !item.date && /^(January|February|March|April|May|June|July|August|September|October|November|December|Present|Now|\d{4})\b/i.test(lines[0]?.trim());
+  return { id: item.id || stableId(), date: item.date || (firstLineLooksLikeDate ? lines[0].trim() : ''), title: item.title || 'Learning item', description: firstLineLooksLikeDate ? lines.slice(1).join('\n').trim() : description, hidden: Boolean(item.hidden) };
+});
 const normalizeAboutItems = (items = []) => items.map(item => ({ id: item.id || stableId(), title: item.title || 'About item', description: item.description || item.value || '', hidden: Boolean(item.hidden) }));
 const normalizeEducation = (items = []) => items.map(item => ({ id: item.id || stableId(), school: '', subtitle: '', description: '', grade: '', startDate: '', endDate: '', logo: '', logoPosition: '50% 50%', ...item }));
 const normalizeSkills = (groups = []) => groups.map(group => ({ id: group.id || stableId(), name: '', description: '', ...group, skills: (group.skills || []).map(skill => typeof skill === 'string' ? { id: stableId(), name: skill } : { id: skill.id || stableId(), ...skill }) }));

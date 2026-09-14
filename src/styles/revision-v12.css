@@ -176,3 +176,157 @@
   .contact footer > div { margin-bottom: 0; }
   .contact .socials { width: 100%; }
 }
+
+/* Revision 13: natural half portrait, readable long-form copy and timeline navigation. */
+.navbar {
+  transition: transform .3s cubic-bezier(.22,.61,.36,1), background-color .25s ease, border-color .25s ease;
+  will-change: transform;
+}
+.navbar.is-hidden { transform: translateY(calc(-100% - 3px)); }
+.navbar.menu-open { transform: translateY(0); }
+.navbar nav a { font-size: clamp(10.5px, .76vw, 12px); letter-spacing: .105em; }
+.nav-contact { font-size: clamp(12px, .9vw, 14px); }
+
+.hero-identity {
+  background-size: 100% 100%, auto 126%;
+  background-position: center, 68% 10%;
+}
+
+.editable-textarea-inline {
+  display: block;
+  width: 100%;
+  min-height: 7.5em;
+  padding: 10px 12px;
+  border: 1px solid var(--host-accent);
+  border-radius: 0;
+  background: #06101aee;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  letter-spacing: inherit;
+  resize: vertical;
+  white-space: pre-wrap;
+}
+
+.hero-intro,
+.about-intro > p:last-child,
+.about-item-list p,
+.projects-heading > p,
+.project-description,
+.collection-description,
+.education-description,
+.learning-item p,
+.strength-grid p,
+.detail-long-copy {
+  white-space: pre-wrap;
+  text-align: justify;
+  text-align-last: left;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+
+.about-item-list article > div > p {
+  margin-top: 10px;
+  color: #dce2df;
+  font-size: clamp(16px, 1.25vw, 19px);
+  font-weight: 450;
+  line-height: 1.65;
+}
+
+.learning-list {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  padding-left: 56px;
+  border: 0;
+  overflow: hidden;
+}
+.learning-list::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  bottom: 24px;
+  left: 18px;
+  width: 1px;
+  background: linear-gradient(180deg, var(--host-accent), #ffffff20);
+}
+.learning-list > .reveal { position: relative; }
+.learning-list > .reveal::before {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 37px;
+  left: -43px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid #06101a;
+  border-radius: 50%;
+  background: var(--host-accent);
+  box-shadow: 0 0 0 1px var(--host-accent), 0 0 22px color-mix(in srgb, var(--host-accent) 35%, transparent);
+}
+.learning-list .learning-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 24px;
+  align-items: start;
+  min-height: 0;
+  padding: 30px 0 32px;
+  border: 0;
+  border-bottom: 1px solid #ffffff1c;
+}
+.learning-list .learning-item > div { display: block; min-width: 0; }
+.learning-date {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--host-accent);
+  font: 10px/1.5 'DM Mono', monospace;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.learning-item h3 { margin: 0 0 10px; font-size: clamp(29px, 3.4vw, 52px); line-height: .96; }
+.learning-item p { max-width: 820px; margin: 0; color: #c7cecb; font-size: clamp(14px, 1.15vw, 17px); line-height: 1.75; }
+.learning-toggle {
+  display: block;
+  min-height: 46px;
+  margin: 26px auto 0;
+  padding: 0 22px;
+  border: 1px solid #ffffff28;
+  background: #07101aad;
+  color: var(--host-accent);
+  font: 10px 'DM Mono', monospace;
+  letter-spacing: .08em;
+  cursor: pointer;
+  transition: border-color .2s ease, background .2s ease, transform .2s ease;
+}
+.learning-toggle:hover { border-color: var(--host-accent); background: #0a1724; transform: translateY(-2px); }
+
+@media (max-width: 800px) {
+  .navbar nav a { font-size: 12px; }
+  .hero-identity {
+    min-height: 980px;
+    background-image: linear-gradient(180deg, #030713 0%, #030713 47%, #030713e8 55%, transparent 70%), url('../assets/images/hero-lawrance-stargazing-composite.png');
+    background-size: 100% 100%, auto 82%;
+    background-position: center, 67% 430px;
+  }
+  .hero-intro,
+  .about-intro > p:last-child,
+  .about-item-list p,
+  .projects-heading > p,
+  .project-description,
+  .collection-description,
+  .education-description,
+  .learning-item p,
+  .strength-grid p,
+  .detail-long-copy { text-align: left; }
+  .about-item-list article > div > p { font-size: 16px; line-height: 1.65; }
+  .learning-list { padding-left: 40px; }
+  .learning-list::before { left: 12px; }
+  .learning-list > .reveal::before { left: -33px; }
+  .learning-item { grid-template-columns: 1fr; gap: 16px; padding: 25px 0 27px; }
+  .learning-item h3 { font-size: clamp(28px, 10vw, 40px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar { transition: none; }
+}
