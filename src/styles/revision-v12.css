@@ -551,7 +551,7 @@ body.host-mode-active #root > main { margin-right: 0 !important; }
   transform: translateY(-50%);
   box-shadow: 0 24px 80px #000c;
 }
-.exit-preview {
+#root > .exit-preview {
   position: fixed;
   z-index: var(--layer-host-toolbar);
   top: 92px;
