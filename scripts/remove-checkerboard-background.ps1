@@ -1,6 +1,7 @@
 param(
   [Parameter(Mandatory = $true)][string]$InputPath,
-  [Parameter(Mandatory = $true)][string]$OutputPath
+  [Parameter(Mandatory = $true)][string]$OutputPath,
+  [string]$ReferenceMask = "src/assets/images/hero-portrait-lawrance-transparent.png"
 )
 
 Add-Type -AssemblyName System.Drawing
@@ -17,7 +18,7 @@ public static class CheckerboardRemoval {
     return max - min <= 12 && (r + g + b) / 3 >= 170;
   }
 
-  public static void Run(string inputPath, string outputPath) {
+  public static void Run(string inputPath, string outputPath, string referenceMaskPath) {
     using (var source = new Bitmap(inputPath))
     using (var image = new Bitmap(source.Width, source.Height, PixelFormat.Format32bppArgb)) {
       using (Graphics graphics = Graphics.FromImage(image)) graphics.DrawImageUnscaled(source, 0, 0);
@@ -55,6 +56,26 @@ public static class CheckerboardRemoval {
         if (y + 1 < image.Height) enqueue(x, y + 1);
       }
 
+      // Preserve all foreground pixels the proven original cutout already kept
+      // (face, shirt, tie and outer silhouette), while the new mask restores
+      // the two dark lapel areas that the original cutout erased.
+      using (var reference = new Bitmap(referenceMaskPath)) {
+        BitmapData referenceData = reference.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+        int referenceStride = Math.Abs(referenceData.Stride);
+        byte[] referencePixels = new byte[referenceStride * reference.Height];
+        Marshal.Copy(referenceData.Scan0, referencePixels, 0, referencePixels.Length);
+        for (int y = 0; y < image.Height; y++) {
+          for (int x = 0; x < image.Width; x++) {
+            int offset = y * stride + x * 4;
+            int referenceOffset = y * referenceStride + x * 4;
+            bool shirtAndTieRegion = y >= 690 && x >= 470 && x <= 810;
+            if (shirtAndTieRegion && referencePixels[referenceOffset + 3] > pixels[offset + 3])
+              pixels[offset + 3] = referencePixels[referenceOffset + 3];
+          }
+        }
+        reference.UnlockBits(referenceData);
+      }
+
       Marshal.Copy(pixels, 0, data.Scan0, pixels.Length);
       image.UnlockBits(data);
       image.Save(outputPath, ImageFormat.Png);
@@ -63,4 +84,8 @@ public static class CheckerboardRemoval {
 }
 '@
 
-[CheckerboardRemoval]::Run((Resolve-Path $InputPath), (Join-Path (Get-Location) $OutputPath))
+[CheckerboardRemoval]::Run(
+  (Resolve-Path $InputPath),
+  (Join-Path (Get-Location) $OutputPath),
+  (Resolve-Path $ReferenceMask)
+)
