@@ -36,7 +36,8 @@ export function PortfolioProvider({ children }) {
   const [defaults] = useState(() => createDefaultContent());
   const [content, setContent] = useState(defaults);
   const [savedContent, setSavedContent] = useState(defaults);
-  const [hostMode, setHostMode] = useState(false);
+  const [hostSession, setHostSession] = useState(false);
+  const [previewMode, setPreviewMode] = useState(false);
   const [hostAccessRequest, setHostAccessRequest] = useState(0);
   const [editorRequest, setEditorRequest] = useState(null);
   const [status, setStatus] = useState('');
@@ -50,7 +51,12 @@ export function PortfolioProvider({ children }) {
   const save = async () => { setStatus('Saving…'); try { await saveContent(content); setSavedContent(clone(content)); setHistory([]); setFuture([]); setStatus('Saved successfully'); } catch (error) { setStatus(error.message || 'Could not save changes.'); } };
   const cancel = () => { setContent(clone(savedContent)); setHistory([]); setFuture([]); setStatus('Unsaved changes discarded'); };
   const reset = () => { const next = createDefaultContent(); setContent(next); setHistory([]); setFuture([]); setStatus('Default content loaded — save to publish it.'); };
-  const value = useMemo(() => ({ content, update, hostMode, setHostMode, hostAccessRequest, requestHostAccess: () => setHostAccessRequest(value => value + 1), editorRequest, requestEditor: setEditorRequest, save, cancel, reset, undo, redo, canUndo: history.length > 0, canRedo: future.length > 0, changeCount: history.length, status, isDirty: JSON.stringify(content) !== JSON.stringify(savedContent) }), [content, hostMode, hostAccessRequest, editorRequest, status, savedContent, history, future]);
+  const hostMode = hostSession && !previewMode;
+  const setHostMode = value => {
+    setHostSession(value);
+    if (!value) setPreviewMode(false);
+  };
+  const value = useMemo(() => ({ content, update, hostMode, hostSession, setHostMode, previewMode, setPreviewMode, hostAccessRequest, requestHostAccess: () => setHostAccessRequest(value => value + 1), editorRequest, requestEditor: setEditorRequest, save, cancel, reset, undo, redo, canUndo: history.length > 0, canRedo: future.length > 0, changeCount: history.length, status, isDirty: JSON.stringify(content) !== JSON.stringify(savedContent) }), [content, hostMode, hostSession, previewMode, hostAccessRequest, editorRequest, status, savedContent, history, future]);
   return <PortfolioContext.Provider value={value}>{children}</PortfolioContext.Provider>;
 }
 export const usePortfolio = () => useContext(PortfolioContext);

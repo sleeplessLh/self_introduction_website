@@ -482,3 +482,102 @@ main > section {
   .hero-actions { gap: 24px; }
   .hero-actions .button { min-width: 170px; min-height: 54px; }
 }
+
+/* Revision 15: Host editing is an overlay and never changes the published layout. */
+body.host-mode-active #root > main { margin-right: 0 !important; }
+.host-workspace-controls { position: fixed; inset: 0; z-index: var(--layer-host-toolbar); pointer-events: none; }
+.host-action-toolbar {
+  position: fixed;
+  top: 92px;
+  right: 20px;
+  display: flex;
+  gap: 4px;
+  padding: 5px;
+  border: 1px solid #ffffff20;
+  background: #07101aee;
+  box-shadow: 0 12px 32px #0006;
+  backdrop-filter: blur(14px);
+  pointer-events: auto;
+}
+.host-action-toolbar button {
+  width: auto;
+  min-width: 48px;
+  height: 34px;
+  padding: 0 9px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #e9eeeb;
+  font: 9px 'DM Mono', monospace;
+}
+.host-action-toolbar button:not(:disabled):hover,
+.host-action-toolbar button:not(:disabled):focus-visible { border-color: #c9ee6b66; color: var(--host-accent, var(--acid)); }
+.host-action-toolbar button:disabled { opacity: .32; }
+
+.editable-inline { outline-color: transparent; }
+.editable-inline:hover { outline-color: #c9ee6b88; }
+.editable-inline.editing { outline-color: var(--host-accent, var(--acid)); }
+.hero-portrait.is-editable { cursor: pointer; }
+.hero-portrait.is-editable:hover { filter: brightness(1.04); }
+.portrait-editor-popover {
+  position: absolute;
+  z-index: var(--layer-editor);
+  top: 50%;
+  right: calc(100% + 14px);
+  width: 210px;
+  display: grid;
+  gap: 9px;
+  padding: 16px;
+  border: 1px solid #ffffff24;
+  background: #07101af5;
+  color: #edf1ee;
+  box-shadow: 0 20px 55px #000a;
+  backdrop-filter: blur(16px);
+  transform: translateY(-50%);
+}
+.portrait-editor-popover strong { font: 10px 'DM Mono'; letter-spacing: .08em; color: var(--host-accent, var(--acid)); }
+.portrait-editor-popover button,
+.portrait-editor-popover label { min-height: 38px; border: 1px solid #ffffff2a; background: #ffffff08; color: inherit; padding: 9px; font: 9px 'DM Mono'; }
+.portrait-editor-popover label { display: grid; gap: 6px; }
+.portrait-editor-popover input { width: 100%; min-width: 0; border: 0; border-bottom: 1px solid #ffffff35; background: transparent; color: inherit; }
+.portrait-editor-popover .popover-close { position: absolute; top: 6px; right: 6px; min-width: 30px; min-height: 30px; padding: 0; }
+
+.cms-drawer.is-contextual {
+  position: fixed;
+  z-index: var(--layer-editor);
+  top: 50%;
+  right: 24px;
+  width: min(430px, calc(100vw - 48px));
+  height: min(74svh, 720px);
+  transform: translateY(-50%);
+  box-shadow: 0 24px 80px #000c;
+}
+.exit-preview {
+  position: fixed;
+  z-index: var(--layer-host-toolbar);
+  top: 92px;
+  right: 20px;
+  min-height: 42px;
+  padding: 0 16px;
+  border: 1px solid #c9ee6b66;
+  background: #07101aee;
+  color: var(--host-accent, var(--acid));
+  box-shadow: 0 12px 32px #0007;
+  font: 10px 'DM Mono';
+  cursor: pointer;
+}
+
+.hero-actions .button,
+.contact-button {
+  min-height: 60px;
+  padding: 17px 22px 17px 26px;
+  font-size: clamp(14px, 1vw, 16px);
+}
+
+@media (max-width: 800px) {
+  .host-action-toolbar { top: auto; right: 8px; bottom: 8px; max-width: calc(100vw - 16px); overflow-x: auto; }
+  .host-action-toolbar button { min-width: 50px; }
+  .portrait-editor-popover { position: fixed; top: auto; right: 12px; bottom: 70px; left: 12px; width: auto; transform: none; }
+  .cms-drawer.is-contextual { top: auto; right: 8px; bottom: 66px; width: calc(100vw - 16px); height: min(70svh, 620px); transform: none; }
+  .exit-preview { top: auto; right: 10px; bottom: 10px; }
+  .hero-actions .button,.contact-button { min-height: 58px; padding: 16px 20px 16px 23px; font-size: 14px; }
+}
