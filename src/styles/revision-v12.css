@@ -358,7 +358,7 @@ main > section {
   justify-self: end;
   width: clamp(300px, 29vw, 430px);
   height: auto;
-  margin-top: clamp(44px, calc(3.5vh + 26px), 60px);
+  margin-top: clamp(130px, calc(3.5vh + 113px), 147px);
   margin-right: clamp(25px, 3.5vw, 64px);
 }
 .hero-portrait {
