@@ -1,4 +1,4 @@
-import portrait from '../assets/images/hero-portrait-lawrance-transparent-v4.png';
+import portrait from '../assets/images/hero-portrait-lawrance-transparent-v5.png';
 import projectOne from '../assets/images/project-one.svg';
 import projectTwo from '../assets/images/project-two.svg';
 import projectThree from '../assets/images/project-three.svg';

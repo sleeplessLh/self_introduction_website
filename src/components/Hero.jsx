@@ -3,7 +3,7 @@ import { usePortfolio } from '../context/PortfolioContext.jsx';
 import { gmailComposeUrl, mailtoUrl, openEmail } from '../utils/contactLinks.js';
 import EditableText from '../editor/EditableText.jsx';
 import { optimiseImage } from '../editor/EditorField.jsx';
-import defaultPortrait from '../assets/images/hero-portrait-lawrance-transparent-v4.png';
+import defaultPortrait from '../assets/images/hero-portrait-lawrance-transparent-v5.png';
 
 export default function Hero() {
   const { content, update, hostMode } = usePortfolio();
