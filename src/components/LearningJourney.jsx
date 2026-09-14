@@ -3,10 +3,12 @@ import Reveal from './Reveal.jsx';
 import EditableText from '../editor/EditableText.jsx';
 import { usePortfolio } from '../context/PortfolioContext.jsx';
 import { blankLearning } from '../data/portfolio.js';
+import SectionVisibilityToggle, { useSectionVisibility } from '../editor/SectionVisibilityToggle.jsx';
 
 export default function LearningJourney() {
   const { content, update, hostMode, requestEditor } = usePortfolio();
   const [expanded, setExpanded] = useState(false);
+  const visibility = useSectionVisibility('learning');
   const copy = content.sections.learning;
   const publishedEntries = content.learningJourney.filter(item => !item.hidden);
   const entries = hostMode ? content.learningJourney : (expanded ? publishedEntries : publishedEntries.slice(0, 3));
@@ -14,7 +16,8 @@ export default function LearningJourney() {
   const setItem = (id, key, value) => update(current => ({ ...current, learningJourney: current.learningJourney.map(item => item.id === id ? { ...item, [key]: value } : item) }));
   const addItem = () => { const item = blankLearning(); update(current => ({ ...current, learningJourney: [...current.learningJourney, item] })); requestEditor({ kind: 'learning', id: item.id }); };
 
-  return <section className="learning-section" id="learning"><div className="section">
+  if (!visibility.shouldRender) return null;
+  return <section className={`learning-section ${visibility.hidden ? 'is-module-hidden-host' : ''}`} id="learning"><SectionVisibilityToggle sectionKey="learning" /><div className="section">
     <div className="section-label"><EditableText value={copy.label} onChange={value => setCopy('label', value)} /></div>
     <Reveal className="projects-heading"><h2><EditableText value={copy.title} onChange={value => setCopy('title', value)} /><br /><em><EditableText value={copy.emphasis} onChange={value => setCopy('emphasis', value)} /></em></h2><p><EditableText value={copy.description} multiline onChange={value => setCopy('description', value)} /></p></Reveal>
     {hostMode && <div className="collection-host-bar"><span>{content.learningJourney.length} learning items</span><button className="editor-add collection-add" onClick={addItem}>+ Add Learning Item</button></div>}

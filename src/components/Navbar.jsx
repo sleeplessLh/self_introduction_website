@@ -44,7 +44,7 @@ export default function Navbar() {
 
   return <header className={`navbar ${hidden ? 'is-hidden' : ''} ${open ? 'menu-open' : ''}`}>
     <a className="brand" href="#home" aria-label="Home"><EditableText value={content.profile.initials} onChange={setInitials} /><i>.</i></a>
-    <nav className={open ? 'open' : ''} aria-label="Main navigation">{content.navigation.map((link, index) => <a key={link.id} href={`#${link.id}`} onClick={() => setOpen(false)}><EditableText value={link.label} onChange={value => setNav(index, value)} /></a>)}</nav>
+    <nav className={open ? 'open' : ''} aria-label="Main navigation">{content.navigation.map((link, index) => ({ link, index })).filter(({ link }) => hostMode || !content.sectionVisibility?.[link.id]).map(({ link, index }) => <a key={link.id} href={`#${link.id}`} onClick={() => setOpen(false)}><EditableText value={link.label} onChange={value => setNav(index, value)} /></a>)}</nav>
     <a className="nav-contact" href={gmailComposeUrl(content.profile.email)} target="_blank" rel="noreferrer"><EditableText value={content.hero.primaryLabel} onChange={value => setHero('primaryLabel', value)} /> <span>↗</span></a>
     <details className="nav-more" ref={moreMenu}><summary className="more-button" role="button" aria-label="More options">⋯</summary><div className="more-menu" role="menu"><button role="menuitem" onClick={hostSession ? exitHost : openHost}>{hostSession ? '↪ Exit Host Mode' : '▣ Host Access'}</button></div></details>
     <button className="menu-button" onClick={() => setOpen(!open)} aria-label="Toggle menu" aria-expanded={open}><span /><span /></button>
