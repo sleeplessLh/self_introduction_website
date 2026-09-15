@@ -590,6 +590,10 @@ body.host-mode-active #root > main { margin-right: 0 !important; }
   transform: translateY(-50%);
   box-shadow: 0 24px 80px #000c;
 }
+.cms-drawer.is-contextual .cms-drag-handle { cursor: grab; user-select: none; touch-action: none; }
+.cms-drawer.is-contextual .cms-drag-handle button { cursor: pointer; }
+body.dragging-cms-drawer,
+body.dragging-cms-drawer * { cursor: grabbing !important; user-select: none !important; }
 #root > .exit-preview {
   position: fixed;
   z-index: var(--layer-host-toolbar);
@@ -617,6 +621,7 @@ body.host-mode-active #root > main { margin-right: 0 !important; }
   .host-action-toolbar button { min-width: 50px; }
   .portrait-editor-popover { position: fixed; top: auto; right: 12px; bottom: 70px; left: 12px; width: auto; transform: none; }
   #root > .cms-drawer.is-contextual { top: auto; right: 8px; left: auto; bottom: 66px; width: calc(100vw - 16px); height: min(70svh, 620px); transform: none; }
+  .cms-drawer.is-contextual .cms-drag-handle { cursor: default; touch-action: auto; }
   .exit-preview { top: auto; right: 10px; bottom: 10px; }
   .hero-actions .button,.contact-button { min-height: 58px; padding: 16px 20px 16px 23px; font-size: 14px; }
 }
