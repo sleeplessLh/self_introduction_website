@@ -579,11 +579,12 @@ body.host-mode-active #root > main { margin-right: 0 !important; }
 .portrait-editor-popover input { width: 100%; min-width: 0; border: 0; border-bottom: 1px solid #ffffff35; background: transparent; color: inherit; }
 .portrait-editor-popover .popover-close { position: absolute; top: 6px; right: 6px; min-width: 30px; min-height: 30px; padding: 0; }
 
-.cms-drawer.is-contextual {
+#root > .cms-drawer.is-contextual {
   position: fixed;
   z-index: var(--layer-editor);
   top: 50%;
-  right: 24px;
+  right: 18px;
+  left: auto;
   width: min(430px, calc(100vw - 48px));
   height: min(74svh, 720px);
   transform: translateY(-50%);
@@ -615,7 +616,7 @@ body.host-mode-active #root > main { margin-right: 0 !important; }
   .host-action-toolbar { top: auto; right: 8px; bottom: 8px; max-width: calc(100vw - 16px); overflow-x: auto; }
   .host-action-toolbar button { min-width: 50px; }
   .portrait-editor-popover { position: fixed; top: auto; right: 12px; bottom: 70px; left: 12px; width: auto; transform: none; }
-  .cms-drawer.is-contextual { top: auto; right: 8px; bottom: 66px; width: calc(100vw - 16px); height: min(70svh, 620px); transform: none; }
+  #root > .cms-drawer.is-contextual { top: auto; right: 8px; left: auto; bottom: 66px; width: calc(100vw - 16px); height: min(70svh, 620px); transform: none; }
   .exit-preview { top: auto; right: 10px; bottom: 10px; }
   .hero-actions .button,.contact-button { min-height: 58px; padding: 16px 20px 16px 23px; font-size: 14px; }
 }
