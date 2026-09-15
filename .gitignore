@@ -4,3 +4,7 @@ dist/
 .env.local
 *.log
 .DS_Store
+verification-*.png
+portrait-*-diagnostic.png
+artifacts/*-check.jpg
+artifacts/*-mask.png

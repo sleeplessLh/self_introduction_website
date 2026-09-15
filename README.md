@@ -1,45 +1,108 @@
-# Personal Portfolio
+# Lawrance Hii — Personal Portfolio
 
-A responsive React + Vite personal portfolio starter for a Software Engineer or Software Engineering student. All visible content is intentionally English and uses clearly marked placeholders until a resume is supplied.
+A responsive portfolio website for presenting my software engineering journey, projects, competitions, education, skills, and independent learning.
+
+[View the live website](https://self-introduction-website-pi.vercel.app/)
+
+![Portfolio desktop preview](artifacts/hero-desktop-auth-fixed.png)
+
+## Highlights
+
+- Responsive single-page experience for desktop and mobile
+- Project and competition galleries with detail views
+- Education and self-learning timelines
+- Content Studio for updating portfolio content without changing source files
+- Draft history with undo, redo, preview, save, and discard controls
+- Section-level visibility controls for preparing different portfolio views
+- Secure Host Mode backed by server-validated sessions
+- Email-based password recovery through Supabase Auth
+- Reduced-motion support and keyboard-accessible controls
+
+## Technology
+
+| Area | Implementation |
+| --- | --- |
+| Frontend | React, Vite, modern CSS |
+| Content | React context with Supabase persistence |
+| Authentication | Supabase Auth with HTTP-only session cookies |
+| Server endpoints | Vercel Functions |
+| Hosting | Vercel |
+
+## Architecture
+
+Visitors read the published portfolio directly from Supabase. Editing is available only after a server-verified Host session. Protected changes are sent to `/api/content`, where the session and request origin are checked before the content record is updated.
+
+The editing interface is an overlay, so entering Host Mode does not change the public page layout. Preview Mode temporarily hides editing controls while preserving the current draft and history.
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for a more detailed walkthrough.
 
 ## Run locally
 
+Requirements: Node.js 20+ and pnpm.
+
 ```bash
-npm install
-npm run dev
+pnpm install
+cp .env.example .env.local
+pnpm dev
 ```
+
+Then open the local URL printed by Vite.
 
 Create a production build with:
 
 ```bash
-npm run build
+pnpm build
 ```
 
-## Structure
+## Environment variables
+
+Copy `.env.example` to `.env.local` and provide the Supabase project values:
+
+```env
+VITE_SUPABASE_URL=
+VITE_SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_URL=
+SUPABASE_PUBLISHABLE_KEY=
+```
+
+The browser uses only the publishable Supabase configuration. Host credentials and session tokens are never stored in source code. Server functions keep authenticated sessions in secure, HTTP-only cookies.
+
+## Project structure
 
 ```text
+api/                 Vercel functions for Host authentication and saving
+artifacts/           Selected README screenshots
+docs/                Architecture and implementation notes
 src/
-  assets/
-    images/       Local SVG placeholder images to replace
-    videos/       Add hero.mp4 here
-  components/     Reusable page sections and cards
-  data/
-    portfolio.js  All editable personal and project content
-  styles/
-    global.css    Design tokens, global styles, and responsive rules
-  App.jsx         Page composition only
-  main.jsx        Application entry point
+  assets/            Portfolio images and local media
+  components/        Public sections and application UI
+  context/           Portfolio state, drafts, and history
+  data/              Default content and data shape
+  editor/            Host Mode editing controls
+  services/          Content persistence
+  styles/            Global, responsive, and component styles
+  utils/             Shared link helpers
 ```
 
-## Update content
+## Main workflows
 
-Open `src/data/portfolio.js`. It contains `profile`, `projects`, `experience`, `highlights`, `strengths`, and `socialLinks`. Update these data structures rather than changing the components.
+### Visitor
 
-- **Add a project:** add a new object to `projects`.
-- **Remove or reorder a project:** delete or move an object inside `projects`.
-- **Replace images:** put your optimized files in `src/assets/images/`, import them at the top of `portfolio.js`, and assign them to `profile.portrait` or a project `image`.
-- **Replace the hero video:** place a muted, web-optimized `hero.mp4` in `src/assets/videos/`; import it in `portfolio.js`, then set `profile.videoSrc` to that import. The visible fallback labels the exact file location until then.
-- **Edit links:** update `profile.email`, `profile.resumeUrl`, and `socialLinks`.
-- **Change the look:** edit the variables at the top of `src/styles/global.css`, especially `--ink`, `--paper`, `--acid`, and the font import.
+Browse the portfolio, expand project or learning collections, open gallery details, and use the contact links.
 
-The site has no unnecessary UI dependencies. Its reveal effects are implemented with a small native `IntersectionObserver` component and respect reduced-motion preferences.
+### Host
+
+Sign in through **Host Access**, open **Content Studio**, edit content, preview the draft, and save it. The studio can be moved around the desktop viewport and becomes a bottom sheet on smaller screens.
+
+## Security notes
+
+- Content writes require an authenticated server session.
+- Session cookies are `HttpOnly`, `Secure`, and `SameSite=Strict`.
+- Write requests are restricted to the same origin.
+- Login and password-recovery endpoints include basic rate limiting.
+- Password recovery responses do not reveal whether an account exists.
+- Passwords and recovery tokens are not stored in frontend code or browser storage.
+
+## Current status
+
+The portfolio foundation and Host editing workflow are complete. Project and competition entries are designed to be replaced with final case studies as they are ready for publication.
