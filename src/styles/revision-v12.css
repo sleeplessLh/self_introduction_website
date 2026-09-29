@@ -49,7 +49,12 @@
   top: 142px;
   height: calc(100svh - 142px);
 }
-.host-gallery-editor-overlay { z-index: var(--layer-modal); padding-top: 156px; }
+#root > .host-gallery-editor-overlay {
+  position: fixed;
+  z-index: var(--layer-modal);
+  inset: 0;
+  padding-top: 156px;
+}
 .gallery-lightbox { z-index: var(--layer-modal); }
 .gallery-lightbox-close { z-index: calc(var(--layer-modal) + 1); }
 .host-confirm { z-index: var(--layer-confirm); }
@@ -112,7 +117,7 @@
   .host-mode-indicator { top: 74px; }
   .host-toast,.host-confirm { top: auto; right: 8px; bottom: 58px; left: 8px; }
   .cms-drawer { top: 68px; height: calc(100svh - 126px); padding-bottom: 8px; }
-  .host-gallery-editor-overlay { padding-top: 84px; padding-bottom: 72px; }
+  #root > .host-gallery-editor-overlay { padding-top: 84px; padding-bottom: 72px; }
   .hero-identity { grid-template-columns: 1fr; padding-top: 88px; }
   .hero-identity {
     min-height: 1080px;
