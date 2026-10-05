@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { TextField } from './EditorField.jsx';
+import { prependItem } from '../utils/collectionOrder.js';
 
 const move = (list, index, direction) => {
   const target = index + direction;
@@ -12,7 +13,7 @@ const move = (list, index, direction) => {
 export default function LearningEditor({ items, create, updateItems, activeId, onActiveChange }) {
   const [pendingRemove, setPendingRemove] = useState(null);
   const updateItem = (id, key, value) => updateItems(items.map(item => item.id === id ? { ...item, [key]: value } : item));
-  const add = () => { const item = create(); updateItems([...items, item]); onActiveChange(item.id); };
+  const add = () => { const item = create(); updateItems(prependItem(items, item)); onActiveChange(item.id); };
   const remove = (id, index) => { const next = items.filter(item => item.id !== id); updateItems(next); onActiveChange(next[Math.max(0, index - 1)]?.id || null); setPendingRemove(null); };
 
   return <div className="collection-editor learning-editor"><p className="editor-help">Each item is one timeline record with a Date, Title and Description. Hidden items stay saved but are not published.</p><button className="editor-add" onClick={add}>+ Add Learning Item</button>{items.map((item, index) => {

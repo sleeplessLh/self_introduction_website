@@ -532,6 +532,21 @@ main > section {
 .hero-portrait-stage::after,
 .hero-portrait::before,
 .hero-portrait::after { display: none !important; content: none !important; }
+
+/* Section hierarchy: headings stay on the primary grid, content steps inward. */
+.section-content-inset {
+  --section-content-inset: clamp(28px, 3.2vw, 64px);
+  width: calc(100% - var(--section-content-inset));
+  margin-left: var(--section-content-inset);
+}
+
+@media (max-width: 1100px) {
+  .section-content-inset { --section-content-inset: clamp(18px, 2.6vw, 32px); }
+}
+
+@media (max-width: 600px) {
+  .section-content-inset { --section-content-inset: 8px; }
+}
 .hero-portrait,
 .hero-portrait img {
   position: relative;

@@ -20,7 +20,7 @@ export default function Contact() {
     <div className="contact-inner">
       <p className="eyebrow"><EditableText value={copy.eyebrow} onChange={value => setCopy('eyebrow', value)} /></p>
       <h2><EditableText value={copy.title} onChange={value => setCopy('title', value)} /><br /><em><EditableText value={copy.emphasis} onChange={value => setCopy('emphasis', value)} /></em></h2>
-      <div className="contact-actions"><a className="button contact-button" href={gmailComposeUrl(profile.email)} onClick={event => openEmail(event, profile.email)}><EditableText value={copy.ctaLabel} onChange={value => setCopy('ctaLabel', value)} /> <b>↗</b></a></div>
+      <div className="contact-actions section-content-inset"><a className="button contact-button" href={gmailComposeUrl(profile.email)} onClick={event => openEmail(event, profile.email)}><EditableText value={copy.ctaLabel} onChange={value => setCopy('ctaLabel', value)} /> <b>↗</b></a></div>
     </div>
     <footer>
       <div><span><EditableText value={contact.footerPrefix || '©'} onChange={value => setContact('footerPrefix', value)} /> {new Date().getFullYear()} <EditableText value={profile.name} onChange={value => setProfile('name', value)} /></span><span><EditableText value={profile.location} onChange={value => setProfile('location', value)} /></span></div>

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ImageField, TagField, TextField } from './EditorField.jsx';
 import GalleryEditor from './GalleryEditor.jsx';
+import { prependItem } from '../utils/collectionOrder.js';
 
 const move = (list, index, direction) => {
   const target = index + direction;
@@ -14,7 +15,7 @@ export default function CollectionEditor({ title, items, create, updateItems, ki
   const [pendingRemove, setPendingRemove] = useState(null);
   const updateItem = (id, key, value) => updateItems(items.map(item => item.id === id ? { ...item, [key]: value } : item));
   const saveGallery = (id, galleryDraft) => updateItems(items.map(item => item.id === id ? { ...item, ...galleryDraft } : item));
-  const add = () => { const item = create(); updateItems([...items, item]); onActiveChange?.(item.id); };
+  const add = () => { const item = create(); updateItems(prependItem(items, item)); onActiveChange?.(item.id); };
   const remove = (id, index) => {
     const next = items.filter(item => item.id !== id);
     updateItems(next);

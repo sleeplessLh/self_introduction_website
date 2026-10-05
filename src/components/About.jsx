@@ -27,10 +27,10 @@ export default function About() {
   return <section className={`section about ${visibility.hidden ? 'is-module-hidden-host' : ''}`} id="about"><SectionVisibilityToggle sectionKey="about" />
     <div className="section-label"><EditableText value={about.label} onChange={value => setAbout('label', value)} /></div>
     <Reveal className="about-intro"><p className="kicker"><EditableText value={about.kicker} onChange={value => setAbout('kicker', value)} /></p><h2><EditableText value={about.title} onChange={value => setAbout('title', value)} /><br /><em><EditableText value={about.emphasis} onChange={value => setAbout('emphasis', value)} /></em></h2><p><EditableText value={profile.bio} multiline onChange={value => setProfile('bio', value)} /></p></Reveal>
-    {hostMode && <div className="collection-host-bar"><span>{about.items.length} About items</span><button className="editor-add collection-add" onClick={addItem}>+ Add About Item</button></div>}
+    <div className="section-content-inset">{hostMode && <div className="collection-host-bar"><span>{about.items.length} About items</span><button className="editor-add collection-add" onClick={addItem}>+ Add About Item</button></div>}
     <div className="about-item-list">{items.map((item, visibleIndex) => {
       const sourceIndex = about.items.findIndex(entry => entry.id === item.id);
       return <Reveal key={item.id}><article className={item.hidden ? 'is-hidden-host' : ''} data-about-id={item.id}><span>{String(visibleIndex + 1).padStart(2, '0')}</span><div><h3><EditableText value={item.title} onChange={value => setItem(item.id, 'title', value)} /></h3><p><EditableText value={item.description} multiline onChange={value => setItem(item.id, 'description', value)} /></p></div>{hostMode && <div className="about-inline-actions"><button onClick={() => requestEditor({ kind: 'about', id: item.id })}>Edit ↗</button><button onClick={() => setItems(move(about.items, sourceIndex, -1))} disabled={sourceIndex === 0}>↑</button><button onClick={() => setItems(move(about.items, sourceIndex, 1))} disabled={sourceIndex === about.items.length - 1}>↓</button><button onClick={() => setItem(item.id, 'hidden', !item.hidden)}>{item.hidden ? 'Show' : 'Hide'}</button></div>}</article></Reveal>;
-    })}</div>
+    })}</div></div>
   </section>;
 }
