@@ -674,3 +674,158 @@ body.dragging-cms-drawer * { cursor: grabbing !important; user-select: none !imp
   .exit-preview { top: auto; right: 10px; bottom: 10px; }
   .hero-actions .button,.contact-button { min-height: 58px; padding: 16px 20px 16px 23px; font-size: 14px; }
 }
+
+/* Revision 17: compose the Hero inside the viewport instead of against its edge. */
+.hero-identity {
+  display: block;
+  min-height: 100svh;
+  padding: 80px 0 0;
+}
+.hero-inner {
+  --hero-gutter: clamp(52px, 7vw, 112px);
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 30vw);
+  align-items: start;
+  gap: clamp(36px, 5vw, 84px);
+  width: min(1280px, calc(100% - (var(--hero-gutter) * 2)));
+  min-height: calc(100svh - 80px);
+  margin-inline: auto;
+}
+.hero-inner > .hero-copy {
+  position: relative;
+  z-index: 3;
+  width: min(100%, 980px);
+  padding-top: clamp(50px, 9vh, 104px);
+  transform: none;
+}
+.hero-inner .hero-copy h1 {
+  max-width: 100%;
+  margin-bottom: clamp(24px, 2.4vw, 34px);
+  font-size: clamp(62px, 7.2vw, 116px);
+  line-height: .82;
+}
+.hero-inner .hero-credentials {
+  max-width: 760px;
+  line-height: 1.35;
+}
+.hero-inner .hero-intro {
+  max-width: 58ch;
+  margin: clamp(24px, 3vh, 34px) 0 20px;
+  line-height: 1.72;
+}
+.hero-inner .hero-focus { margin-bottom: clamp(26px, 3.5vh, 36px); }
+.hero-inner .hero-actions {
+  align-items: center;
+  gap: clamp(24px, 2.5vw, 38px);
+}
+.hero-inner > .hero-portrait-stage {
+  position: relative;
+  z-index: 2;
+  align-self: start;
+  justify-self: end;
+  margin-right: 0;
+}
+
+/* One Education timeline system: rail -> logo -> content. */
+.education-timeline > .education-stage {
+  position: relative;
+  grid-template-columns: 24px minmax(0, 1fr);
+  padding: 0;
+}
+.education-timeline > .education-stage::before {
+  content: none !important;
+  display: none !important;
+}
+.education-stage > .timeline-rail {
+  grid-template-rows: 14px 1fr;
+  padding-top: 28px;
+  color: var(--host-accent, var(--acid));
+}
+.education-stage > .timeline-rail span {
+  display: block;
+  width: 10px;
+  height: 10px;
+  margin-top: 2px;
+  border: 1px solid #07101a;
+  border-radius: 50%;
+  background: var(--host-accent, var(--acid));
+  box-shadow: 0 0 0 2px #c9ee6b29;
+}
+.education-stage > .timeline-rail i {
+  width: 1px;
+  min-height: 0;
+  background: linear-gradient(#c9ee6b80, #c9ee6b2e);
+}
+.education-stage:last-child > .timeline-rail i {
+  background: linear-gradient(#c9ee6b80 0%, #c9ee6b2e 74%, transparent 100%);
+}
+.education-stage > .education-card {
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: clamp(22px, 2.6vw, 38px);
+  padding: 24px 0 38px 18px;
+}
+.education-card .education-logo-cell > img,
+.education-card .education-logo-empty {
+  width: 92px;
+  height: 92px;
+}
+
+@media (max-width: 1100px) {
+  .hero-inner {
+    --hero-gutter: clamp(32px, 5vw, 58px);
+    grid-template-columns: minmax(0, 1fr) minmax(240px, 29vw);
+    gap: clamp(28px, 4vw, 52px);
+  }
+  .hero-inner .hero-copy h1 { font-size: clamp(58px, 8.5vw, 98px); }
+}
+
+@media (max-width: 800px) {
+  .hero-identity {
+    min-height: auto;
+    padding-top: 76px;
+  }
+  .hero-inner {
+    --hero-gutter: clamp(18px, 5.5vw, 28px);
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+    min-height: auto;
+    padding-bottom: 72px;
+  }
+  .hero-inner > .hero-copy {
+    order: 1;
+    width: 100%;
+    padding-top: clamp(34px, 7vh, 64px);
+  }
+  .hero-inner .hero-copy h1 {
+    font-size: clamp(42px, 12vw, 56px);
+    line-height: .86;
+  }
+  .hero-inner .hero-credentials { font-size: clamp(14px, 4.4vw, 18px); }
+  .hero-inner .hero-intro { max-width: 52ch; }
+  .hero-inner .hero-actions { gap: 22px; }
+  .hero-inner > .hero-portrait-stage {
+    order: 2;
+    width: min(62vw, 240px);
+    margin: 0 3vw -24px auto;
+  }
+  .education-timeline > .education-stage { grid-template-columns: 18px minmax(0, 1fr); }
+  .education-stage > .timeline-rail { grid-template-rows: 12px 1fr; padding-top: 24px; }
+  .education-stage > .timeline-rail span { width: 9px; height: 9px; }
+  .education-stage > .education-card {
+    grid-template-columns: 64px minmax(0, 1fr);
+    gap: 14px;
+    padding: 20px 0 30px 12px;
+  }
+  .education-card .education-logo-cell > img,
+  .education-card .education-logo-empty { width: 58px; height: 58px; }
+}
+
+@media (max-width: 480px) {
+  .hero-inner .hero-actions { align-items: flex-start; gap: 18px; }
+  .hero-inner .hero-actions .button { min-width: 156px; }
+  .education-stage > .education-card { grid-template-columns: 52px minmax(0, 1fr); gap: 11px; }
+  .education-card .education-logo-cell > img,
+  .education-card .education-logo-empty { width: 48px; height: 48px; border-radius: 7px; }
+}

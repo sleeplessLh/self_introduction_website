@@ -29,7 +29,7 @@ export default function EducationSkills() {
       <header className="profile-section-header"><div><p className="kicker"><EditableText value={content.about.educationTitle} onChange={value => setAbout('educationTitle', value)} /></p><h2>Education</h2></div><small><EditableText value={content.about.educationDirection} onChange={value => setAbout('educationDirection', value)} /></small>{hostMode && <button className="editor-add section-inline-add" onClick={addEducation}>+ Add Education</button>}</header>
       <div className="education-timeline section-content-inset" aria-label="Education timeline, newest to earliest">
         {content.educationStages.map((stage, index) => <article className="education-stage" key={stage.id} data-education-id={stage.id}>
-          <div className="timeline-rail" aria-hidden="true"><span>{index === 0 ? '↑' : '●'}</span><i /></div>
+          <div className="timeline-rail" aria-hidden="true"><span /><i /></div>
           <div className="education-card">
             <div className="education-logo-cell">{stage.logo ? <img src={stage.logo} alt={`${stage.school} logo`} style={{ objectPosition: stage.logoPosition || '50% 50%' }} /> : <div className="education-logo-empty">LOGO</div>}{hostMode && <ImageField label="School Logo" value={stage.logo || ''} onChange={value => setStage(stage.id, 'logo', value)} />}</div>
             <div className="education-card-copy">
