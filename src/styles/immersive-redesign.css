@@ -199,10 +199,12 @@ body::before {
 .hero-actions .text-link b { color: var(--ember); }
 .hero-inner > .hero-portrait-stage {
   position: relative;
-  align-self: end;
+  align-self: center;
   width: clamp(230px, 23vw, 340px);
-  height: min(43vh, 430px);
-  margin: 0 2vw 7vh 0;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: .9;
+  margin: 0 2vw 0 0;
   border: 1px solid #ffffff20;
   border-radius: 180px 180px 26px 26px;
   background: linear-gradient(160deg, #8d7aff14, #0a0d1457 58%, #83f5dc12);
@@ -416,7 +418,7 @@ body.host-mode-active .collection-card:hover { transform: none; }
   .navbar nav { gap: 14px; }
   .hero-inner { grid-template-columns: minmax(0, 1fr) minmax(220px, .43fr); }
   .hero-inner .hero-copy h1 { font-size: clamp(58px, 7.8vw, 88px); }
-  .hero-inner > .hero-portrait-stage { width: min(28vw, 290px); height: min(51vh, 480px); }
+  .hero-inner > .hero-portrait-stage { width: min(28vw, 290px); }
   .compact-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .compact-list > .reveal:last-child:nth-child(odd) { grid-column: span 2; }
   .skill-groups { grid-template-columns: 1fr; }
@@ -439,7 +441,7 @@ body.host-mode-active .collection-card:hover { transform: none; }
   .hero-inner .hero-copy h1 { max-width: 620px; font-size: clamp(43px, 12vw, 68px); }
   .hero-credentials { font-size: clamp(14px, 4.5vw, 18px); }
   .hero-inner .hero-actions { align-items: flex-start; }
-  .hero-inner > .hero-portrait-stage { width: min(70vw, 280px); height: 410px; margin: 32px 0 0 auto; border-radius: 150px 150px 24px 24px; }
+  .hero-inner > .hero-portrait-stage { width: min(70vw, 280px); margin: 32px 0 0 auto; border-radius: 150px 150px 24px 24px; }
   .section,.projects-section,.learning-section .section,.education-skills-stack > section,.contact { width: calc(100% - 40px); padding: 104px 0; }
   .section::before,.projects-section::before,.education-skills-stack > section::before { top: 54px; }
   .projects-heading,.strengths-intro,.profile-section-header,.about-intro { grid-template-columns: 1fr; gap: 28px; }
@@ -471,7 +473,6 @@ body.host-mode-active .collection-card:hover { transform: none; }
   .hero-inner .hero-actions { flex-wrap: wrap; }
   .hero-actions .button { min-width: 160px; }
   .hero-actions .text-link { margin-left: 0; }
-  .hero-inner > .hero-portrait-stage { height: 360px; }
   .projects-heading h2,.strengths-intro h2,.about h2,.profile-section-header h2 { font-size: clamp(46px, 14vw, 62px); }
   .skill-group article { display: block; }
   .skill-group-index { margin-bottom: 26px; }
