@@ -57,7 +57,9 @@ body::before {
   pointer-events: none;
   opacity: .96;
   overflow: hidden;
+  transition: opacity .6s ease;
 }
+.spatial-experience.is-content-focus { opacity: .22; }
 #root > .spatial-experience { position: fixed; }
 .spatial-experience canvas { width: 100% !important; height: 100% !important; }
 .spatial-fallback { position: absolute; inset: 0; opacity: 0; transition: opacity .4s; }
@@ -313,15 +315,32 @@ body::before {
 .education-subtitle { color: #d7d5d2 !important; font-size: clamp(14px, 1.3vw, 19px) !important; }
 .education-description { color: #aaaab3 !important; font-size: 13px !important; }
 .education-grade { border-color: #86f5df55 !important; background: #86f5df0a; }
-.skill-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; padding: 1px; background: #ffffff18; }
-.skill-group { border: 0; background: #0b0e15e8; }
-.skill-group article { min-height: 330px; grid-template-columns: 54px minmax(150px, .75fr) 1.25fr; padding: 28px; }
+.skills-section .skill-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; padding: 1px; background: #ffffff20; }
+.skills-section .skill-group { min-width: 0; border: 0; background: #0b0e15f7; }
+.skills-section .skill-group article {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr);
+  grid-template-areas: "index title" ". description" ". items" ". actions";
+  column-gap: clamp(18px, 2vw, 30px);
+  row-gap: 16px;
+  align-content: start;
+  min-height: 270px;
+  padding: clamp(24px, 3vw, 42px);
+  background: transparent;
+}
+.skills-section .skill-group-index { grid-area: index; margin: 8px 0 0; }
+.skills-section .skill-group h3 { grid-area: title; min-width: 0; margin: 0; overflow-wrap: anywhere; line-height: 1.06; }
+.skills-section .skill-group-description { grid-area: description; min-height: 0; margin: 0; }
+.skills-section .skill-items { grid-area: items; min-width: 0; margin: 0; }
+.skills-section .skill-group .inline-record-actions { grid-area: actions; }
 .skill-group-index,.skill-letter { color: var(--signal) !important; }
-.skill-group h3 { color: var(--chalk); font-size: clamp(28px, 3vw, 46px); }
+.skill-group h3 { color: var(--chalk); font-size: clamp(28px, 2.6vw, 42px); }
 .skill-items li { color: #e9e7e2; border-color: #ffffff12; }
 
 /* Dimensional project archive. */
 .projects-inner { width: 100%; max-width: none; padding: 0; }
+.projects-section .projects-heading { grid-template-columns: minmax(0, 1fr) minmax(260px, .42fr); gap: clamp(32px, 5vw, 80px); margin-bottom: clamp(40px, 5vw, 72px); }
+.projects-section .projects-heading > p { justify-self: end; max-width: 32ch; padding: 16px 0; }
 .compact-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(18px, 2.2vw, 32px); perspective: 1500px; }
 .compact-list > .reveal { min-width: 0; }
 .collection-card {
@@ -399,7 +418,12 @@ body::before {
 
 /* Immersive details and galleries remain conventional enough to operate. */
 .detail-modal { z-index: 1200; background: #080a10f5; backdrop-filter: blur(26px); }
-.detail-only-modal { grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr); gap: 1px; }
+.detail-only-modal { grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr); gap: clamp(20px, 3vw, 48px); height: 100dvh; overflow-y: auto; overscroll-behavior: contain; }
+.detail-only-modal .detail-stage { min-height: 0; height: min(76dvh, 720px); }
+.detail-only-modal .detail-stage img { object-fit: contain; }
+.detail-only-modal > .detail-close { position: fixed; z-index: 2; }
+.detail-gallery-action { min-height: 44px; margin-top: 28px; padding: 11px 18px; border: 1px solid #86f5df77; border-radius: 999px; background: #86f5df12; color: var(--signal); font: 600 11px 'DM Mono', monospace; cursor: pointer; }
+.detail-gallery-action:hover { background: #86f5df26; }
 .detail-stage,.detail-copy,.gallery-modal-header,.gallery-photo-grid { background: #0b0e15; }
 .detail-copy { padding: clamp(34px, 5vw, 74px); }
 .detail-copy h2,.gallery-modal-header h2 { color: var(--chalk); }
@@ -421,12 +445,13 @@ body.host-mode-active .collection-card:hover { transform: none; }
   .hero-inner > .hero-portrait-stage { width: min(28vw, 290px); }
   .compact-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .compact-list > .reveal:last-child:nth-child(odd) { grid-column: span 2; }
-  .skill-groups { grid-template-columns: 1fr; }
+  .skills-section .skill-groups { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 800px) {
   .global-background .global-scene { background-attachment: scroll; }
   .spatial-experience { opacity: .7; }
+  .spatial-experience.is-content-focus { opacity: .16; }
   .navbar { top: 8px; left: 8px; right: 8px; width: calc(100% - 16px) !important; height: 58px; border-radius: 16px; }
   .navbar nav { top: 66px; left: 0; width: 100%; border: 1px solid #ffffff1f; border-radius: 16px; background: #090b11f5; }
   .hero-identity::before { background: linear-gradient(180deg, #06070bb8 0%, #06070bcf 56%, #06070b 100%); }
@@ -445,6 +470,8 @@ body.host-mode-active .collection-card:hover { transform: none; }
   .section,.projects-section,.learning-section .section,.education-skills-stack > section,.contact { width: calc(100% - 40px); padding: 104px 0; }
   .section::before,.projects-section::before,.education-skills-stack > section::before { top: 54px; }
   .projects-heading,.strengths-intro,.profile-section-header,.about-intro { grid-template-columns: 1fr; gap: 28px; }
+  .projects-section .projects-heading { grid-template-columns: 1fr; }
+  .projects-section .projects-heading > p { justify-self: start; }
   .about-intro .kicker { margin-bottom: 0; }
   .about-intro h2 { position: static; }
   .about-item-list { grid-template-columns: 1fr; }
@@ -453,8 +480,7 @@ body.host-mode-active .collection-card:hover { transform: none; }
   .education-stage > .education-card { grid-template-columns: 58px minmax(0, 1fr); gap: 15px; padding-left: 12px; }
   .education-logo-cell > img,.education-logo-empty { width: 54px !important; height: 54px !important; border-radius: 14px !important; }
   .education-timeline .education-card h3 { font-size: clamp(25px, 7.5vw, 38px); }
-  .skill-group article { grid-template-columns: 34px 1fr; padding: 20px; }
-  .skill-items { grid-column: 2; }
+  .skills-section .skill-group article { grid-template-columns: 34px minmax(0, 1fr); padding: 24px; }
   .compact-list { grid-template-columns: 1fr; }
   .compact-list > .reveal:last-child:nth-child(odd) { grid-column: auto; }
   .collection-card { border-radius: 20px; }
@@ -466,7 +492,8 @@ body.host-mode-active .collection-card:hover { transform: none; }
   .strength-grid h3 { margin-top: 72px; }
   .contact { min-height: 90svh; }
   .contact footer { display: grid; gap: 20px; }
-  .detail-only-modal { display: block; overflow-y: auto; }
+  .detail-only-modal { display: grid; grid-template-columns: 1fr; grid-template-rows: auto auto; align-content: start; align-items: start; gap: 0; overflow-y: auto; padding: 72px 20px 30px; }
+  .detail-only-modal .detail-stage { height: min(44dvh, 440px); }
 }
 
 @media (max-width: 480px) {
@@ -474,9 +501,7 @@ body.host-mode-active .collection-card:hover { transform: none; }
   .hero-actions .button { min-width: 160px; }
   .hero-actions .text-link { margin-left: 0; }
   .projects-heading h2,.strengths-intro h2,.about h2,.profile-section-header h2 { font-size: clamp(46px, 14vw, 62px); }
-  .skill-group article { display: block; }
-  .skill-group-index { margin-bottom: 26px; }
-  .skill-items { margin-top: 30px; }
+  .skills-section .skill-group article { display: grid; }
   .contact h2 { font-size: clamp(58px, 17vw, 78px); }
 }
 

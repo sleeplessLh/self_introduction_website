@@ -11,6 +11,7 @@ export default function GalleryModal({ item, onClose }) {
   const [closing, setClosing] = useState(false);
   const stage = useRef(null);
   const drag = useRef(null);
+  const swipe = useRef(null);
   const active = index === null ? null : gallery[index];
   const resetView = useCallback(() => { setZoom(1); setOffset({ x: 0, y: 0 }); }, []);
   const select = useCallback(next => { if (!gallery.length) return; setIndex((next + gallery.length) % gallery.length); resetView(); }, [gallery.length, resetView]);
@@ -39,7 +40,7 @@ export default function GalleryModal({ item, onClose }) {
     {item.galleryUrl && <a className="gallery-external-link" href={item.galleryUrl} target="_blank" rel="noreferrer">Open external gallery ↗</a>}
     {active && <div className="gallery-lightbox" role="dialog" aria-modal="true" aria-label={`${item.title} image viewer`} onMouseDown={event => { if (event.target === event.currentTarget) closeViewer(); }}>
       <button className="gallery-lightbox-close" onClick={closeViewer} aria-label="Close image viewer">×</button>
-      <div className="detail-stage" ref={stage} onWheel={event => { event.preventDefault(); setScale(zoom + (event.deltaY < 0 ? .2 : -.2)); }} onPointerDown={event => { if (zoom <= 1 || event.target.closest('button')) return; drag.current = { x: event.clientX, y: event.clientY, offset }; event.currentTarget.setPointerCapture?.(event.pointerId); }} onPointerMove={event => { if (drag.current) setOffset({ x: drag.current.offset.x + event.clientX - drag.current.x, y: drag.current.offset.y + event.clientY - drag.current.y }); }} onPointerUp={() => { drag.current = null; }}>
+      <div className="detail-stage" ref={stage} onWheel={event => { event.preventDefault(); setScale(zoom + (event.deltaY < 0 ? .2 : -.2)); }} onPointerDown={event => { if (event.target.closest('button')) return; if (zoom <= 1) swipe.current = { x: event.clientX, y: event.clientY }; else drag.current = { x: event.clientX, y: event.clientY, offset }; event.currentTarget.setPointerCapture?.(event.pointerId); }} onPointerMove={event => { if (drag.current) setOffset({ x: drag.current.offset.x + event.clientX - drag.current.x, y: drag.current.offset.y + event.clientY - drag.current.y }); }} onPointerUp={event => { if (swipe.current && gallery.length > 1) { const dx = event.clientX - swipe.current.x; const dy = event.clientY - swipe.current.y; if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy)) select(index + (dx < 0 ? 1 : -1)); } swipe.current = null; drag.current = null; }} onPointerCancel={() => { swipe.current = null; drag.current = null; }}>
         <img src={active.src} alt={active.caption || `${item.title} gallery image ${index + 1}`} style={{ transform: `translate3d(${offset.x}px, ${offset.y}px, 0) scale(${zoom})` }} draggable="false" />
         {gallery.length > 1 && <><button className="gallery-previous" onClick={() => select(index - 1)} aria-label="Previous image">←</button><button className="gallery-next" onClick={() => select(index + 1)} aria-label="Next image">→</button></>}
         <div className="gallery-controls"><button onClick={() => setScale(zoom - .25)} aria-label="Zoom out">−</button><button onClick={() => setScale(zoom + .25)} aria-label="Zoom in">+</button><button onClick={resetView}>Reset</button><button onClick={toggleFullscreen}>Fullscreen</button></div>
