@@ -1,5 +1,5 @@
 /* V11: responsive Gallery grid with a separate image viewer. */
-.gallery-grid-modal { display: block; overflow-y: auto; padding: clamp(72px, 8vw, 110px) max(22px, calc((100vw - 1500px) / 2)) 60px; background: #05070b; }
+.detail-modal.gallery-grid-modal { display: block; overflow-y: auto; padding: clamp(72px, 8vw, 110px) max(22px, calc((100vw - 1500px) / 2)) 60px; background: #05070b; }
 .gallery-grid-modal > .detail-close { position: fixed; z-index: 2; top: 24px; right: 28px; }
 .gallery-grid-modal .gallery-modal-header { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 30px; padding: 0 54px 18px 0; border-bottom: 1px solid #ffffff20; }
 .gallery-grid-modal .gallery-modal-header > div { min-width: 0; }
