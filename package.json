@@ -8,7 +8,8 @@
     "build": "vite build",
     "preview": "vite preview",
     "verify:ordering": "node scripts/verify-ordering.mjs",
-    "verify:immersive": "node scripts/verify-immersive.mjs"
+    "verify:immersive": "node scripts/verify-immersive.mjs",
+    "verify:critical": "node scripts/verify-critical-fixes.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

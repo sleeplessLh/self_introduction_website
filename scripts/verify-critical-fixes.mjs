@@ -10,6 +10,19 @@ const widths = [1920, 1440, 1024, 768, 390];
 const failures = [];
 const results = {};
 const expect = (condition, message) => { if (!condition) failures.push(message); };
+// Stable, browser-local sample records keep UI regression tests independent of live CMS data.
+const tinyPngUrl = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScL/nwAAAABJRU5ErkJggg==';
+const fixtureContent = {
+  schemaVersion: 12,
+  navigation: [],
+  projects: [
+    { id: 'fixture-project-01', title: 'pAIcture', label: 'Product Engineering', date: '2026', coverImage: '/src/assets/images/project-one.svg', gallery: [{ id: 'fixture-image-01', src: tinyPngUrl, caption: 'First image' }, { id: 'fixture-image-02', src: tinyPngUrl, caption: 'Second image' }], description: 'A sample project for isolated browser testing.', technologies: [{ id: 'fixture-tag-01', label: 'React' }] },
+    { id: 'fixture-project-02', title: 'PROJECT / TWO', label: 'Systems & Data', date: '2026', coverImage: '/src/assets/images/project-two.svg', gallery: [], description: 'A separate project with an empty gallery.', technologies: [] },
+    { id: 'fixture-project-03', title: 'PROJECT / THREE', label: 'Experiment', date: '2026', coverImage: '/src/assets/images/project-three.svg', gallery: [], description: 'A third project for layout checks.', technologies: [] },
+  ],
+};
+const fixtureRow = content => ({ id: 'local-test-only', content });
+const routeContentFixture = context => context.route('**/rest/v1/portfolio_content*', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(fixtureRow(fixtureContent)) }));
 
 await mkdir(output, { recursive: true });
 const server = await createServer({ root, server: { host: '127.0.0.1', port: 5192, strictPort: true } });
@@ -20,12 +33,13 @@ try {
   browser = await chromium.launch({ channel: 'chrome', headless: true });
   for (const width of widths) {
     const context = await browser.newContext({ viewport: { width, height: width === 390 ? 844 : 1000 }, isMobile: width === 390, hasTouch: width === 390 });
+    await routeContentFixture(context);
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
     await page.locator('#projects .collection-card').first().waitFor({ timeout: 30000 });
-    await page.locator('#learning .learning-toggle').waitFor({ timeout: 30000 });
+    await page.locator('#learning').waitFor({ timeout: 30000 });
 
     await page.locator('#skills').scrollIntoViewIfNeeded();
     await page.waitForTimeout(650);
@@ -74,7 +88,7 @@ try {
     const firstOwner = await gallery.getAttribute('data-gallery-owner');
     const imageCount = await gallery.locator('.gallery-photo-grid figure').count();
     expect(imageCount >= 2, `${width}: Project 01 gallery images missing`);
-    await gallery.getByRole('button', { name: 'Open image 1', exact: true }).click();
+    await gallery.getByRole('button', { name: /^Open image 1(?:\:|$)/ }).click();
     const lightbox = page.locator('.gallery-lightbox');
     await lightbox.waitFor();
     await page.keyboard.press('ArrowRight');
@@ -97,7 +111,7 @@ try {
     await gallery.getByRole('button', { name: 'Close gallery' }).click();
     await gallery.waitFor({ state: 'detached' });
     const scrollAfter = await page.evaluate(() => scrollY);
-    expect(Math.abs(scrollAfter - scrollBefore) < 5, `${width}: Closing gallery lost scroll position`);
+    expect(Math.abs(scrollAfter - scrollBefore) < 5, `${width}: Closing gallery lost scroll position (${scrollBefore} → ${scrollAfter})`);
 
     await page.locator('#projects .collection-cover').nth(1).click();
     await page.locator('.detail-only-modal').getByRole('button', { name: /View project gallery/ }).click();
@@ -123,8 +137,8 @@ try {
     await route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'local-test-only' }) });
   });
   await hostContext.route('**/rest/v1/portfolio_content*', route => savedDraft
-    ? route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'local-test-only', content: savedDraft }) })
-    : route.continue());
+    ? route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(fixtureRow(savedDraft)) })
+    : route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(fixtureRow(fixtureContent)) }));
   const host = await hostContext.newPage();
   await host.goto(baseUrl, { waitUntil: 'domcontentloaded' });
   await host.locator('body.host-mode-active').waitFor({ timeout: 30000 });
@@ -137,7 +151,7 @@ try {
   await editor.waitFor();
   expect(await editor.getAttribute('aria-label') === `Edit ${originalTitle} Gallery`, 'Host gallery editor opened for the wrong project');
   const originalGalleryCount = await editor.locator('.gallery-editor figure').count();
-  const tinyPng = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScL/nwAAAABJRU5ErkJggg==', 'base64');
+  const tinyPng = Buffer.from(tinyPngUrl.split(',')[1], 'base64');
   await editor.locator('input[type="file"][multiple]').setInputFiles({ name: 'disposable-test.png', mimeType: 'image/png', buffer: tinyPng });
   await editor.locator('.gallery-editor figure').nth(originalGalleryCount).waitFor();
   await editor.locator('.gallery-editor figure').last().getByLabel(`Image ${originalGalleryCount + 1} Caption`).fill('Disposable test image');

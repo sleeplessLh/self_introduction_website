@@ -433,7 +433,9 @@ body::before {
 .gallery-controls button,.detail-close,.gallery-lightbox-close { border-color: #ffffff28; background: #0c0f17dd; color: var(--chalk); backdrop-filter: blur(12px); }
 
 /* Host UI always remains above WebGL and keeps its own layout. */
-.host-workspace-controls,.cms-drawer,.host-gallery-editor-overlay,.host-dialog,.exit-preview { z-index: 2000 !important; }
+.host-workspace-controls,.cms-drawer,.exit-preview { z-index: 2000 !important; }
+.host-gallery-editor-overlay { z-index: 2100 !important; }
+.host-dialog,.host-confirm { z-index: 2200 !important; }
 .section-visibility-toggle,.collection-host-bar,.about-inline-actions,.inline-record-actions,.host-card-actions,.skill-inline-actions { position: relative; z-index: 20; }
 body.host-mode-active .collection-card:hover { transform: none; }
 .editable-inline:hover { outline-color: var(--signal); }
