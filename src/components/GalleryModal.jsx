@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 const clamp = (number, minimum, maximum) => Math.min(maximum, Math.max(minimum, number));
 
@@ -31,7 +32,7 @@ export default function GalleryModal({ item, onClose }) {
   }, [close, closeViewer, index, select, zoom]);
   useEffect(() => { const previous = document.body.style.overflow; document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = previous; }; }, []);
 
-  return <div className={`detail-modal gallery-grid-modal ${closing ? 'is-closing' : ''}`} role="dialog" aria-modal="true" aria-label={`${item.title} gallery`} data-gallery-owner={item.id} onMouseDown={event => { if (event.target === event.currentTarget) close(); }}>
+  return createPortal(<div className={`detail-modal gallery-grid-modal ${closing ? 'is-closing' : ''}`} role="dialog" aria-modal="true" aria-label={`${item.title} gallery`} data-gallery-owner={item.id} onMouseDown={event => { if (event.target === event.currentTarget) close(); }}>
     <button className="detail-close" onClick={close} aria-label="Close gallery">×</button>
     <header className="gallery-modal-header"><div><p>EXCLUSIVE GALLERY</p><h2>{item.title}</h2></div><span>{gallery.length} image{gallery.length === 1 ? '' : 's'}</span></header>
     {gallery.length ? <div className="gallery-photo-grid">{gallery.map((image, imageIndex) => <figure key={image.id}><button onClick={() => { setIndex(imageIndex); resetView(); }} aria-label={`Open image ${imageIndex + 1}${image.caption ? `: ${image.caption}` : ''}`}><img src={image.src} alt={image.caption || `${item.title} gallery image ${imageIndex + 1}`} loading="lazy" /></button>{image.caption && <figcaption>{image.caption}</figcaption>}</figure>)}</div> : <div className="gallery-empty-state"><strong>No gallery images yet.</strong><span>This Gallery is separate from the Highlight Image.</span></div>}
@@ -45,5 +46,5 @@ export default function GalleryModal({ item, onClose }) {
       </div>
       <div className="gallery-viewer-footer"><p>{active.caption || `Image ${index + 1} of ${gallery.length}`}</p><div className="gallery-viewer-thumbnails">{gallery.map((image, imageIndex) => <button className={imageIndex === index ? 'is-selected' : ''} key={image.id} onClick={() => select(imageIndex)} aria-label={`Select image ${imageIndex + 1}`}><img src={image.src} alt="" /></button>)}</div></div>
     </div>}
-  </div>;
+  </div>, document.body);
 }
