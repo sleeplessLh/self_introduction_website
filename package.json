@@ -7,14 +7,20 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "verify:ordering": "node scripts/verify-ordering.mjs"
+    "verify:ordering": "node scripts/verify-ordering.mjs",
+    "verify:immersive": "node scripts/verify-immersive.mjs"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.1",
     "@supabase/supabase-js": "^2.57.4",
     "@vitejs/plugin-react": "latest",
-    "vite": "latest",
     "react": "latest",
-    "react-dom": "latest"
+    "react-dom": "latest",
+    "three": "^0.186.1",
+    "vite": "latest"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "playwright": "^1.64.0"
+  }
 }

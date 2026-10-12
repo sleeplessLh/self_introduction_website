@@ -12,5 +12,6 @@ import './styles/gallery-experience.css';
 import './styles/module-refinement.css';
 import './styles/revision-v11.css';
 import './styles/revision-v12.css';
+import './styles/immersive-redesign.css';
 
 createRoot(document.getElementById('root')).render(<React.StrictMode><PortfolioProvider><App /></PortfolioProvider></React.StrictMode>);
