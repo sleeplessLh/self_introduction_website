@@ -571,6 +571,7 @@ main > section {
 }
 
 /* Revision 15: Host editing is an overlay and never changes the published layout. */
+.compact-list > .collection-entry:not(.is-collapsed) { max-height: none; overflow: visible; }
 body.host-mode-active #root > main { margin-right: 0 !important; }
 .host-workspace-controls { position: fixed; inset: 0; z-index: var(--layer-host-toolbar); pointer-events: none; }
 .host-action-toolbar {

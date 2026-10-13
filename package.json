@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "verify:ordering": "node scripts/verify-ordering.mjs",
     "verify:immersive": "node scripts/verify-immersive.mjs",
-    "verify:critical": "node scripts/verify-critical-fixes.mjs"
+    "verify:critical": "node scripts/verify-critical-fixes.mjs",
+    "verify:auth-ui": "node scripts/verify-auth-ui.mjs",
+    "verify:api-auth": "node scripts/verify-api-auth.mjs"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.9",

@@ -1,0 +1,81 @@
+import { chromium } from 'playwright';
+import { createServer } from 'vite';
+import { resolve } from 'node:path';
+
+const fixtureContent = { schemaVersion: 12, navigation: [], projects: [{ id: 'auth-project', title: 'Auth fixture', date: '2026', description: 'Fixture only', gallery: [], technologies: [] }], competitions: [] };
+
+const root = resolve(import.meta.dirname, '..');
+const server = await createServer({ root, server: { host: '127.0.0.1', port: 5194, strictPort: true } });
+await server.listen();
+let browser;
+try {
+  browser = await chromium.launch({ channel: 'chrome', headless: true });
+  const context = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  let authenticated = false;
+  let loginAttempts = 0;
+  let recoveryRequests = 0;
+  let logoutRequests = 0;
+  let contentWrites = 0;
+  await context.route('**/rest/v1/portfolio_content*', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'auth-fixture', content: fixtureContent }) }));
+  await context.route('**/api/host/session', route => route.fulfill({ status: authenticated ? 200 : 401, contentType: 'application/json', body: JSON.stringify({ authenticated }) }));
+  await context.route('**/api/host/login', route => {
+    loginAttempts++;
+    const input = JSON.parse(route.request().postData());
+    authenticated = input.email === 'qa@example.test' && input.password === 'fixture-only-password';
+    return route.fulfill({ status: authenticated ? 200 : 401, contentType: 'application/json', body: authenticated ? '{"authenticated":true}' : '{"error":"Invalid email or password."}' });
+  });
+  await context.route('**/api/host/forgot-password', route => { recoveryRequests++; return route.fulfill({ status: 200, contentType: 'application/json', body: '{"message":"If that email exists, a password reset link has been sent."}' }); });
+  await context.route('**/api/host/logout', route => { logoutRequests++; authenticated = false; return route.fulfill({ status: 200, contentType: 'application/json', body: '{}' }); });
+  await context.route('**/api/content', route => { contentWrites++; return route.fulfill({ status: 401, contentType: 'application/json', body: '{"error":"Host authentication required."}' }); });
+  const page = await context.newPage();
+  const errors = [];
+  page.on('pageerror', error => errors.push(error.message));
+  await page.goto('http://127.0.0.1:5194', { waitUntil: 'domcontentloaded' });
+  await page.locator('#projects .collection-card').first().waitFor({ timeout: 30000 });
+  if (await page.locator('body.host-mode-active').count()) throw new Error('Guest entered Host Mode without login');
+  if (await page.locator('.host-action-toolbar').count()) throw new Error('Guest can see editing toolbar');
+  await page.locator('.nav-more summary').click();
+  await page.getByRole('menuitem', { name: /Host Access/ }).click();
+  const dialog = page.getByRole('dialog', { name: 'Host verification' });
+  await dialog.getByRole('button', { name: 'Forgot password?' }).click();
+  await dialog.getByPlaceholder('Email').fill('qa@example.test');
+  await dialog.getByRole('button', { name: /Send reset email/ }).click();
+  await dialog.getByText('If that email exists, a password reset link has been sent.').waitFor();
+  await dialog.getByRole('button', { name: 'Back to sign in' }).click();
+  await dialog.getByPlaceholder('Password').fill('wrong-password');
+  await dialog.getByRole('button', { name: /Unlock editor/ }).click();
+  await dialog.getByText('Invalid email or password.').waitFor();
+  if (await page.locator('body.host-mode-active').count()) throw new Error('Invalid login unlocked Host Mode');
+  await dialog.getByPlaceholder('Password').fill('fixture-only-password');
+  await dialog.getByRole('button', { name: /Unlock editor/ }).click();
+  await page.locator('body.host-mode-active').waitFor();
+  await page.reload();
+  await page.locator('body.host-mode-active').waitFor();
+  await page.locator('.nav-more summary').click();
+  await page.getByRole('menuitem', { name: /Exit Host Mode/ }).click();
+  await page.locator('body.host-mode-active').waitFor({ state: 'detached' });
+  await page.reload();
+  await page.locator('#projects .collection-card').first().waitFor();
+  if (await page.locator('body.host-mode-active').count()) throw new Error('Logged-out visitor regained Host Mode after refresh');
+  if (contentWrites || errors.length) throw new Error(`Unexpected content writes or browser errors: ${contentWrites}, ${errors.join(' | ')}`);
+  console.log(JSON.stringify({ loginAttempts, recoveryRequests, logoutRequests, authenticationPersistedThroughRefresh: true, guestProtected: true, contentWrites, errors }, null, 2));
+  await context.close();
+  const fallbackContext = await browser.newContext({ viewport: { width: 390, height: 844 }, reducedMotion: 'reduce' });
+  await fallbackContext.addInitScript(() => {
+    const getContext = HTMLCanvasElement.prototype.getContext;
+    HTMLCanvasElement.prototype.getContext = function (type, ...args) { return type === 'webgl2' ? null : getContext.call(this, type, ...args); };
+  });
+  await fallbackContext.route('**/rest/v1/portfolio_content*', route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify({ id: 'auth-fixture', content: fixtureContent }) }));
+  await fallbackContext.route('**/api/host/session', route => route.fulfill({ status: 401, contentType: 'application/json', body: '{"authenticated":false}' }));
+  const fallback = await fallbackContext.newPage();
+  await fallback.goto('http://127.0.0.1:5194', { waitUntil: 'domcontentloaded' });
+  await fallback.locator('.spatial-experience.is-fallback').waitFor({ timeout: 30000 });
+  await fallback.locator('#projects .collection-cover').first().click();
+  await fallback.locator('.detail-only-modal').waitFor();
+  await fallback.locator('.detail-only-modal').getByRole('button', { name: 'Close details' }).click();
+  console.log('Reduced-motion, no-WebGL visitor fallback passed.');
+  await fallbackContext.close();
+} finally {
+  await browser?.close();
+  await server.close();
+}

@@ -41,6 +41,13 @@ try {
       const visibleCount = (records[index].gallery || []).filter(image => !image.hidden).length;
       const actualCount = await gallery.locator('.gallery-photo-grid figure').count();
       if (actualCount !== visibleCount) throw new Error(`${section} ${index + 1}: expected ${visibleCount} visible images, found ${actualCount}`);
+      if (visibleCount) {
+        const imageHealth = await gallery.locator('.gallery-photo-grid img').evaluateAll(async images => Promise.all(images.map(async image => {
+          await image.decode().catch(() => {});
+          return { loaded: image.naturalWidth > 0 && image.naturalHeight > 0, portrait: image.naturalHeight > image.naturalWidth };
+        })));
+        if (imageHealth.some(image => !image.loaded)) throw new Error(`${section} ${index + 1}: saved gallery contains an image that cannot load`);
+      }
       if (!visibleCount && await gallery.locator('.gallery-empty-state').count() !== 1) throw new Error(`${section} ${index + 1}: empty state missing`);
       results[section].push({ index: index + 1, owner, visibleImages: actualCount });
       await gallery.getByRole('button', { name: 'Close gallery' }).click();

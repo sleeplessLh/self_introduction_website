@@ -89,8 +89,8 @@ try {
     expect(layout.sceneFocus && layout.canvasPointerEvents === 'none', `${width}: 3D scene is not subordinate to Projects`);
     if (width === 1440 || width === 390) await page.screenshot({ path: resolve(output, `projects-${width}.png`) });
 
-    const scrollBefore = await page.evaluate(() => scrollY);
     await page.locator('#projects .collection-cover').first().click();
+    const scrollBefore = await page.evaluate(() => scrollY);
     const detail = page.locator('.detail-only-modal');
     await detail.waitFor();
     await page.waitForTimeout(350);
