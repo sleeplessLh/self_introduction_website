@@ -78,6 +78,12 @@ try {
       return ids.map(id => ({ id, top: document.getElementById(id).getBoundingClientRect().top + scrollY, bottom: document.getElementById(id).getBoundingClientRect().bottom + scrollY }));
     });
     expect(sections.every((section, index) => index === 0 || section.top >= sections[index - 1].bottom - 2), `${width}: Section bounds overlap`);
+    const collectionLabels = await page.evaluate(() => ['projects', 'competitions'].map(id => {
+      const section = document.getElementById(id);
+      const label = section.querySelector('.section-label');
+      return { id, labelTop: label.getBoundingClientRect().top - section.getBoundingClientRect().top, separatorTop: Number.parseFloat(getComputedStyle(section, '::before').top) };
+    }));
+    expect(collectionLabels.every(item => item.labelTop - item.separatorTop >= 20), `${width}: Collection separator crosses its label: ${JSON.stringify(collectionLabels)}`);
     const layout = await page.evaluate(() => ({
       overflow: document.documentElement.scrollWidth - innerWidth,
       cards: [...document.querySelectorAll('#projects .collection-card')].map(card => ({ left: card.getBoundingClientRect().left, right: card.getBoundingClientRect().right })),
@@ -177,7 +183,7 @@ try {
     }));
     expect(contactScene.focused && contactScene.opacity <= .25, `${width}: Contact 3D scene obstructs the text`);
     expect(errors.length === 0, `${width}: Browser errors: ${errors.join(' | ')}`);
-    results[width] = { skills: skills.length, about, projects: layout.cards.length, imageCount, independentGalleries: firstOwner !== secondOwner && competitionOwner !== firstOwner, detail: detailState, backdrop, contactScene, overflow: layout.overflow, errors };
+    results[width] = { skills: skills.length, about, collectionLabels, projects: layout.cards.length, imageCount, independentGalleries: firstOwner !== secondOwner && competitionOwner !== firstOwner, detail: detailState, backdrop, contactScene, overflow: layout.overflow, errors };
     await context.close();
   }
 

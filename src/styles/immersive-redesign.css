@@ -250,6 +250,8 @@ body::before {
   height: 1px;
   background: linear-gradient(90deg, var(--signal), #ffffff24 16%, transparent 75%);
 }
+/* Compact collections retain their shorter top padding, so their rule belongs above the label. */
+.compact-collection.projects-section::before { top: 30px; }
 .section-label,.eyebrow,.kicker,.profile-section-header .kicker {
   color: var(--signal);
   font: 500 9px/1.3 'DM Mono', monospace;
@@ -478,6 +480,7 @@ body.host-mode-active .collection-card:hover { transform: none; }
   .hero-inner > .hero-portrait-stage { width: min(70vw, 280px); margin: 32px 0 0 auto; border-radius: 150px 150px 24px 24px; }
   .section,.projects-section,.learning-section .section,.education-skills-stack > section,.contact { width: calc(100% - 40px); padding: 104px 0; }
   .section::before,.projects-section::before,.education-skills-stack > section::before { top: 54px; }
+  .compact-collection.projects-section::before { top: 18px; }
   .projects-heading,.strengths-intro,.profile-section-header,.about-intro { grid-template-columns: 1fr; gap: 28px; }
   .about-intro { grid-template-areas: "kicker" "title" "bio"; }
   .projects-section .projects-heading { grid-template-columns: 1fr; }
