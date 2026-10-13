@@ -49,7 +49,8 @@ try {
         if (clipped) throw new Error(`${width}: ${id} card content exceeds its entry container`);
       }
       report[width].sections[id] = metrics;
-      await section.screenshot({ path: resolve(output, `${id}-${width}.png`), animations: 'disabled' });
+      const imageBounds = await section.evaluate(element => { const rect = element.getBoundingClientRect(); return { x: Math.max(0, rect.x + scrollX), y: Math.max(0, rect.y + scrollY), width: rect.width, height: rect.height }; });
+      await page.screenshot({ path: resolve(output, `${id}-${width}.png`), clip: imageBounds, fullPage: true, animations: 'disabled' });
     }
     await page.locator('#projects .collection-toggle').click();
     const imageHealth = await page.evaluate(async () => {

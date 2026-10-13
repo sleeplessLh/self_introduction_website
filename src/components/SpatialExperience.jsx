@@ -153,7 +153,7 @@ export default function SpatialExperience() {
   useEffect(() => {
     const update = () => {
       const midpoint = window.innerHeight * .5;
-      const active = ['about', 'skills', 'projects', 'competitions'].find(id => {
+      const active = ['about', 'education', 'skills', 'projects', 'competitions', 'learning', 'strengths', 'contact'].find(id => {
         const rect = document.getElementById(id)?.getBoundingClientRect();
         return rect && rect.top <= midpoint && rect.bottom >= midpoint;
       });
