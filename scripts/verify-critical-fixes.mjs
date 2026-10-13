@@ -86,12 +86,12 @@ try {
     expect(collectionLabels.every(item => item.labelTop - item.separatorTop >= 20), `${width}: Collection separator crosses its label: ${JSON.stringify(collectionLabels)}`);
     const layout = await page.evaluate(() => ({
       overflow: document.documentElement.scrollWidth - innerWidth,
-      cards: [...document.querySelectorAll('#projects .collection-card')].map(card => ({ left: card.getBoundingClientRect().left, right: card.getBoundingClientRect().right })),
+      cards: [...document.querySelectorAll('#projects .collection-entry.is-active .collection-card')].map(card => ({ left: card.getBoundingClientRect().left, right: card.getBoundingClientRect().right })),
       sceneFocus: document.querySelector('.spatial-experience').classList.contains('is-content-focus'),
       canvasPointerEvents: getComputedStyle(document.querySelector('.spatial-experience')).pointerEvents,
     }));
     expect(layout.overflow <= 2, `${width}: ${layout.overflow}px horizontal overflow`);
-    expect(layout.cards.every(card => card.left >= -2 && card.right <= width + 2), `${width}: Project card clipped`);
+    expect(layout.cards.length === 1 && layout.cards.every(card => card.left >= -2 && card.right <= width + 2), `${width}: Active carousel card clipped`);
     expect(layout.sceneFocus && layout.canvasPointerEvents === 'none', `${width}: 3D scene is not subordinate to Projects`);
     if (width === 1440 || width === 390) await page.screenshot({ path: resolve(output, `projects-${width}.png`) });
 
@@ -323,18 +323,24 @@ try {
   const newProject = hostStudio.locator('.editor-item').first();
   await newProject.getByLabel('Title', { exact: true }).fill('Disposable Project');
   expect(await newProject.locator('.editor-item-select').innerText().then(value => value.includes('Disposable Project')), 'New Project did not become first');
+  expect(await host.locator('#projects .is-grid-view .collection-entry').count() === fixtureContent.projects.length + 1, 'New Project did not enter the Host collection grid');
+  expect(await host.locator('#projects .is-grid-view .collection-entry').first().locator('h3').innerText() === 'Disposable Project', 'Host collection grid did not mirror the new first Project');
   await newProject.getByRole('button', { name: 'Move Project 1 down' }).click();
   expect(await hostStudio.locator('.editor-item').nth(1).locator('.editor-item-select').innerText().then(value => value.includes('Disposable Project')), 'Project move down failed');
+  expect(await host.locator('#projects .is-grid-view .collection-entry').nth(1).locator('h3').innerText() === 'Disposable Project', 'Host collection grid did not mirror Project reorder');
   await hostStudio.locator('.editor-item').nth(1).getByRole('button', { name: 'Move Project 2 up' }).click();
   await hostStudio.locator('.editor-item').first().getByRole('button', { name: 'Delete', exact: true }).click();
   await hostStudio.locator('.editor-item').first().getByRole('button', { name: 'Confirm delete' }).click();
   expect(await hostStudio.locator('.editor-item').count() === fixtureContent.projects.length, 'Project delete failed');
+  expect(await host.locator('#projects .is-grid-view .collection-entry').count() === fixtureContent.projects.length, 'Host collection grid did not remove deleted Project');
   await hostStudio.getByRole('button', { name: 'Competitions', exact: true }).click();
   await hostStudio.getByRole('button', { name: '+ Add Competition' }).click();
   await hostStudio.locator('.editor-item').first().getByLabel('Title', { exact: true }).fill('Disposable Competition');
+  expect(await host.locator('#competitions .is-grid-view .collection-entry').count() === fixtureContent.competitions.length + 1, 'New Competition did not enter the Host collection grid');
   await hostStudio.locator('.editor-item').first().getByRole('button', { name: 'Delete', exact: true }).click();
   await hostStudio.locator('.editor-item').first().getByRole('button', { name: 'Confirm delete' }).click();
   expect(await hostStudio.locator('.editor-item').count() === fixtureContent.competitions.length, 'Competition delete failed');
+  expect(await host.locator('#competitions .is-grid-view .collection-entry').count() === fixtureContent.competitions.length, 'Host collection grid did not remove deleted Competition');
   await hostStudio.getByRole('button', { name: 'Learning', exact: true }).click();
   await hostStudio.getByRole('button', { name: '+ Add Learning Item' }).click();
   await hostStudio.locator('.learning-editor .editor-item').first().getByLabel('Title', { exact: true }).fill('Disposable Learning');

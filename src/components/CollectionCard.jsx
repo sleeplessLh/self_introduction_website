@@ -27,14 +27,14 @@ export default function CollectionCard({ item, type, onOpen, detailLabel, galler
   const setLabels = next => updateItem(labelKey, next);
 
   return <article id={`${type}-${item.id}`} className={`collection-card ${hostMode ? 'is-host-editable' : ''}`}>
-    <button className="collection-cover" onClick={primaryAction} aria-label={hostMode ? `Edit ${item.title}` : `Open ${item.title}`}>{item.coverImage ? <img src={item.coverImage} alt="" loading="lazy" style={{ objectPosition: item.coverPosition || '50% 50%' }} /> : <div className="collection-cover-empty">No highlight image</div>}<span>{hostMode ? 'Edit' : <EditableText value={item.date} onChange={value => updateItem('date', value)} />}</span></button>
+    <button className="collection-cover" onClick={primaryAction} aria-label={hostMode ? `Edit ${item.title}` : `Open ${item.title}`}>{item.coverImage ? <img src={item.coverImage} alt="" loading="lazy" draggable="false" style={{ objectPosition: item.coverPosition || '50% 50%' }} /> : <div className="collection-cover-empty"><small>{String(itemIndex + 1).padStart(2, '0')} / {type === 'competition' ? 'Competition' : 'Project'}</small><strong>{item.title}</strong><em>No highlight image uploaded</em></div>}<span>{hostMode ? 'Edit' : <EditableText value={item.date} onChange={value => updateItem('date', value)} />}</span></button>
     <div className="collection-info">
       <p className="project-category"><EditableText value={item.label} onChange={value => updateItem('label', value)} /></p>
       <h3><EditableText value={item.title} onChange={value => updateItem('title', value)} /></h3>
       <p className="collection-description"><EditableText value={item.description} multiline onChange={value => updateItem('description', value)} /></p>
       {type === 'competition' && <p className="achievement"><b>{achievementLabel}</b><span><EditableText value={item.achievement || ''} onChange={value => updateItem('achievement', value)} /></span></p>}
       <div className="collection-meta">
-        {hostMode ? <button className="gallery-link" onClick={editGallery}>Edit Gallery</button> : <button className="gallery-link" onClick={() => onOpen('gallery')}>{galleryLabel} {visibleGalleryCount ? `(${visibleGalleryCount})` : ''} ↗</button>}
+        {hostMode ? <button className="gallery-link" onClick={editGallery}>Edit Gallery</button> : visibleGalleryCount ? <button className="gallery-link" onClick={() => onOpen('gallery')} aria-label={`${galleryLabel} for ${item.title}, ${visibleGalleryCount} images`}>{galleryLabel} ({visibleGalleryCount}) ↗</button> : <span className="gallery-empty-label">No gallery images yet</span>}
         <div className={`collection-tags ${hostMode ? 'host-label-manager' : ''}`}>{normalisedLabels.map((entry, index) => hostMode ? <span className="host-label-row" key={entry.id}>
           <EditableText value={entry.label} onChange={value => setLabels(normalisedLabels.map(label => label.id === entry.id ? { ...label, label: value } : label))} />
           <button onClick={() => setLabels(moveEntry(normalisedLabels, index, -1))} disabled={index === 0} aria-label={`Move ${entry.label} earlier`}>←</button>
