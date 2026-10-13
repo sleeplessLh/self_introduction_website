@@ -169,8 +169,15 @@ try {
     await detail.waitFor();
     await detail.getByRole('button', { name: 'Close details' }).click();
     await detail.waitFor({ state: 'detached' });
+    await page.locator('#contact').scrollIntoViewIfNeeded();
+    await page.waitForTimeout(350);
+    const contactScene = await page.locator('.spatial-experience').evaluate(element => ({
+      focused: element.classList.contains('is-content-focus'),
+      opacity: Number(getComputedStyle(element).opacity),
+    }));
+    expect(contactScene.focused && contactScene.opacity <= .25, `${width}: Contact 3D scene obstructs the text`);
     expect(errors.length === 0, `${width}: Browser errors: ${errors.join(' | ')}`);
-    results[width] = { skills: skills.length, about, projects: layout.cards.length, imageCount, independentGalleries: firstOwner !== secondOwner && competitionOwner !== firstOwner, detail: detailState, backdrop, overflow: layout.overflow, errors };
+    results[width] = { skills: skills.length, about, projects: layout.cards.length, imageCount, independentGalleries: firstOwner !== secondOwner && competitionOwner !== firstOwner, detail: detailState, backdrop, contactScene, overflow: layout.overflow, errors };
     await context.close();
   }
 

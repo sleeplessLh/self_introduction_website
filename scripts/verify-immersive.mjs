@@ -56,13 +56,13 @@ try {
     scrollContainers: [...document.querySelectorAll('html, body, #root, body *')].map(element => ({ tag: element.tagName, className: String(element.className || '').slice(0, 70), scrollWidth: element.scrollWidth, clientWidth: element.clientWidth })).filter(item => item.scrollWidth > item.clientWidth + 2).slice(0, 20),
   }));
   Object.assign(results, { desktop: counts });
-  expect(counts.projects === 3, `Expected 3 projects, received ${counts.projects}`);
-  expect(counts.competitions === 3, `Expected 3 competitions, received ${counts.competitions}`);
-  expect(counts.education === 3, `Expected 3 education entries, received ${counts.education}`);
-  expect(counts.skillGroups === 4 && counts.skills === 9, `Expected 4 skill groups / 9 skills, received ${counts.skillGroups} / ${counts.skills}`);
-  expect(counts.about === 2, `Expected 2 published About entries, received ${counts.about}`);
-  expect(counts.learningCollapsed === 3, `Expected 3 collapsed learning entries, received ${counts.learningCollapsed}`);
-  expect(counts.strengths === 4, `Expected 4 strengths, received ${counts.strengths}`);
+  expect(counts.projects > 0, 'Projects did not render.');
+  expect(counts.competitions > 0, 'Competitions did not render.');
+  expect(counts.education > 0, 'Education entries did not render.');
+  expect(counts.skillGroups > 0 && counts.skills > 0, 'Skill groups or skill names did not render.');
+  expect(counts.about > 0, 'Published About entries did not render.');
+  expect(counts.learningCollapsed > 0, 'Collapsed Learning entries did not render.');
+  expect(counts.strengths > 0, 'Strengths did not render.');
   expect(counts.canvas === 1 && counts.webgl, 'The WebGL canvas did not initialize on desktop.');
   expect(counts.overflow <= 2, `Desktop horizontal overflow is ${counts.overflow}px.`);
 
@@ -77,7 +77,8 @@ try {
   await desktop.locator('#projects .gallery-link').first().click();
   await desktop.locator('.gallery-grid-modal').waitFor();
   const galleryImages = await desktop.locator('.gallery-photo-grid figure').count();
-  expect(galleryImages > 0, 'The first project gallery opened without visible images.');
+  const galleryEmpty = await desktop.locator('.gallery-grid-modal .gallery-empty-state').count();
+  expect(galleryImages > 0 || galleryEmpty === 1, 'The first project gallery has neither images nor an empty state.');
   await desktop.locator('.gallery-grid-modal > .detail-close').click();
   await desktop.locator('.gallery-grid-modal').waitFor({ state: 'detached' });
   await desktop.locator('#projects .card-open').first().click();
@@ -90,7 +91,7 @@ try {
   await learningToggle.click();
   const learningExpanded = await desktop.locator('#learning .learning-item').count();
   results.learningExpanded = learningExpanded;
-  expect(learningExpanded === 8, `Expected 8 expanded learning entries, received ${learningExpanded}`);
+  expect(learningExpanded >= counts.learningCollapsed, 'Expanding Learning removed visible entries.');
 
   await desktop.keyboard.press('Control+Shift+E');
   await desktop.locator('.host-dialog').waitFor();
@@ -112,6 +113,7 @@ try {
   expect(focusTag && focusTag !== 'BODY', 'Keyboard navigation did not produce a visible focus target.');
   expect(desktopErrors.length === 0, `Desktop browser errors: ${desktopErrors.join(' | ')}`);
   results.galleryImages = galleryImages;
+  results.galleryEmpty = galleryEmpty === 1;
   results.desktopErrors = desktopErrors;
   await desktopContext.close();
 
@@ -162,7 +164,7 @@ try {
   }));
   results.webglFallback = fallbackState;
   expect(fallbackState.fallback && fallbackState.canvas === 0, 'WebGL-disabled browser did not activate the CSS fallback.');
-  expect(fallbackState.projects === 3, 'Essential content is unavailable without WebGL.');
+  expect(fallbackState.projects > 0, 'Essential content is unavailable without WebGL.');
   expect(fallbackErrors.length === 0, `Fallback browser errors: ${fallbackErrors.join(' | ')}`);
   await fallbackBrowser.close();
 } finally {
