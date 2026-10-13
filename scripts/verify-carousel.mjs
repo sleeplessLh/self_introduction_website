@@ -78,28 +78,37 @@ try {
           assert(!(await track.locator('.collection-entry').first().evaluate(el => el.classList.contains('is-active'))), `${width} ${sectionId}: touch swipe did not advance`);
         }
       }
+      const focusedBeforeArchive = await track.locator('.collection-entry.is-active').evaluate(el => [...el.parentElement.children].indexOf(el));
       await section.getByRole('button', { name: /View All \(/ }).click();
       assert(await track.evaluate(el => el.classList.contains('is-grid-view')), `${width} ${sectionId}: View All did not switch to grid`);
       assert(await track.locator('.collection-entry').count() === records.length, `${width} ${sectionId}: View All lost records`);
       await section.getByRole('button', { name: /Carousel View/ }).click();
       assert(await track.evaluate(el => el.classList.contains('is-carousel-view')), `${width} ${sectionId}: Carousel View did not return`);
+      await page.waitForTimeout(250);
+      assert(await track.locator('.collection-entry').nth(focusedBeforeArchive).evaluate(el => el.classList.contains('is-active')), `${width} ${sectionId}: Carousel View lost the prior position`);
       const galleryIndex = records.findIndex(item => (item.gallery || []).some(image => typeof image === 'string' || !image.hidden));
       if (galleryIndex >= 0) {
         await section.getByRole('button', { name: /View All \(/ }).click();
-        await track.locator('.collection-entry').nth(galleryIndex).locator('.gallery-link').click();
+        const galleryOpener = track.locator('.collection-entry').nth(galleryIndex).locator('.gallery-link');
+        await galleryOpener.click();
         const gallery = page.locator('.gallery-grid-modal');
         await gallery.waitFor();
         assert(await gallery.getAttribute('data-gallery-owner') === records[galleryIndex].id, `${width} ${sectionId}: gallery owner mismatch`);
         assert(await gallery.locator('.gallery-photo-grid figure').count() > 0, `${width} ${sectionId}: direct gallery has no images`);
         await gallery.getByRole('button', { name: 'Close gallery' }).click();
         await gallery.waitFor({ state: 'detached' });
+        await page.waitForTimeout(40);
+        assert(await galleryOpener.evaluate(el => document.activeElement === el), `${width} ${sectionId}: closing gallery did not restore keyboard focus`);
       }
-      await track.locator('.collection-entry').first().locator('.card-open').click();
+      const detailOpener = track.locator('.collection-entry').first().locator('.card-open');
+      await detailOpener.click();
       const detail = page.locator('.detail-only-modal');
       await detail.waitFor();
       assert(await detail.locator('h2').count() > 0, `${width} ${sectionId}: detail title missing`);
       await detail.getByRole('button', { name: 'Close details' }).click();
       await detail.waitFor({ state: 'detached' });
+      await page.waitForTimeout(40);
+      assert(await detailOpener.evaluate(el => document.activeElement === el), `${width} ${sectionId}: closing details did not restore keyboard focus`);
       assert(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth) <= 2, `${width} ${sectionId}: horizontal overflow`);
     }
     assert(errors.length === 0, `${width}: browser errors: ${errors.join(' | ')}`);

@@ -48,7 +48,7 @@ referenced by the commit above.
 | --- | --- | --- |
 | Production build | PASS | `npm run build` (662 modules; large-chunk warning remains) |
 | Saved-content visual QA | PASS | `verify-visual-snapshot.mjs` at 1440 and 390; nine sections, no document overflow, 7 visible image sources healthy, no browser page errors |
-| Carousel / View All / direct gallery / details | PASS | `verify-carousel.mjs` at 1920, 1440, 1024, 768, 390 using private content snapshot; also one/two-item cases |
+| Carousel / View All / direct gallery / details | PASS | `verify-carousel.mjs` at 1920, 1440, 1024, 768, 390 using private content snapshot; position survives View All round-trip, closing overlays restores focus, and one/two-item cases pass |
 | Mouse drag, post-drag click, and touch swipe | PASS | Physical pointer and CDP touch interactions in `verify-carousel.mjs` |
 | Existing modal, gallery, section, Host fixture flows | PASS | `npm run verify:critical` at five widths, including Host add/reorder/delete synchronization with the collection grid; isolated test data, zero production writes |
 | Ordering | PASS | `npm run verify:ordering` |
