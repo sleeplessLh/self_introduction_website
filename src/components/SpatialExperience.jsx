@@ -57,7 +57,7 @@ function ParticleField({ compact }) {
   </points>;
 }
 
-function OrbitalCore({ compact, reducedMotion, contentFocus }) {
+function OrbitalCore({ compact, reducedMotion, contentFocus, aboutFocus }) {
   const root = useRef();
   const core = useRef();
   const ringA = useRef();
@@ -86,8 +86,8 @@ function OrbitalCore({ compact, reducedMotion, contentFocus }) {
   useFrame((state, delta) => {
     if (!root.current || !core.current) return;
     const progress = scroll.current;
-    const targetX = contentFocus ? (compact ? 1.65 : 3.45) : compact ? .72 : 2.45 - Math.sin(progress * Math.PI * 3.2) * 1.25;
-    const targetY = contentFocus ? .65 : compact ? 1.25 - progress * .55 : .15 + Math.sin(progress * Math.PI * 4) * .72;
+    const targetX = aboutFocus ? (compact ? 2.3 : 5.3) : contentFocus ? (compact ? 1.65 : 3.45) : compact ? .72 : 2.45 - Math.sin(progress * Math.PI * 3.2) * 1.25;
+    const targetY = aboutFocus ? -2.1 : contentFocus ? .65 : compact ? 1.25 - progress * .55 : .15 + Math.sin(progress * Math.PI * 4) * .72;
     root.current.position.x = THREE.MathUtils.damp(root.current.position.x, targetX, 2.2, delta);
     root.current.position.y = THREE.MathUtils.damp(root.current.position.y, targetY, 2.2, delta);
     root.current.rotation.x = THREE.MathUtils.damp(root.current.rotation.x, reducedMotion ? .1 : pointer.current.y * .18 + progress * .28, 2.4, delta);
@@ -128,14 +128,14 @@ function OrbitalCore({ compact, reducedMotion, contentFocus }) {
   </group>;
 }
 
-function Scene({ compact, reducedMotion, contentFocus }) {
+function Scene({ compact, reducedMotion, contentFocus, aboutFocus }) {
   return <>
     <ambientLight intensity={.42} />
     <directionalLight color="#a8fff0" intensity={2.5} position={[4, 5, 6]} />
     <pointLight color="#7664ff" intensity={18} distance={9} position={[2, -1, 2]} />
     <pointLight color="#ff8d6b" intensity={10} distance={8} position={[-4, 2, 1]} />
     <ParticleField compact={compact} />
-    <OrbitalCore compact={compact} reducedMotion={reducedMotion} contentFocus={contentFocus} />
+    <OrbitalCore compact={compact} reducedMotion={reducedMotion} contentFocus={contentFocus} aboutFocus={aboutFocus} />
   </>;
 }
 
@@ -144,6 +144,7 @@ export default function SpatialExperience() {
   const [compact, setCompact] = useState(() => window.innerWidth <= 800);
   const [available, setAvailable] = useState(() => supportsWebGL());
   const [contentFocus, setContentFocus] = useState(false);
+  const [aboutFocus, setAboutFocus] = useState(false);
   useEffect(() => {
     const resize = () => setCompact(window.innerWidth <= 800);
     window.addEventListener('resize', resize, { passive: true });
@@ -152,23 +153,25 @@ export default function SpatialExperience() {
   useEffect(() => {
     const update = () => {
       const midpoint = window.innerHeight * .5;
-      setContentFocus(['skills', 'projects', 'competitions'].some(id => {
+      const active = ['about', 'skills', 'projects', 'competitions'].find(id => {
         const rect = document.getElementById(id)?.getBoundingClientRect();
         return rect && rect.top <= midpoint && rect.bottom >= midpoint;
-      }));
+      });
+      setContentFocus(Boolean(active));
+      setAboutFocus(active === 'about');
     };
     update();
     window.addEventListener('scroll', update, { passive: true });
     window.addEventListener('resize', update, { passive: true });
     return () => { window.removeEventListener('scroll', update); window.removeEventListener('resize', update); };
   }, []);
-  return <div className={`spatial-experience ${available ? 'is-webgl' : 'is-fallback'} ${contentFocus ? 'is-content-focus' : ''}`} aria-hidden="true">
+  return <div className={`spatial-experience ${available ? 'is-webgl' : 'is-fallback'} ${contentFocus ? 'is-content-focus' : ''} ${aboutFocus ? 'is-about-focus' : ''}`} aria-hidden="true">
     <div className="spatial-fallback"><i /><i /><i /></div>
     {available && <SceneBoundary onFailure={() => setAvailable(false)}><Canvas
       camera={{ position: [0, 0, compact ? 9.2 : 7.4], fov: compact ? 48 : 42, near: .1, far: 50 }}
       dpr={compact ? 1 : [1, 1.5]}
       frameloop={reducedMotion ? 'demand' : 'always'}
       gl={{ antialias: !compact, alpha: true, powerPreference: 'high-performance' }}
-    ><Scene compact={compact} reducedMotion={reducedMotion} contentFocus={contentFocus} /></Canvas></SceneBoundary>}
+    ><Scene compact={compact} reducedMotion={reducedMotion} contentFocus={contentFocus} aboutFocus={aboutFocus} /></Canvas></SceneBoundary>}
   </div>;
 }

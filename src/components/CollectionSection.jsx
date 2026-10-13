@@ -14,6 +14,7 @@ export default function CollectionSection({ type }) {
   const [selected, setSelected] = useState(null);
   const [expanded, setExpanded] = useState(false);
   const section = useRef(null);
+  const opener = useRef(null);
   const sectionKey = type === 'competition' ? 'competitions' : 'projects';
   const visibility = useSectionVisibility(sectionKey);
   const collection = content[sectionKey];
@@ -29,6 +30,18 @@ export default function CollectionSection({ type }) {
     if (expanded) window.setTimeout(() => section.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60);
     setExpanded(value => !value);
   };
+  const closeSelection = () => {
+    setSelected(null);
+    window.setTimeout(() => opener.current?.isConnected && opener.current.focus(), 0);
+  };
+  const openSelection = (item, initialView) => {
+    opener.current = document.activeElement;
+    setSelected({ item, initialView, returnToDetail: false });
+  };
+  const closeGallery = () => {
+    if (selected?.returnToDetail) setSelected(current => current ? { ...current, initialView: 'cover', returnToDetail: false } : current);
+    else closeSelection();
+  };
   if (!visibility.shouldRender) return null;
-  return <section ref={section} className={`projects-section compact-collection ${visibility.hidden ? 'is-module-hidden-host' : ''}`} id={sectionKey}><SectionVisibilityToggle sectionKey={sectionKey} /><div className="projects-inner"><div className="section-label"><EditableText value={copy.label} onChange={value => setCopy('label', value)} /></div><Reveal className="projects-heading"><h2><EditableText value={copy.title} onChange={value => setCopy('title', value)} /><br /><em><EditableText value={copy.emphasis} onChange={value => setCopy('emphasis', value)} /></em></h2><p><EditableText value={copy.description} multiline onChange={value => setCopy('description', value)} /></p></Reveal><div className="section-content-inset">{hostMode && <div className="collection-host-bar"><span>{collection.length} {sectionKey}</span><button className="editor-add collection-add" onClick={addItem}>+ Add {singular}</button></div>}{collection.length ? <><div className="compact-list">{collection.map((item, index) => <Reveal className={`collection-entry ${!hostMode && !expanded && index >= 3 ? 'is-collapsed' : ''}`} key={item.id}><CollectionCard item={item} type={type} detailLabel={copy.detailLabel} galleryLabel={copy.galleryLabel || 'View Gallery'} achievementLabel={copy.achievementLabel || 'Achievement'} onOpen={initialView => setSelected({ item, initialView })} /></Reveal>)}</div>{!hostMode && collection.length > 3 && <button className="collection-toggle" onClick={toggle} aria-expanded={expanded}>{expanded ? copy.collapseLabel : copy.expandLabel} <b>{expanded ? '↑' : '↓'}</b></button>}</> : <div className="empty-collection"><EditableText value={copy.emptyLabel} onChange={value => setCopy('emptyLabel', value)} /></div>}</div></div>{selected?.initialView === 'gallery' ? <GalleryModal item={selected.item} onClose={() => setSelected(null)} /> : selected && <DetailModal item={selected.item} type={type} achievementLabel={copy.achievementLabel || 'Achievement'} onClose={() => setSelected(null)} onOpenGallery={() => setSelected(current => current ? { ...current, initialView: 'gallery' } : current)} />}</section>;
+  return <section ref={section} className={`projects-section compact-collection ${visibility.hidden ? 'is-module-hidden-host' : ''}`} id={sectionKey}><SectionVisibilityToggle sectionKey={sectionKey} /><div className="projects-inner"><div className="section-label"><EditableText value={copy.label} onChange={value => setCopy('label', value)} /></div><Reveal className="projects-heading"><h2><EditableText value={copy.title} onChange={value => setCopy('title', value)} /><br /><em><EditableText value={copy.emphasis} onChange={value => setCopy('emphasis', value)} /></em></h2><p><EditableText value={copy.description} multiline onChange={value => setCopy('description', value)} /></p></Reveal><div className="section-content-inset">{hostMode && <div className="collection-host-bar"><span>{collection.length} {sectionKey}</span><button className="editor-add collection-add" onClick={addItem}>+ Add {singular}</button></div>}{collection.length ? <><div className="compact-list">{collection.map((item, index) => <Reveal className={`collection-entry ${!hostMode && !expanded && index >= 3 ? 'is-collapsed' : ''}`} key={item.id}><CollectionCard item={item} type={type} detailLabel={copy.detailLabel} galleryLabel={copy.galleryLabel || 'View Gallery'} achievementLabel={copy.achievementLabel || 'Achievement'} onOpen={initialView => openSelection(item, initialView)} /></Reveal>)}</div>{!hostMode && collection.length > 3 && <button className="collection-toggle" onClick={toggle} aria-expanded={expanded}>{expanded ? copy.collapseLabel : copy.expandLabel} <b>{expanded ? '↑' : '↓'}</b></button>}</> : <div className="empty-collection"><EditableText value={copy.emptyLabel} onChange={value => setCopy('emptyLabel', value)} /></div>}</div></div>{selected?.initialView === 'gallery' ? <GalleryModal item={selected.item} onClose={closeGallery} onBack={selected.returnToDetail ? closeGallery : null} /> : selected && <DetailModal item={selected.item} type={type} achievementLabel={copy.achievementLabel || 'Achievement'} onClose={closeSelection} onOpenGallery={() => setSelected(current => current ? { ...current, initialView: 'gallery', returnToDetail: true } : current)} />}</section>;
 }

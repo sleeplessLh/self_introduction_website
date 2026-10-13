@@ -287,13 +287,15 @@ body::before {
 /* About becomes a spatial manifesto. */
 .about-intro {
   display: grid;
-  grid-template-columns: minmax(0, .72fr) minmax(300px, 1.28fr);
-  gap: clamp(36px, 8vw, 126px);
+  grid-template-columns: minmax(0, 1fr) minmax(280px, .9fr);
+  grid-template-areas: "kicker kicker" "title bio";
+  column-gap: clamp(36px, 6vw, 104px);
+  row-gap: clamp(20px, 2.5vw, 36px);
   align-items: start;
 }
-.about-intro .kicker { grid-column: 1 / -1; margin-bottom: -12px; }
-.about-intro h2 { position: sticky; top: 120px; }
-.about-intro > p:last-child { max-width: 720px; color: #c1c1c8; font-size: clamp(17px, 1.55vw, 23px); line-height: 1.65; }
+.about-intro .kicker { grid-column: auto; grid-row: auto; grid-area: kicker; margin: 0; }
+.about-intro h2 { grid-column: auto; grid-row: auto; grid-area: title; position: static; margin: 0; }
+.about-intro > p:last-child { grid-column: auto; grid-row: auto; grid-area: bio; max-width: 38ch; margin: 0; color: #c1c1c8; font-size: clamp(17px, 1.55vw, 23px); line-height: 1.65; }
 .about .section-content-inset { margin-top: clamp(70px, 10vw, 130px); }
 .about-item-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #ffffff17; border: 1px solid #ffffff17; }
 .about-item-list .reveal { background: var(--void-soft); }
@@ -315,8 +317,8 @@ body::before {
 .education-subtitle { color: #d7d5d2 !important; font-size: clamp(14px, 1.3vw, 19px) !important; }
 .education-description { color: #aaaab3 !important; font-size: 13px !important; }
 .education-grade { border-color: #86f5df55 !important; background: #86f5df0a; }
-.skills-section .skill-groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; padding: 1px; background: #ffffff20; }
-.skills-section .skill-group { min-width: 0; border: 0; background: #0b0e15f7; }
+.skills-section .skill-groups { position: relative; z-index: 1; isolation: isolate; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; padding: 1px; background: #ffffff20; }
+.skills-section .skill-group { min-width: 0; border: 0; background: #0b0e15; }
 .skills-section .skill-group article {
   display: grid;
   grid-template-columns: 36px minmax(0, 1fr);
@@ -417,8 +419,12 @@ body::before {
 .socials a:hover { color: var(--signal); }
 
 /* Immersive details and galleries remain conventional enough to operate. */
-.detail-modal { z-index: 1200; background: #080a10f5; backdrop-filter: blur(26px); }
-.detail-only-modal { grid-template-columns: minmax(0, 1.1fr) minmax(320px, .9fr); gap: clamp(20px, 3vw, 48px); height: 100dvh; overflow-y: auto; overscroll-behavior: contain; }
+.detail-modal { z-index: 1200; background: #060910ad; backdrop-filter: blur(16px) saturate(.82); }
+.detail-only-modal { grid-template-columns: minmax(0, 1fr) minmax(320px, .82fr); gap: clamp(20px, 3vw, 48px); height: 100dvh; overflow-y: auto; overscroll-behavior: contain; padding-inline: max(24px, calc((100vw - 1600px) / 2)); }
+.detail-only-modal > .detail-stage,.detail-only-modal > .detail-copy { position: relative; z-index: 1; border: 1px solid #ffffff1b; box-shadow: 0 28px 90px #0009; }
+.detail-modal.gallery-grid-modal { background: #060910d9; backdrop-filter: blur(16px) saturate(.82); }
+.detail-modal.gallery-grid-modal > .gallery-back-to-detail { position: fixed; z-index: 3; top: 24px; right: auto; left: max(22px, calc((100vw - 1500px) / 2)); width: max-content; min-height: 42px; padding: 9px 14px; border: 1px solid #ffffff36; border-radius: 999px; background: #0c101add; color: var(--chalk); font: 11px 'DM Mono', monospace; cursor: pointer; }
+.gallery-back-to-detail:hover { border-color: var(--signal); color: var(--signal); }
 .detail-only-modal .detail-stage { min-height: 0; height: min(76dvh, 720px); }
 .detail-only-modal .detail-stage img { object-fit: contain; }
 .detail-only-modal > .detail-close { position: fixed; z-index: 2; }
@@ -472,10 +478,10 @@ body.host-mode-active .collection-card:hover { transform: none; }
   .section,.projects-section,.learning-section .section,.education-skills-stack > section,.contact { width: calc(100% - 40px); padding: 104px 0; }
   .section::before,.projects-section::before,.education-skills-stack > section::before { top: 54px; }
   .projects-heading,.strengths-intro,.profile-section-header,.about-intro { grid-template-columns: 1fr; gap: 28px; }
+  .about-intro { grid-template-areas: "kicker" "title" "bio"; }
   .projects-section .projects-heading { grid-template-columns: 1fr; }
   .projects-section .projects-heading > p { justify-self: start; }
   .about-intro .kicker { margin-bottom: 0; }
-  .about-intro h2 { position: static; }
   .about-item-list { grid-template-columns: 1fr; }
   .about-item-list article { min-height: 210px; }
   .section-content-inset { --section-content-inset: 6px; }

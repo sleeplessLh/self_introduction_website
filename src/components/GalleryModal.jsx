@@ -1,18 +1,23 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import useDialogFocus from '../utils/useDialogFocus.js';
 
 const clamp = (number, minimum, maximum) => Math.min(maximum, Math.max(minimum, number));
 
-export default function GalleryModal({ item, onClose }) {
+export default function GalleryModal({ item, onClose, onBack }) {
   const gallery = useMemo(() => (item.gallery || []).map(image => typeof image === 'string' ? { id: image, src: image, caption: '', hidden: false } : image).filter(image => image?.src && !image.hidden), [item.gallery]);
   const [index, setIndex] = useState(null);
   const [zoom, setZoom] = useState(1);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [closing, setClosing] = useState(false);
   const stage = useRef(null);
+  const dialog = useRef(null);
+  const viewer = useRef(null);
   const drag = useRef(null);
   const swipe = useRef(null);
   const active = index === null ? null : gallery[index];
+  useDialogFocus(dialog, index === null);
+  useDialogFocus(viewer, index !== null);
   const resetView = useCallback(() => { setZoom(1); setOffset({ x: 0, y: 0 }); }, []);
   const select = useCallback(next => { if (!gallery.length) return; setIndex((next + gallery.length) % gallery.length); resetView(); }, [gallery.length, resetView]);
   const closeViewer = useCallback(() => { setIndex(null); resetView(); }, [resetView]);
@@ -33,12 +38,13 @@ export default function GalleryModal({ item, onClose }) {
   }, [close, closeViewer, index, select, zoom]);
   useEffect(() => { const previous = document.body.style.overflow; document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = previous; }; }, []);
 
-  return createPortal(<div className={`detail-modal gallery-grid-modal ${closing ? 'is-closing' : ''}`} role="dialog" aria-modal="true" aria-label={`${item.title} gallery`} data-gallery-owner={item.id} onMouseDown={event => { if (event.target === event.currentTarget) close(); }}>
+  return createPortal(<div ref={dialog} className={`detail-modal gallery-grid-modal ${closing ? 'is-closing' : ''}`} role="dialog" aria-modal="true" aria-label={`${item.title} gallery`} data-gallery-owner={item.id} onMouseDown={event => { if (event.target === event.currentTarget) close(); }}>
     <button className="detail-close" onClick={close} aria-label="Close gallery">×</button>
+    {onBack && <button className="gallery-back-to-detail" onClick={onBack}>← Back to details</button>}
     <header className="gallery-modal-header"><div><p>EXCLUSIVE GALLERY</p><h2>{item.title}</h2></div><span>{gallery.length} image{gallery.length === 1 ? '' : 's'}</span></header>
     {gallery.length ? <div className="gallery-photo-grid">{gallery.map((image, imageIndex) => <figure key={image.id}><button onClick={() => { setIndex(imageIndex); resetView(); }} aria-label={`Open image ${imageIndex + 1}${image.caption ? `: ${image.caption}` : ''}`}><img src={image.src} alt={image.caption || `${item.title} gallery image ${imageIndex + 1}`} loading="lazy" /></button>{image.caption && <figcaption>{image.caption}</figcaption>}</figure>)}</div> : <div className="gallery-empty-state"><strong>No gallery images yet.</strong><span>This Gallery is separate from the Highlight Image.</span></div>}
     {item.galleryUrl && <a className="gallery-external-link" href={item.galleryUrl} target="_blank" rel="noreferrer">Open external gallery ↗</a>}
-    {active && <div className="gallery-lightbox" role="dialog" aria-modal="true" aria-label={`${item.title} image viewer`} onMouseDown={event => { if (event.target === event.currentTarget) closeViewer(); }}>
+    {active && <div ref={viewer} className="gallery-lightbox" role="dialog" aria-modal="true" aria-label={`${item.title} image viewer`} onMouseDown={event => { if (event.target === event.currentTarget) closeViewer(); }}>
       <button className="gallery-lightbox-close" onClick={closeViewer} aria-label="Close image viewer">×</button>
       <div className="detail-stage" ref={stage} onWheel={event => { event.preventDefault(); setScale(zoom + (event.deltaY < 0 ? .2 : -.2)); }} onPointerDown={event => { if (event.target.closest('button')) return; if (zoom <= 1) swipe.current = { x: event.clientX, y: event.clientY }; else drag.current = { x: event.clientX, y: event.clientY, offset }; event.currentTarget.setPointerCapture?.(event.pointerId); }} onPointerMove={event => { if (drag.current) setOffset({ x: drag.current.offset.x + event.clientX - drag.current.x, y: drag.current.offset.y + event.clientY - drag.current.y }); }} onPointerUp={event => { if (swipe.current && gallery.length > 1) { const dx = event.clientX - swipe.current.x; const dy = event.clientY - swipe.current.y; if (Math.abs(dx) > 48 && Math.abs(dx) > Math.abs(dy)) select(index + (dx < 0 ? 1 : -1)); } swipe.current = null; drag.current = null; }} onPointerCancel={() => { swipe.current = null; drag.current = null; }}>
         <img src={active.src} alt={active.caption || `${item.title} gallery image ${index + 1}`} style={{ transform: `translate3d(${offset.x}px, ${offset.y}px, 0) scale(${zoom})` }} draggable="false" />

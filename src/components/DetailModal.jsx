@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import useDialogFocus from '../utils/useDialogFocus.js';
 
 const clamp = (number, minimum, maximum) => Math.min(maximum, Math.max(minimum, number));
 
@@ -9,6 +10,8 @@ export default function DetailModal({ item, type, achievementLabel = 'Achievemen
   const [closing, setClosing] = useState(false);
   const drag = useRef(null);
   const stage = useRef(null);
+  const dialog = useRef(null);
+  useDialogFocus(dialog);
   const tags = (item.technologies || item.tags || []).map(entry => typeof entry === 'string' ? { id: entry, label: entry } : entry);
   const galleryCount = (item.gallery || []).filter(image => typeof image === 'string' || (image?.src && !image.hidden)).length;
   const resetView = useCallback(() => { setZoom(1); setOffset({ x: 0, y: 0 }); }, []);
@@ -23,7 +26,7 @@ export default function DetailModal({ item, type, achievementLabel = 'Achievemen
   }, [close, zoom]);
   useEffect(() => { const previous = document.body.style.overflow; document.body.style.overflow = 'hidden'; return () => { document.body.style.overflow = previous; }; }, []);
 
-  return createPortal(<div className={`detail-modal detail-only-modal ${closing ? 'is-closing' : ''}`} role="dialog" aria-modal="true" aria-label={`${item.title} details`} onMouseDown={event => { if (event.target === event.currentTarget) close(); }}>
+  return createPortal(<div ref={dialog} className={`detail-modal detail-only-modal ${closing ? 'is-closing' : ''}`} role="dialog" aria-modal="true" aria-label={`${item.title} details`} onMouseDown={event => { if (event.target === event.currentTarget) close(); }}>
     <button className="detail-close" onClick={close} aria-label="Close details">×</button>
     <div className="detail-stage" ref={stage} onWheel={event => { event.preventDefault(); setScale(zoom + (event.deltaY < 0 ? .2 : -.2)); }} onPointerDown={event => { if (zoom <= 1 || event.target.closest('button')) return; drag.current = { x: event.clientX, y: event.clientY, offset }; event.currentTarget.setPointerCapture?.(event.pointerId); }} onPointerMove={event => { if (drag.current) setOffset({ x: drag.current.offset.x + event.clientX - drag.current.x, y: drag.current.offset.y + event.clientY - drag.current.y }); }} onPointerUp={() => { drag.current = null; }}>
       {item.coverImage ? <img src={item.coverImage} alt={`${item.title} highlight`} style={{ objectPosition: item.coverPosition || '50% 50%', transform: `translate3d(${offset.x}px, ${offset.y}px, 0) scale(${zoom})` }} draggable="false" /> : <p className="gallery-empty">No highlight image has been published.</p>}
