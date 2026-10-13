@@ -576,7 +576,8 @@ body.host-mode-active #root > main { margin-right: 0 !important; }
 .host-action-toolbar {
   position: fixed;
   top: 92px;
-  right: 20px;
+  left: 20px;
+  right: auto;
   display: flex;
   gap: 4px;
   padding: 5px;
@@ -666,7 +667,7 @@ body.dragging-cms-drawer * { cursor: grabbing !important; user-select: none !imp
 }
 
 @media (max-width: 800px) {
-  .host-action-toolbar { top: auto; right: 8px; bottom: 8px; max-width: calc(100vw - 16px); overflow-x: auto; }
+  .host-action-toolbar { top: auto; left: 8px; right: auto; bottom: 8px; max-width: calc(100vw - 16px); overflow-x: auto; }
   .host-action-toolbar button { min-width: 50px; }
   .portrait-editor-popover { position: fixed; top: auto; right: 12px; bottom: 70px; left: 12px; width: auto; transform: none; }
   #root > .cms-drawer.is-contextual { top: auto; right: 8px; left: auto; bottom: 66px; width: calc(100vw - 16px); height: min(70svh, 620px); transform: none; }

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { createDefaultContent } from '../data/portfolio.js';
 import { loadContent, saveContent } from '../services/contentStorage.js';
 
@@ -29,7 +29,7 @@ function normalize(saved, defaults) {
   const hero = isLegacyHero ? defaults.hero : { ...defaults.hero, ...saved.hero, ...((needsProfessionalPortrait || needsTransparentPortrait) ? { portrait: defaults.hero.portrait, portraitPosition: defaults.hero.portraitPosition } : {}) };
   const savedAboutItems = saved.about?.items || (saved.about?.stats || []).map(item => ({ id: item.id, title: item.label, description: item.value, hidden: false }));
   const contact = { ...defaults.contact, ...saved.contact, socialLinks: (saved.contact?.socialLinks || defaults.contact.socialLinks).map(link => ({ ...link, url: ['https://github.com/', 'https://www.linkedin.com/'].includes(link.url) ? '' : link.url })) };
-  const profile = { ...defaults.profile, ...saved.profile, email: 'lawrancehii12345@gmail.com', resumeUrl: saved.profile?.resumeUrl === '#' ? '' : saved.profile?.resumeUrl || '' };
+  const profile = { ...defaults.profile, ...saved.profile, resumeUrl: saved.profile?.resumeUrl === '#' ? '' : saved.profile?.resumeUrl || '' };
   return { ...defaults, ...saved, schemaVersion: defaults.schemaVersion, theme: { ...defaults.theme, ...saved.theme }, sectionVisibility: { ...defaults.sectionVisibility, ...saved.sectionVisibility }, hero, profile, about: { ...defaults.about, ...saved.about, items: normalizeAboutItems(savedAboutItems.length ? savedAboutItems : defaults.about.items) }, sections: mergeSections(saved.sections, defaults.sections), contact, navigation: saved.navigation || defaults.navigation, projects: normalizeCollection(saved.projects || defaults.projects), competitions: normalizeCollection(needsCompetitionTemplate ? defaults.competitions : saved.competitions || []), learningJourney: normalizeLearning(saved.learningJourney || []), educationStages: normalizeEducation(needsStructuredEducation ? defaults.educationStages : saved.educationStages || defaults.educationStages), skillGroups: normalizeSkills(needsStructuredEducation ? defaults.skillGroups : saved.skillGroups || defaults.skillGroups), strengths: saved.strengths || defaults.strengths };
 }
 export function PortfolioProvider({ children }) {
@@ -52,10 +52,10 @@ export function PortfolioProvider({ children }) {
   const cancel = () => { setContent(clone(savedContent)); setHistory([]); setFuture([]); setStatus('Unsaved changes discarded'); };
   const reset = () => { const next = createDefaultContent(); setContent(next); setHistory([]); setFuture([]); setStatus('Default content loaded — save to publish it.'); };
   const hostMode = hostSession && !previewMode;
-  const setHostMode = value => {
+  const setHostMode = useCallback(value => {
     setHostSession(value);
     if (!value) setPreviewMode(false);
-  };
+  }, []);
   const value = useMemo(() => ({ content, update, hostMode, hostSession, setHostMode, previewMode, setPreviewMode, hostAccessRequest, requestHostAccess: () => setHostAccessRequest(value => value + 1), editorRequest, requestEditor: setEditorRequest, save, cancel, reset, undo, redo, canUndo: history.length > 0, canRedo: future.length > 0, changeCount: history.length, status, isDirty: JSON.stringify(content) !== JSON.stringify(savedContent) }), [content, hostMode, hostSession, previewMode, hostAccessRequest, editorRequest, status, savedContent, history, future]);
   return <PortfolioContext.Provider value={value}>{children}</PortfolioContext.Provider>;
 }

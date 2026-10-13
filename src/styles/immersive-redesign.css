@@ -419,7 +419,7 @@ body::before {
 .socials a:hover { color: var(--signal); }
 
 /* Immersive details and galleries remain conventional enough to operate. */
-.detail-modal { z-index: 1200; background: #060910ad; backdrop-filter: blur(16px) saturate(.82); }
+.detail-modal { z-index: 2300; background: #060910ad; backdrop-filter: blur(16px) saturate(.82); }
 .detail-only-modal { grid-template-columns: minmax(0, 1fr) minmax(320px, .82fr); gap: clamp(20px, 3vw, 48px); height: 100dvh; overflow-y: auto; overscroll-behavior: contain; padding-inline: max(24px, calc((100vw - 1600px) / 2)); }
 .detail-only-modal > .detail-stage,.detail-only-modal > .detail-copy { position: relative; z-index: 1; border: 1px solid #ffffff1b; box-shadow: 0 28px 90px #0009; }
 .detail-modal.gallery-grid-modal { background: #060910d9; backdrop-filter: blur(16px) saturate(.82); }
@@ -440,6 +440,7 @@ body::before {
 
 /* Host UI always remains above WebGL and keeps its own layout. */
 .host-workspace-controls,.cms-drawer,.exit-preview { z-index: 2000 !important; }
+body.host-mode-active #root > .navbar { z-index: 2050 !important; }
 .host-gallery-editor-overlay { z-index: 2100 !important; }
 .host-dialog,.host-confirm { z-index: 2200 !important; }
 .section-visibility-toggle,.collection-host-bar,.about-inline-actions,.inline-record-actions,.host-card-actions,.skill-inline-actions { position: relative; z-index: 20; }

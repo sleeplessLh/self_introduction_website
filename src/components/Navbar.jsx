@@ -8,13 +8,20 @@ export default function Navbar() {
   const [hidden, setHidden] = useState(false);
   const moreMenu = useRef(null);
   const lastScrollY = useRef(0);
-  const { content, update, hostMode, hostSession, setHostMode, requestHostAccess, requestEditor } = usePortfolio();
+  const { content, update, hostMode, hostSession, setHostMode, requestHostAccess, requestEditor, isDirty, cancel } = usePortfolio();
   const setInitials = value => update(current => ({ ...current, profile: { ...current.profile, initials: value } }));
   const setNav = (index, value) => update(current => ({ ...current, navigation: current.navigation.map((item, itemIndex) => itemIndex === index ? { ...item, label: value } : item) }));
   const setHero = (key, value) => update(current => ({ ...current, hero: { ...current.hero, [key]: value } }));
   const closeMore = () => { if (moreMenu.current) moreMenu.current.open = false; };
   const openHost = () => { closeMore(); requestHostAccess(); };
-  const exitHost = async () => { closeMore(); await fetch('/api/host/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => {}); setHostMode(false); window.history.replaceState({}, '', `${window.location.pathname}${window.location.hash}`); };
+  const exitHost = async () => {
+    closeMore();
+    if (isDirty && !window.confirm('Discard unsaved changes and exit Host Mode?')) return;
+    if (isDirty) cancel();
+    await fetch('/api/host/logout', { method: 'POST', credentials: 'same-origin' }).catch(() => {});
+    setHostMode(false);
+    window.history.replaceState({}, '', `${window.location.pathname}${window.location.hash}`);
+  };
 
   useEffect(() => {
     const close = event => { if (event.key === 'Escape' || (moreMenu.current?.open && !moreMenu.current.contains(event.target))) closeMore(); };
