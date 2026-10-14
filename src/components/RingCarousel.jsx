@@ -197,13 +197,15 @@ export default function RingCarousel({ items, activeIndex, setActiveIndex, type,
     return () => observer.disconnect();
   }, []);
   useEffect(() => {
-    if (!activeCard.current) return undefined;
+    const card = activeCard.current;
+    if (!card) return undefined;
     const measure = () => {
-      const { width, height } = activeCard.current.getBoundingClientRect();
+      if (!card.isConnected) return;
+      const { width, height } = card.getBoundingClientRect();
       setCenterSize(current => current.width === width && current.height === height ? current : { width, height });
     };
     const observer = new ResizeObserver(measure);
-    observer.observe(activeCard.current);
+    observer.observe(card);
     measure();
     return () => observer.disconnect();
   }, [active?.id]);

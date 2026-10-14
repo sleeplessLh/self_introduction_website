@@ -74,13 +74,21 @@ try {
   await desktop.waitForTimeout(450);
   await desktop.screenshot({ path: resolve(output, 'desktop-projects.png') });
 
-  await desktop.locator('#projects .gallery-link').first().click();
-  await desktop.locator('.gallery-grid-modal').waitFor();
-  const galleryImages = await desktop.locator('.gallery-photo-grid figure').count();
-  const galleryEmpty = await desktop.locator('.gallery-grid-modal .gallery-empty-state').count();
-  expect(galleryImages > 0 || galleryEmpty === 1, 'The first project gallery has neither images nor an empty state.');
-  await desktop.locator('.gallery-grid-modal > .detail-close').click();
-  await desktop.locator('.gallery-grid-modal').waitFor({ state: 'detached' });
+  const galleryEntry = desktop.locator('#projects .ring-accessible-list button').filter({ hasText: 'gallery images' }).first();
+  let galleryImages = 0;
+  let galleryEmpty = false;
+  if (await galleryEntry.count()) {
+    await galleryEntry.click();
+    await desktop.locator('#projects .gallery-link').click();
+    await desktop.locator('.gallery-grid-modal').waitFor();
+    galleryImages = await desktop.locator('.gallery-photo-grid figure').count();
+    expect(galleryImages > 0, 'The selected project gallery has no images.');
+    await desktop.locator('.gallery-grid-modal > .detail-close').click();
+    await desktop.locator('.gallery-grid-modal').waitFor({ state: 'detached' });
+  } else {
+    galleryEmpty = await desktop.locator('#projects .gallery-empty-label').count() === 1;
+    expect(galleryEmpty, 'An empty project gallery has no empty state.');
+  }
   await desktop.locator('#projects .card-open').first().click();
   await desktop.locator('.detail-only-modal').waitFor();
   await desktop.locator('.detail-only-modal > .detail-close').click();
@@ -113,7 +121,7 @@ try {
   expect(focusTag && focusTag !== 'BODY', 'Keyboard navigation did not produce a visible focus target.');
   expect(desktopErrors.length === 0, `Desktop browser errors: ${desktopErrors.join(' | ')}`);
   results.galleryImages = galleryImages;
-  results.galleryEmpty = galleryEmpty === 1;
+  results.galleryEmpty = galleryEmpty;
   results.desktopErrors = desktopErrors;
   await desktopContext.close();
 
