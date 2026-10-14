@@ -275,7 +275,6 @@ export default function RingCarousel({ items, activeIndex, setActiveIndex, type,
         </div>
       </article>
     </div>}
-    <p className="ring-instruction">Drag to orbit · use arrows to explore · select a card for details</p>
     <div className="ring-accessible-list" aria-label={`All ${singular.toLowerCase()} entries`}>
       {items.map((item, index) => <button key={item.id} type="button" onClick={() => focus(index)} aria-current={index === activeIndex ? 'true' : undefined}>{String(index + 1).padStart(2, '0')} {item.title}{galleryCount(item) ? ` · ${galleryCount(item)} gallery images` : ''}</button>)}
     </div>

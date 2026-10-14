@@ -37,7 +37,6 @@
 .ring-card-caption { width: 270px; padding: 13px 17px; border: 1px solid #ffffff30; border-radius: 10px; background: #090e19ed; color: var(--chalk); box-shadow: 0 12px 30px #0009; }
 .ring-card-caption small { display: block; margin-bottom: 4px; color: var(--signal); font: 10px 'DM Mono', monospace; }
 .ring-card-caption strong { display: block; overflow: hidden; font: 600 20px/1.1 Manrope, sans-serif; text-overflow: ellipsis; white-space: nowrap; }
-.ring-instruction { position: absolute; z-index: 2; left: 24px; bottom: 16px; margin: 0; color: #cad4d4; font: 10px 'DM Mono', monospace; letter-spacing: .035em; pointer-events: none; }
 .ring-accessible-list { position: absolute; z-index: 2; right: 18px; bottom: 13px; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; max-width: 45%; }
 .ring-accessible-list button { max-width: 120px; padding: 6px 9px; overflow: hidden; border: 1px solid #ffffff30; border-radius: 999px; background: #08111bdc; color: #cbd5d7; font: 9px 'DM Mono', monospace; text-overflow: ellipsis; white-space: nowrap; cursor: pointer; }
 .ring-accessible-list button[aria-current="true"] { border-color: var(--signal); color: var(--signal); }
@@ -59,7 +58,6 @@
   .ring-active-card .collection-meta { padding-top: 7px; }
   .ring-active-card .collection-tags { display: none; }
   .ring-card-caption { width: 180px; }
-  .ring-instruction { left: 12px; bottom: 10px; max-width: 48%; font-size: 8px; line-height: 1.4; }
   .ring-accessible-list { right: 9px; bottom: 8px; max-width: 45%; max-height: 72px; overflow-y: auto; }
   .ring-accessible-list button { max-width: 90px; font-size: 8px; }
   .ring-pair-preview { display: none; }
