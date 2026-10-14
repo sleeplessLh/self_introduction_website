@@ -43,7 +43,7 @@
   overflow: hidden;
   border: 1px solid rgba(193, 214, 226, .18);
   border-radius: clamp(18px, 2vw, 28px);
-  background: linear-gradient(120deg, rgba(17, 25, 35, .95), rgba(12, 18, 28, .90));
+  background: linear-gradient(120deg, #111923, #0c121c);
   box-shadow: inset 0 1px rgba(255,255,255,.065), 0 22px 60px rgba(0,0,0,.14);
   transition: border-color .35s ease, background-color .35s ease, transform .35s ease, box-shadow .35s ease;
 }
