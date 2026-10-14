@@ -11,6 +11,7 @@ const baseUrl = 'http://127.0.0.1:5195';
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 const group = (index, skills) => ({ id: `test-group-${index}`, name: index === 5 ? 'An intentionally longer technical discipline heading' : `Skill Group ${index}`, description: index === 5 ? 'A longer group description that should wrap naturally without clipping or pushing into adjacent cards.' : '', skills: Array.from({ length: skills }, (_, item) => ({ id: `test-skill-${index}-${item}`, name: item === 0 && index === 5 ? 'A very long skill name that must remain visible on a narrow screen' : `Skill ${index}.${item}` })) });
 const fixtures = [1, 2, 3, 4, 5, 8].map(count => ({ count, content: { ...snapshot, skillGroups: Array.from({ length: count }, (_, index) => group(index + 1, index === 2 ? 0 : index === 4 ? 7 : 3)) } }));
+fixtures.push({ count: snapshot.skillGroups.length, content: snapshot, actual: true });
 await mkdir(output, { recursive: true });
 const server = await createServer({ root, server: { host: '127.0.0.1', port: 5195, strictPort: true } });
 await server.listen();
@@ -43,6 +44,7 @@ try {
       assert(geometry.groups.every((item, index) => item.itemCount === fixture.content.skillGroups[index].skills.length), `${width}/${fixture.count}: lost skills`);
       assert(errors.length === 0, `${width}/${fixture.count}: ${errors.join(' | ')}`);
       if ((width === 1440 || width === 390) && fixture.count === 5) await page.screenshot({ path: resolve(output, `visitor-${width}.png`) });
+      if ((width === 1440 || width === 390) && fixture.actual) await page.screenshot({ path: resolve(output, `actual-content-${width}.png`) });
       results.push({ width, groups: fixture.count, status: 'PASS' });
       await context.close();
     }
