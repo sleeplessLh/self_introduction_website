@@ -21,7 +21,7 @@
 .ring-pair-preview small,.ring-pair-preview span { color: var(--signal); font: 10px 'DM Mono', monospace; }
 .ring-pair-preview strong { font: 600 18px/1.14 Manrope, sans-serif; overflow-wrap: anywhere; }
 .ring-active-card { position: absolute; z-index: 2; top: 50%; left: 50%; width: min(390px, 38%); max-height: 610px; transform: translate(-50%, -50%); }
-.ring-active-card .collection-card { min-height: 0; border-color: #86f5df7d; background: #111823f5; box-shadow: 0 34px 92px #000b; }
+.ring-active-card .collection-card { min-height: 0; border-color: #86f5df7d; background: #111823; box-shadow: 0 34px 92px #000b; }
 #competitions .ring-active-card .collection-card { border-color: #ff947380; }
 .ring-active-card .collection-card:hover { transform: none; }
 .ring-active-card .collection-cover { aspect-ratio: 1.7; }

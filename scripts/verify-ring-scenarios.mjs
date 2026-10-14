@@ -37,11 +37,19 @@ try {
     assert(await section.locator('.carousel-indicators button').count() === (count > 1 ? count : 0), `${count}: indicator count mismatch`);
     const activeOwner = () => ring.locator('.ring-active-card').getAttribute('data-ring-owner');
     assert(await activeOwner() === content.projects[0].id, `${count}: wrong initial item`);
+    assert(await ring.locator('.ring-active-card .collection-card').evaluate(element => getComputedStyle(element).backgroundColor === 'rgb(17, 24, 35)'), `${count}: center card is not opaque`);
     if (count > 1) {
       await section.getByRole('button', { name: 'Previous project', exact: true }).click();
       assert(await activeOwner() === content.projects.at(-1).id, `${count}: reverse wrap failed`);
       await section.getByRole('button', { name: 'Next project', exact: true }).click();
       assert(await activeOwner() === content.projects[0].id, `${count}: forward wrap failed`);
+      await ring.focus();
+      for (let index = 1; index < count; index++) {
+        await page.keyboard.press('ArrowRight');
+        assert(await activeOwner() === content.projects[index].id, `${count}: card ${index + 1} could not reach center`);
+      }
+      await page.keyboard.press('Home');
+      assert(await activeOwner() === content.projects[0].id, `${count}: keyboard Home did not restore first card`);
     }
     if (count === 5) {
       await page.waitForTimeout(250);
@@ -88,12 +96,12 @@ try {
     assert(await section.locator('.is-grid-view .collection-entry').count() === count, `${count}: archive missing records`);
     await section.getByRole('button', { name: /Carousel View/ }).click();
     await ring.scrollIntoViewIfNeeded();
-    await page.waitForTimeout(250);
+    await page.waitForTimeout(500);
     const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 2);
     assert(!horizontalOverflow, `${count}: horizontal overflow`);
     await ring.screenshot({ path: resolve(import.meta.dirname, `../artifacts/ring-count-${count}-${width}.png`) });
     assert(!errors.length, `${count}: browser error ${errors.join(' | ')}`);
-    console.log(`${count} cards at ${width}px: geometry, 360 wrap, archive, no page overflow PASS`);
+    console.log(`${count} cards at ${width}px: opaque center, every card focusable, 360 wrap, archive, no page overflow PASS`);
     await context.close();
   }
 
