@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import CollectionCard from './CollectionCard.jsx';
 import { galleryCount, ringRadius, signedDistance, wrapIndex } from '../utils/ringCarousel.js';
@@ -9,7 +9,7 @@ const canRenderWebGL = () => {
   catch { return false; }
 };
 
-function RingCard({ item, index, count, radius, angle, activeIndex, type, onFocus, onOpen, detailLabel, galleryLabel, achievementLabel }) {
+function RingCard({ item, index, count, radius, angle, activeIndex, type, compact, onFocus }) {
   const group = useRef();
   const [texture, setTexture] = useState(null);
   const labelTexture = useMemo(() => {
@@ -37,7 +37,7 @@ function RingCard({ item, index, count, radius, angle, activeIndex, type, onFocu
   const distance = signedDistance(index, activeIndex, count);
   const visible = Math.abs(distance) <= Math.min(3, Math.floor(count / 2));
   useEffect(() => {
-    if (!item.coverImage || !visible) { setTexture(null); return undefined; }
+    if (!item.coverImage || !visible || compact) { setTexture(null); return undefined; }
     let live = true;
     const loader = new THREE.TextureLoader();
     loader.load(item.coverImage, loaded => {
@@ -55,7 +55,7 @@ function RingCard({ item, index, count, radius, angle, activeIndex, type, onFocu
       setTexture(loaded);
     }, undefined, () => { if (live) setTexture(null); });
     return () => { live = false; };
-  }, [item.coverImage, visible]);
+  }, [item.coverImage, visible, compact]);
   useEffect(() => () => texture?.dispose(), [texture]);
   useEffect(() => () => labelTexture.dispose(), [labelTexture]);
   useFrame(() => {
@@ -63,14 +63,16 @@ function RingCard({ item, index, count, radius, angle, activeIndex, type, onFocu
   });
   const theta = index * Math.PI * 2 / Math.max(count, 1);
   const focused = distance === 0;
-  return <group ref={group} position={[Math.sin(theta) * radius, 0, Math.cos(theta) * radius]} visible={visible && !focused}>
+  const depthScale = compact ? .55 : Math.abs(distance) === 1 ? .82 : .68;
+  const sideTexture = compact ? null : texture;
+  return <group ref={group} position={[Math.sin(theta) * radius, 0, Math.cos(theta) * radius]} scale={depthScale} visible={visible && !focused}>
     <mesh position={[0, .15, -.035]} onClick={event => { event.stopPropagation(); onFocus(index); }}>
       <planeGeometry args={[1.78, 2.36]} />
       <meshBasicMaterial color={type === 'competition' ? '#ff9473' : '#86f5df'} transparent opacity={.75} side={THREE.DoubleSide} />
     </mesh>
     <mesh position={[0, .15, 0]} onClick={event => { event.stopPropagation(); onFocus(index); }}>
       <planeGeometry args={[1.72, 2.3]} />
-      <meshBasicMaterial color={texture ? '#ffffff' : type === 'competition' ? '#2d2630' : '#1a2735'} map={texture} side={THREE.DoubleSide} toneMapped={false} />
+      <meshBasicMaterial color={sideTexture ? '#858f9c' : type === 'competition' ? '#2d2630' : '#1a2735'} map={sideTexture} side={THREE.DoubleSide} toneMapped={false} />
     </mesh>
     <mesh position={[0, -.75, .012]} onClick={event => { event.stopPropagation(); onFocus(index); }}>
       <planeGeometry args={[1.72, .5]} />
@@ -79,8 +81,9 @@ function RingCard({ item, index, count, radius, angle, activeIndex, type, onFocu
   </group>;
 }
 
-function RingScene({ items, activeIndex, type, onFocus, onOpen, detailLabel, galleryLabel, achievementLabel, reducedMotion }) {
+function RingScene({ items, activeIndex, type, onFocus, reducedMotion }) {
   const root = useRef();
+  const compact = useThree(state => state.size.width < 600);
   const angle = useRef(0);
   const count = items.length;
   const radius = useMemo(() => ringRadius(count), [count]);
@@ -99,7 +102,7 @@ function RingScene({ items, activeIndex, type, onFocus, onOpen, detailLabel, gal
         <torusGeometry args={[radius, .012, 4, Math.max(64, count * 12)]} />
         <meshBasicMaterial color={type === 'competition' ? '#ff9473' : '#86f5df'} transparent opacity={.5} />
       </mesh>}
-      {items.map((item, index) => <RingCard key={item.id} item={item} index={index} count={count} radius={radius} angle={angle} activeIndex={activeIndex} type={type} onFocus={onFocus} onOpen={view => onOpen(item, view)} detailLabel={detailLabel} galleryLabel={galleryLabel} achievementLabel={achievementLabel} />)}
+      {items.map((item, index) => <RingCard key={item.id} item={item} index={index} count={count} radius={radius} angle={angle} activeIndex={activeIndex} type={type} compact={compact} onFocus={onFocus} />)}
     </group>
   </>;
 }
@@ -139,7 +142,7 @@ export default function RingCarousel({ items, activeIndex, setActiveIndex, type,
     onKeyDown={event => { if (event.target !== event.currentTarget) return; if (event.key === 'ArrowRight') { event.preventDefault(); focus(activeIndex + 1); } else if (event.key === 'ArrowLeft') { event.preventDefault(); focus(activeIndex - 1); } else if (event.key === 'Home') { event.preventDefault(); focus(0); } else if (event.key === 'End') { event.preventDefault(); focus(count - 1); } }}
     onPointerDown={onPointerDown} onPointerUp={onPointerUp} onPointerCancel={() => { gesture.current = null; }}>
     {nearViewport && <Canvas className="ring-canvas" frameloop="demand" camera={{ position: [0, 2.6, Math.max(9.4, ringRadius(count) + 6.7)], fov: 42, near: .1, far: 110 }} dpr={[1, 1.6]} gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}>
-      <RingScene items={items} activeIndex={activeIndex} type={type} onFocus={focus} onOpen={open} detailLabel={detailLabel} galleryLabel={galleryLabel} achievementLabel={achievementLabel} reducedMotion={reducedMotion} />
+      <RingScene items={items} activeIndex={activeIndex} type={type} onFocus={focus} reducedMotion={reducedMotion} />
     </Canvas>}
     {count === 2 && <button type="button" className="ring-pair-preview" onClick={() => focus(1 - activeIndex)} aria-label={`Focus ${items[1 - activeIndex].title}`}>
       {items[1 - activeIndex].coverImage && <img src={items[1 - activeIndex].coverImage} alt="" draggable="false" />}

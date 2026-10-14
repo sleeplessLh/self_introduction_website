@@ -54,3 +54,10 @@ No production content or media was changed. The stored project, competition, edu
 - The installed React Three Fiber version emits a non-failing Three.js `Clock` deprecation warning in development. There were no page errors or critical console errors.
 - Real production Host credentials were not used. Authentication and persistence were verified through the same HTTP/UI workflow with intercepted local fixtures, so production-service credential acceptance is NOT TESTED in this run.
 - No deployment or remote push was performed because the task explicitly requires approval before production deployment.
+
+## Follow-up visual refinement
+
+- Reduced the spatial scale and brightness of non-selected 3D cards so pale covers no longer overpower the central reading surface.
+- On narrow screens, the surrounding cards use restrained dark materials rather than loading cover textures; the selected card still shows its actual cover image at full fidelity. This also reduces mobile GPU texture work.
+- The carousel screenshot test now waits for the re-mounted WebGL scene after returning from View All, preventing misleading blank-frame captures.
+- Reverified `npm run build`, five-width Project/Competition carousel navigation and screenshots, and `npm run verify:critical` with isolated Host fixtures. All passed. The existing non-failing Three.js `Clock` development warning remains.

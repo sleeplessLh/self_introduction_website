@@ -52,6 +52,8 @@ try {
       const activeBounds = await ring.locator('.ring-active-card').boundingBox();
       const ringBounds = await ring.boundingBox();
       assert(activeBounds && ringBounds && activeBounds.width >= 160 && activeBounds.x >= ringBounds.x - 4 && activeBounds.x + activeBounds.width <= ringBounds.x + ringBounds.width + 4, `${width} ${sectionId}: active card unreadable or clipped ${JSON.stringify(activeBounds)}`);
+      await ring.locator('canvas').waitFor();
+      await page.waitForTimeout(500);
       await ring.screenshot({ path: resolve(import.meta.dirname, `../artifacts/ring-${sectionId}-${width}.png`) });
     }
     assert(!errors.length, `${width}: browser errors: ${errors.join(' | ')}`);
