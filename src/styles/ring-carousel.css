@@ -11,7 +11,7 @@
 }
 .ring-carousel:focus-visible { outline: 2px solid var(--signal); outline-offset: 4px; }
 .ring-carousel.is-dragging { cursor: grabbing; }
-.ring-carousel.is-dragging .ring-active-card { opacity: 0; pointer-events: none; }
+.ring-carousel.is-dragging .ring-active-card,.ring-carousel.is-rotating .ring-active-card { opacity: 0; pointer-events: none; }
 .ring-carousel.is-dragging .ring-canvas { cursor: grabbing; }
 .ring-loading { display: grid; min-height: 560px; place-items: center; border: 1px solid #ffffff26; border-radius: 28px; color: var(--signal); font: 12px 'DM Mono', monospace; }
 .ring-canvas { position: absolute !important; inset: 0; }
@@ -20,7 +20,7 @@
 .ring-pair-preview img { width: 100%; aspect-ratio: 1.5; border-radius: 9px; object-fit: cover; }
 .ring-pair-preview small,.ring-pair-preview span { color: var(--signal); font: 10px 'DM Mono', monospace; }
 .ring-pair-preview strong { font: 600 18px/1.14 Manrope, sans-serif; overflow-wrap: anywhere; }
-.ring-active-card { position: absolute; z-index: 2; top: 50%; left: 50%; width: min(390px, 38%); max-height: 610px; transform: translate(-50%, -50%); }
+.ring-active-card { position: absolute; z-index: 2; top: 50%; left: 50%; width: min(390px, 38%); max-height: 610px; transform: translate(-50%, -50%); transition: opacity .22s ease; }
 .ring-active-card .collection-card { min-height: 0; border-color: #86f5df7d; background: #111823; box-shadow: 0 34px 92px #000b; }
 #competitions .ring-active-card .collection-card { border-color: #ff947380; }
 .ring-active-card .collection-card:hover { transform: none; }
@@ -51,7 +51,7 @@
 }
 @media (max-width: 600px) {
   .ring-carousel { height: 545px; }
-  .ring-active-card { width: min(290px, 80%); max-height: 470px; }
+  .ring-active-card { width: min(270px, 72%); max-height: 470px; }
   .ring-active-card .collection-cover { aspect-ratio: 1.8; }
   .ring-active-card .collection-info { padding: 14px; }
   .ring-active-card .collection-info h3 { font-size: 21px; }

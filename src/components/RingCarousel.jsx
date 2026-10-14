@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import CollectionCard from './CollectionCard.jsx';
@@ -11,14 +11,12 @@ const canRenderWebGL = () => {
 const WORLD_X = new THREE.Vector3(1, 0, 0);
 const WORLD_Y = new THREE.Vector3(0, 1, 0);
 
-const smoothVisibility = (gap, depthGap) => {
-  if (gap <= 0) return 0;
-  const fadeDistance = Math.min(.07, .035 + Math.max(0, depthGap) * .005);
-  const progress = Math.min(1, gap / fadeDistance);
+const smoothstep = value => {
+  const progress = THREE.MathUtils.clamp(value, 0, 1);
   return progress * progress * (3 - 2 * progress);
 };
 
-function RingCard({ item, index, count, radius, angle, activeIndex, type, compact, dragging, centerSize, reducedMotion, onFocus }) {
+function RingCard({ item, index, count, radius, angle, activeIndex, type, compact, inMotion, centerSize, reducedMotion, onFocus }) {
   const group = useRef();
   const edgeMaterial = useRef();
   const faceMaterial = useRef();
@@ -26,7 +24,6 @@ function RingCard({ item, index, count, radius, angle, activeIndex, type, compac
   const opacity = useRef(0);
   const worldCenter = useMemo(() => new THREE.Vector3(), []);
   const projected = useMemo(() => new THREE.Vector3(), []);
-  const frontWorld = useMemo(() => new THREE.Vector3(), []);
   const [texture, setTexture] = useState(null);
   const labelTexture = useMemo(() => {
     const canvas = document.createElement('canvas');
@@ -51,10 +48,10 @@ function RingCard({ item, index, count, radius, angle, activeIndex, type, compac
     return result;
   }, [item.title, item.date, item.label, type]);
   const distance = signedDistance(index, activeIndex, count);
-  const visible = Math.abs(distance) <= Math.min(3, Math.floor(count / 2));
+  const textureCandidate = Math.abs(distance) <= 4;
   const focused = distance === 0;
   useEffect(() => {
-    if (!item.coverImage || !visible || compact && !focused) { setTexture(null); return undefined; }
+    if (!item.coverImage || !textureCandidate || compact && Math.abs(distance) > 1) { setTexture(null); return undefined; }
     let live = true;
     const loader = new THREE.TextureLoader();
     loader.load(item.coverImage, loaded => {
@@ -72,34 +69,36 @@ function RingCard({ item, index, count, radius, angle, activeIndex, type, compac
       setTexture(loaded);
     }, undefined, () => { if (live) setTexture(null); });
     return () => { live = false; };
-  }, [item.coverImage, visible, compact, focused]);
+  }, [item.coverImage, textureCandidate, compact, distance]);
   useEffect(() => () => texture?.dispose(), [texture]);
   useEffect(() => () => labelTexture.dispose(), [labelTexture]);
   useFrame(({ camera, size, invalidate }, delta) => {
-    if (!group.current || !visible) return;
+    if (!group.current) return;
     group.current.rotation.y = -angle.current;
     camera.updateMatrixWorld();
     group.current.updateWorldMatrix(true, false);
     group.current.getWorldPosition(worldCenter);
-    const frontIndex = dragging ? wrapIndex(Math.round(-angle.current / (Math.PI * 2 / Math.max(count, 1))), count) : activeIndex;
-    const frontTheta = frontIndex * Math.PI * 2 / Math.max(count, 1) + angle.current;
-    frontWorld.set(Math.sin(frontTheta) * radius, 0, Math.cos(frontTheta) * radius);
-    const depth = -projected.copy(worldCenter).applyMatrix4(camera.matrixWorldInverse).z;
-    const frontDepth = -projected.copy(frontWorld).applyMatrix4(camera.matrixWorldInverse).z;
+    const relativeAngle = Math.atan2(Math.sin(theta + angle.current), Math.cos(theta + angle.current));
+    const step = Math.PI * 2 / Math.max(count, 1);
+    const scale = (compact ? 2.05 : count >= 20 ? 1.22 : count >= 12 ? 1.32 : 1.42) / (1 + .32 * Math.abs(relativeAngle) / step);
+    group.current.scale.setScalar(scale);
     const centerX = projected.copy(worldCenter).project(camera).x;
     const centerY = projected.y;
-    const rightX = projected.copy(worldCenter).addScaledVector(WORLD_X, .89 * depthScale).project(camera).x;
-    const topY = projected.copy(worldCenter).addScaledVector(WORLD_Y, 1.18 * depthScale).project(camera).y;
+    const rightX = projected.copy(worldCenter).addScaledVector(WORLD_X, .89 * scale).project(camera).x;
+    const topY = projected.copy(worldCenter).addScaledVector(WORLD_Y, 1.18 * scale).project(camera).y;
     const halfWidth = Math.abs(rightX - centerX);
     const halfHeight = Math.abs(topY - centerY);
     const protectedHalfWidth = Math.min(.95, (centerSize.width + 12) / size.width);
     const protectedHalfHeight = Math.min(.95, (centerSize.height + 12) / size.height);
-    const gapX = Math.abs(centerX) - halfWidth - protectedHalfWidth;
-    const gapY = Math.abs(centerY) - halfHeight - protectedHalfHeight;
-    const gap = Math.max(gapX, gapY);
-    const priority = index === frontIndex;
-    const targetOpacity = !dragging && index === activeIndex ? 0 : priority && dragging ? 1 : smoothVisibility(gap, depth - frontDepth);
-    opacity.current = reducedMotion || priority && dragging ? targetOpacity : THREE.MathUtils.damp(opacity.current, targetOpacity, 12, delta);
+    const revealedWidth = (Math.abs(centerX) + halfWidth - protectedHalfWidth) / Math.max(.01, halfWidth * 2);
+    const revealedHeight = (Math.abs(centerY) + halfHeight - protectedHalfHeight) / Math.max(.01, halfHeight * 2);
+    const sideVisibility = smoothstep(Math.max(revealedWidth, revealedHeight) / .28);
+    const frontVisibility = inMotion ? smoothstep(1 - Math.abs(relativeAngle) / Math.max(step * 1.15, .45)) : 0;
+    const visibleSideSlots = count <= 3 ? 1 : Math.min(4, Math.max(1, Math.floor(count / 4)));
+    const arcLimit = visibleSideSlots * step + .3;
+    const arcVisibility = smoothstep((arcLimit - Math.abs(relativeAngle)) / .3);
+    const targetOpacity = !inMotion && index === activeIndex ? 0 : arcVisibility * Math.max(sideVisibility, frontVisibility);
+    opacity.current = reducedMotion ? targetOpacity : THREE.MathUtils.damp(opacity.current, targetOpacity, 12, delta);
     group.current.visible = opacity.current > .015;
     for (const material of [edgeMaterial.current, faceMaterial.current, labelMaterial.current]) {
       if (!material) continue;
@@ -109,39 +108,39 @@ function RingCard({ item, index, count, radius, angle, activeIndex, type, compac
     if (Math.abs(opacity.current - targetOpacity) > .01) invalidate();
   });
   const theta = index * Math.PI * 2 / Math.max(count, 1);
-  const depthScale = focused ? compact ? 1.15 : 1.2 : compact ? .55 : Math.abs(distance) === 1 ? .82 : .68;
-  const sideTexture = compact && !focused ? null : texture;
+  const sideTexture = compact && Math.abs(distance) > 1 ? null : texture;
   const focusIfVisible = event => { event.stopPropagation(); if (opacity.current > .45) onFocus(index); };
-  return <group ref={group} position={[Math.sin(theta) * radius, 0, Math.cos(theta) * radius]} scale={depthScale} visible={visible}>
-    <mesh position={[0, .15, -.035]} onClick={focusIfVisible}>
+  return <group ref={group} position={[Math.sin(theta) * radius, 0, Math.cos(theta) * radius]}>
+    <mesh position={[0, .15, -.035]} renderOrder={-1} onClick={focusIfVisible}>
       <planeGeometry args={[1.78, 2.36]} />
       <meshBasicMaterial ref={edgeMaterial} color={type === 'competition' ? '#ff9473' : '#86f5df'} transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} />
     </mesh>
     <mesh position={[0, .15, 0]} onClick={focusIfVisible}>
       <planeGeometry args={[1.72, 2.3]} />
-      <meshBasicMaterial ref={faceMaterial} color={sideTexture ? focused ? '#ffffff' : '#858f9c' : type === 'competition' ? '#2d2630' : '#1a2735'} map={sideTexture} transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} toneMapped={false} />
+      <meshBasicMaterial ref={faceMaterial} color={sideTexture ? focused ? '#ffffff' : '#dce6ea' : type === 'competition' ? '#2d2630' : '#1a2735'} map={sideTexture} transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} toneMapped={false} />
     </mesh>
-    <mesh position={[0, -.75, .012]} onClick={focusIfVisible}>
+    <mesh position={[0, -.75, .012]} renderOrder={1} onClick={focusIfVisible}>
       <planeGeometry args={[1.72, .5]} />
       <meshBasicMaterial ref={labelMaterial} map={labelTexture} transparent opacity={0} depthWrite={false} side={THREE.DoubleSide} toneMapped={false} />
     </mesh>
   </group>;
 }
 
-function RingScene({ items, activeIndex, type, onFocus, reducedMotion, dragging, dragOffset, centerSize }) {
+function RingScene({ items, activeIndex, type, onFocus, reducedMotion, dragging, dragOffset, inMotion, centerSize }) {
   const root = useRef();
   const compact = useThree(state => state.size.width < 600);
   const camera = useThree(state => state.camera);
   const invalidate = useThree(state => state.invalidate);
-  const angle = useRef(0);
+  const angle = useRef(-activeIndex * Math.PI * 2 / Math.max(items.length, 1));
   const dragBase = useRef(0);
   const wasDragging = useRef(false);
   const count = items.length;
   const radius = useMemo(() => ringRadius(count), [count]);
   useEffect(() => {
+    camera.position.set(0, compact ? 2.1 : 2.6, compact ? Math.max(16, radius + 14) : Math.max(9.4, radius + 6.7));
     camera.lookAt(0, 0, Math.max(0, radius - 3));
     invalidate();
-  }, [camera, radius, invalidate]);
+  }, [camera, compact, radius, invalidate]);
   const target = -activeIndex * Math.PI * 2 / Math.max(count, 1);
   useFrame((state, delta) => {
     const shortest = Math.atan2(Math.sin(target - angle.current), Math.cos(target - angle.current));
@@ -149,13 +148,12 @@ function RingScene({ items, activeIndex, type, onFocus, reducedMotion, dragging,
       if (!wasDragging.current) dragBase.current = angle.current;
       angle.current = dragBase.current + dragOffset;
     } else {
-      angle.current = reducedMotion ? angle.current + shortest : THREE.MathUtils.damp(angle.current, angle.current + shortest, 5.5, delta);
+      angle.current = reducedMotion ? angle.current + shortest : THREE.MathUtils.damp(angle.current, angle.current + shortest, 4.1, delta);
     }
     wasDragging.current = dragging;
     if (root.current) root.current.rotation.y = angle.current;
     if (dragging || Math.abs(shortest) > .001) state.invalidate();
   });
-  const visualIndex = dragging ? wrapIndex(activeIndex - Math.round(dragOffset / (Math.PI * 2 / Math.max(count, 1))), count) : activeIndex;
   return <>
     <ambientLight intensity={1.35} />
     <pointLight position={[0, 5, 5]} intensity={24} color={type === 'competition' ? '#ff9473' : '#86f5df'} />
@@ -164,7 +162,7 @@ function RingScene({ items, activeIndex, type, onFocus, reducedMotion, dragging,
         <torusGeometry args={[radius, .012, 4, Math.max(64, count * 12)]} />
         <meshBasicMaterial color={type === 'competition' ? '#ff9473' : '#86f5df'} transparent opacity={.5} />
       </mesh>}
-      {items.map((item, index) => <RingCard key={item.id} item={item} index={index} count={count} radius={radius} angle={angle} activeIndex={visualIndex} type={type} compact={compact} dragging={dragging} centerSize={centerSize} reducedMotion={reducedMotion} onFocus={onFocus} />)}
+      {items.map((item, index) => <RingCard key={item.id} item={item} index={index} count={count} radius={radius} angle={angle} activeIndex={activeIndex} type={type} compact={compact} inMotion={inMotion} centerSize={centerSize} reducedMotion={reducedMotion} onFocus={onFocus} />)}
     </group>
   </>;
 }
@@ -175,13 +173,23 @@ export default function RingCarousel({ items, activeIndex, setActiveIndex, type,
   const [nearViewport, setNearViewport] = useState(false);
   const [dragOffset, setDragOffset] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const [rotating, setRotating] = useState(false);
   const [centerSize, setCenterSize] = useState({ width: 390, height: 430 });
   const stage = useRef(null);
   const activeCard = useRef(null);
   const gesture = useRef(null);
   const suppress = useRef(false);
+  const previousIndex = useRef(activeIndex);
   const count = items.length;
   const active = items[activeIndex] || items[0];
+  useLayoutEffect(() => {
+    const changed = previousIndex.current !== activeIndex && count > 1;
+    previousIndex.current = activeIndex;
+    if (!changed) { setRotating(false); return undefined; }
+    setRotating(!reducedMotion);
+    const timeout = window.setTimeout(() => setRotating(false), reducedMotion ? 0 : 1050);
+    return () => window.clearTimeout(timeout);
+  }, [activeIndex, count, reducedMotion]);
   useEffect(() => {
     if (!stage.current) return undefined;
     const observer = new IntersectionObserver(([entry]) => setNearViewport(entry.isIntersecting), { rootMargin: '300px 0px' });
@@ -236,11 +244,11 @@ export default function RingCarousel({ items, activeIndex, setActiveIndex, type,
   if (!webgl) return <div className="ring-fallback" aria-label={`${singular} gallery`}>
     {items.map(item => <CollectionCard key={item.id} item={item} type={type} detailLabel={detailLabel} galleryLabel={galleryLabel} achievementLabel={achievementLabel} onOpen={view => open(item, view)} />)}
   </div>;
-  return <div ref={stage} className={`ring-carousel${dragging ? ' is-dragging' : ''}`} role="region" aria-roledescription="carousel" aria-label={`${singular} 3D carousel`} tabIndex={0}
+  return <div ref={stage} className={`ring-carousel${dragging ? ' is-dragging' : ''}${rotating ? ' is-rotating' : ''}`} role="region" aria-roledescription="carousel" aria-label={`${singular} 3D carousel`} tabIndex={0}
     onKeyDown={event => { if (event.target !== event.currentTarget) return; if (event.key === 'ArrowRight') { event.preventDefault(); focus(activeIndex + 1); } else if (event.key === 'ArrowLeft') { event.preventDefault(); focus(activeIndex - 1); } else if (event.key === 'Home') { event.preventDefault(); focus(0); } else if (event.key === 'End') { event.preventDefault(); focus(count - 1); } }}
     onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={() => { gesture.current = null; setDragging(false); setDragOffset(0); }}>
     {nearViewport && <Canvas className="ring-canvas" frameloop="demand" camera={{ position: [0, 2.6, Math.max(9.4, ringRadius(count) + 6.7)], fov: 42, near: .1, far: 110 }} dpr={[1, 1.6]} gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}>
-      <RingScene items={items} activeIndex={activeIndex} type={type} onFocus={index => { if (!suppress.current) focus(index); }} reducedMotion={reducedMotion} dragging={dragging} dragOffset={dragOffset} centerSize={centerSize} />
+      <RingScene items={items} activeIndex={activeIndex} type={type} onFocus={index => { if (!suppress.current) focus(index); }} reducedMotion={reducedMotion} dragging={dragging} dragOffset={dragOffset} inMotion={dragging || rotating} centerSize={centerSize} />
     </Canvas>}
     {count === 2 && <button type="button" className="ring-pair-preview" onClick={() => focus(1 - activeIndex)} aria-label={`Focus ${items[1 - activeIndex].title}`}>
       {items[1 - activeIndex].coverImage && <img src={items[1 - activeIndex].coverImage} alt="" draggable="false" />}

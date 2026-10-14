@@ -38,6 +38,37 @@ try {
     const activeOwner = () => ring.locator('.ring-active-card').getAttribute('data-ring-owner');
     assert(await activeOwner() === content.projects[0].id, `${count}: wrong initial item`);
     assert(await ring.locator('.ring-active-card .collection-card').evaluate(element => getComputedStyle(element).backgroundColor === 'rgb(17, 24, 35)'), `${count}: center card is not opaque`);
+    if (count === 5) {
+      await page.waitForTimeout(500);
+      await ring.screenshot({ path: resolve(import.meta.dirname, '../artifacts/ring-rotation-initial-5.png') });
+      const initialFrame = await ring.locator('canvas').screenshot();
+      await section.getByRole('button', { name: 'Next project', exact: true }).click();
+      await page.waitForTimeout(280);
+      assert(await ring.evaluate(element => element.classList.contains('is-rotating')), 'Next did not start a spatial transition');
+      await ring.screenshot({ path: resolve(import.meta.dirname, '../artifacts/ring-rotation-mid-5.png') });
+      const midFrame = await ring.locator('canvas').screenshot();
+      assert(Buffer.compare(initialFrame, midFrame) !== 0, 'Next did not redraw the 3D ring');
+      await page.waitForTimeout(900);
+      assert(!(await ring.evaluate(element => element.classList.contains('is-rotating'))), 'Next rotation did not settle');
+      assert(await activeOwner() === content.projects[1].id, 'Next settled on the wrong card');
+      await ring.screenshot({ path: resolve(import.meta.dirname, '../artifacts/ring-rotation-final-5.png') });
+      const finalFrame = await ring.locator('canvas').screenshot();
+      await section.getByRole('button', { name: 'Previous project', exact: true }).click();
+      await page.waitForTimeout(280);
+      assert(await ring.evaluate(element => element.classList.contains('is-rotating')), 'Previous did not start a reverse transition');
+      await ring.screenshot({ path: resolve(import.meta.dirname, '../artifacts/ring-rotation-reverse-mid-5.png') });
+      const reverseFrame = await ring.locator('canvas').screenshot();
+      assert(Buffer.compare(finalFrame, reverseFrame) !== 0, 'Previous did not redraw the 3D ring');
+      await page.waitForTimeout(900);
+      assert(await activeOwner() === content.projects[0].id, 'Previous settled on the wrong card');
+      for (let click = 0; click < 3; click++) await section.getByRole('button', { name: 'Next project', exact: true }).click();
+      assert(await activeOwner() === content.projects[3].id, 'Rapid Next clicks selected the wrong card');
+      await page.waitForTimeout(1200);
+      assert(!(await ring.evaluate(element => element.classList.contains('is-rotating'))), 'Rapid Next rotation did not settle');
+      await ring.focus();
+      await page.keyboard.press('Home');
+      await page.waitForTimeout(1200);
+    }
     if (count > 1) {
       await section.getByRole('button', { name: 'Previous project', exact: true }).click();
       assert(await activeOwner() === content.projects.at(-1).id, `${count}: reverse wrap failed`);

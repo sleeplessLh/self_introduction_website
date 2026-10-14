@@ -9,7 +9,7 @@ export const signedDistance = (index, active, count) => {
 export const ringRadius = (count, cardWidth = 2.75, gap = .34) => {
   if (count <= 1) return 0;
   if (count === 2) return 2.25;
-  return Math.max(2.65, (cardWidth + gap) / (2 * Math.sin(Math.PI / count)));
+  return Math.max(3.6, (cardWidth + gap) / (2 * Math.sin(Math.PI / count)));
 };
 
 export const galleryCount = item => (item.gallery || []).filter(image => typeof image === 'string' || !image.hidden).length;
