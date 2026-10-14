@@ -18,7 +18,7 @@
   position: relative;
   display: grid;
   grid-template-rows: auto 1fr;
-  min-height: clamp(220px, 22vw, 290px);
+  min-height: clamp(190px, 18vw, 240px);
   gap: 28px;
   padding: clamp(26px, 3vw, 42px);
 }
@@ -55,7 +55,7 @@
   position: relative;
   display: grid;
   grid-template-rows: auto 1fr auto;
-  min-height: clamp(240px, 25vw, 305px);
+  min-height: clamp(215px, 20vw, 270px);
   gap: 18px;
   padding: clamp(25px, 2.7vw, 38px);
   isolation: isolate;

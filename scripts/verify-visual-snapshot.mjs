@@ -26,7 +26,7 @@ try {
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto('http://127.0.0.1:5195', { waitUntil: 'domcontentloaded' });
-    await page.waitForFunction(expected => document.querySelectorAll('#projects .collection-card').length === expected, content.projects.length, { timeout: 30000 });
+    await page.waitForFunction(expected => document.querySelectorAll('#projects .ring-accessible-list button').length === expected, content.projects.length, { timeout: 30000 });
     report[width] = { sections: {}, errors };
     for (const id of ['home', 'about', 'education', 'skills', 'projects', 'competitions', 'learning', 'strengths', 'contact']) {
       const section = page.locator(`#${id}`);

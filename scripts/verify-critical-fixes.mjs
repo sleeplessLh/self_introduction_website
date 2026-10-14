@@ -86,7 +86,7 @@ try {
     expect(collectionLabels.every(item => item.labelTop - item.separatorTop >= 20), `${width}: Collection separator crosses its label: ${JSON.stringify(collectionLabels)}`);
     const layout = await page.evaluate(() => ({
       overflow: document.documentElement.scrollWidth - innerWidth,
-      cards: [...document.querySelectorAll('#projects .collection-entry.is-active .collection-card')].map(card => ({ left: card.getBoundingClientRect().left, right: card.getBoundingClientRect().right })),
+      cards: [...document.querySelectorAll('#projects .ring-active-card .collection-card')].map(card => ({ left: card.getBoundingClientRect().left, right: card.getBoundingClientRect().right })),
       sceneFocus: document.querySelector('.spatial-experience').classList.contains('is-content-focus'),
       canvasPointerEvents: getComputedStyle(document.querySelector('.spatial-experience')).pointerEvents,
     }));
@@ -143,7 +143,8 @@ try {
     const scrollAfter = await page.evaluate(() => scrollY);
     expect(Math.abs(scrollAfter - scrollBefore) < 5, `${width}: Closing gallery lost scroll position (${scrollBefore} → ${scrollAfter})`);
 
-    await page.locator('#projects .collection-cover').nth(1).click();
+    await page.locator('#projects .ring-accessible-list button').nth(1).click();
+    await page.locator('#projects .ring-active-card .collection-cover').click();
     await page.locator('.detail-only-modal').getByRole('button', { name: /View project gallery/ }).click();
     await gallery.waitFor();
     const secondOwner = await gallery.getAttribute('data-gallery-owner');
@@ -167,7 +168,8 @@ try {
     await detail.waitFor();
     await detail.getByRole('button', { name: 'Close details' }).click();
     await detail.waitFor({ state: 'detached' });
-    await page.locator('#competitions .collection-cover').nth(1).click();
+    await page.locator('#competitions .ring-accessible-list button').nth(1).click();
+    await page.locator('#competitions .ring-active-card .collection-cover').click();
     await detail.getByRole('button', { name: /View competition gallery/ }).click();
     await gallery.waitFor();
     expect(await gallery.locator('.gallery-empty-state').count() === 1, `${width}: Empty competition gallery state missing`);
