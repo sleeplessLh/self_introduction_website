@@ -44,21 +44,42 @@ try {
       assert(await activeOwner() === content.projects[0].id, `${count}: forward wrap failed`);
     }
     if (count === 5) {
+      await page.waitForTimeout(250);
+      await ring.scrollIntoViewIfNeeded();
       const box = await ring.locator('.ring-active-card .collection-cover').boundingBox();
+      const beforeFrame = await ring.locator('canvas').screenshot();
       await page.mouse.move(box.x + box.width * .7, box.y + box.height * .5);
       await page.mouse.down();
       await page.mouse.move(box.x + box.width * .2, box.y + box.height * .5, { steps: 8 });
+      assert(await ring.evaluate(element => element.classList.contains('is-dragging')), 'mouse drag did not enter continuous rotation');
+      assert(await activeOwner() === content.projects[0].id, 'mouse drag changed selection before release');
+      const duringFrame = await ring.locator('canvas').screenshot();
+      assert(Buffer.compare(beforeFrame, duringFrame) !== 0, '3D scene did not redraw while dragging');
+      await ring.screenshot({ path: resolve(import.meta.dirname, '../artifacts/ring-live-drag-5-1440.png') });
       await page.mouse.up();
       assert(await activeOwner() === content.projects[1].id, 'mouse drag did not rotate to next card');
       assert(await page.locator('.detail-only-modal').count() === 0, 'mouse drag opened details');
+      const ringBox = await ring.boundingBox();
+      const orbitY = ringBox.y + ringBox.height * .24;
+      await page.mouse.move(ringBox.x + ringBox.width * .8, orbitY);
+      await page.mouse.down();
+      await page.mouse.move(ringBox.x + ringBox.width * .2, orbitY, { steps: 12 });
+      await page.mouse.up();
+      assert(await activeOwner() === content.projects[4].id, 'long drag did not cross multiple ring positions');
     }
     if (count === 24) {
+      await page.waitForTimeout(250);
+      await ring.scrollIntoViewIfNeeded();
       const box = await ring.locator('.ring-active-card .collection-cover').boundingBox();
       const client = await context.newCDPSession(page);
       const point = (x, y) => [{ x, y, id: 1 }];
       const y = Math.round(box.y + box.height * .5);
       await client.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: point(Math.round(box.x + box.width * .8), y) });
       for (const fraction of [.65, .5, .35, .2]) await client.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: point(Math.round(box.x + box.width * fraction), y) });
+      assert(await ring.evaluate(element => element.classList.contains('is-dragging')), 'touch swipe did not rotate continuously');
+      const touchBounds = await ring.boundingBox();
+      assert(touchBounds && touchBounds.y < 844 && touchBounds.y + touchBounds.height > 0, 'touch drag scrolled the carousel out of view');
+      await page.screenshot({ path: resolve(import.meta.dirname, '../artifacts/ring-live-touch-24-390.png') });
       await client.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
       assert(await activeOwner() === content.projects[1].id, 'touch swipe did not rotate to next card');
       assert(await page.locator('.detail-only-modal').count() === 0, 'touch swipe opened details');

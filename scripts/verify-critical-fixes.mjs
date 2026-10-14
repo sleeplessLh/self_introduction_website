@@ -140,6 +140,7 @@ try {
     expect(await detail.getByRole('button', { name: /View project gallery/ }).count() === 1, `${width}: Closing gallery did not return to project details`);
     await detail.getByRole('button', { name: 'Close details' }).click();
     await detail.waitFor({ state: 'detached' });
+    await page.waitForFunction(expected => Math.abs(scrollY - expected) < 5, scrollBefore, { timeout: 1500 });
     const scrollAfter = await page.evaluate(() => scrollY);
     expect(Math.abs(scrollAfter - scrollBefore) < 5, `${width}: Closing gallery lost scroll position (${scrollBefore} → ${scrollAfter})`);
 

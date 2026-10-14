@@ -61,3 +61,11 @@ No production content or media was changed. The stored project, competition, edu
 - On narrow screens, the surrounding cards use restrained dark materials rather than loading cover textures; the selected card still shows its actual cover image at full fidelity. This also reduces mobile GPU texture work.
 - The carousel screenshot test now waits for the re-mounted WebGL scene after returning from View All, preventing misleading blank-frame captures.
 - Reverified `npm run build`, five-width Project/Competition carousel navigation and screenshots, and `npm run verify:critical` with isolated Host fixtures. All passed. The existing non-failing Three.js `Clock` development warning remains.
+
+## Continuous 360-degree drag follow-up
+
+- The circular WebGL exhibition now follows the pointer or touch continuously while held, rather than changing only one record on release. Releasing snaps to the nearest card, including across multiple positions in one gesture.
+- During drag, the DOM reading card yields to the underlying real 3D card. Click suppression prevents a drag from opening a detail panel.
+- The camera target now advances toward the front of larger rings. A 24-card, 390 px touch-drag screenshot confirmed the foreground 3D card remains within the stage instead of falling below it.
+- Isolated tests verified live WebGL redraw during mouse drag, no premature selection, multi-position drag, mobile touch drag, 1/2/3/5/8/12/20/24-card counts, gallery isolation, and no accidental detail opening. The five-width carousel suite, production build, and full critical visitor/Host fixture suite passed afterward.
+- The critical scroll-restoration test now waits for the app's existing asynchronous restoration callback before checking the final position, avoiding a timing-dependent false failure.

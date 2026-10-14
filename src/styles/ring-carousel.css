@@ -10,6 +10,9 @@
   touch-action: pan-y;
 }
 .ring-carousel:focus-visible { outline: 2px solid var(--signal); outline-offset: 4px; }
+.ring-carousel.is-dragging { cursor: grabbing; }
+.ring-carousel.is-dragging .ring-active-card { opacity: 0; pointer-events: none; }
+.ring-carousel.is-dragging .ring-canvas { cursor: grabbing; }
 .ring-loading { display: grid; min-height: 560px; place-items: center; border: 1px solid #ffffff26; border-radius: 28px; color: var(--signal); font: 12px 'DM Mono', monospace; }
 .ring-canvas { position: absolute !important; inset: 0; }
 .ring-pair-preview { position: absolute; z-index: 1; top: 50%; left: 7%; display: grid; width: min(210px, 19%); gap: 8px; padding: 14px; transform: translateY(-50%); border: 1px solid #ffffff42; border-radius: 16px; background: #0d1723ee; color: var(--chalk); text-align: left; cursor: pointer; }
