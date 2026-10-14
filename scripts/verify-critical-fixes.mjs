@@ -68,7 +68,7 @@ try {
       });
     });
     expect(skills.length >= 4, `${width}: Skills groups missing`);
-    expect(skills.every(skill => skill.listTop >= skill.titleBottom - 2 && skill.listLeft < skill.groupRight), `${width}: Skills title/list collision or clipping`);
+    expect(skills.every(skill => (skill.listTop >= skill.titleBottom - 2 || skill.titleRight <= skill.listLeft + 2) && skill.listLeft < skill.groupRight), `${width}: Skills title/list collision or clipping`);
     if (width === 1440 || width === 390) await page.screenshot({ path: resolve(output, `skills-${width}.png`) });
 
     await page.locator('#projects').scrollIntoViewIfNeeded();
